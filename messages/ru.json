@@ -7,12 +7,14 @@
     "gallery": "Галерея"
   },
   "home": {
-    "title": "Создаю мосты между дизайном и кодом",
-    "description": "Портфолио с моими работами"
+    "headline": "Создаю захватывающие 3D-окружения для игр",
+    "subline": "Я Игорь, Lead Environment Artist в <strong>EveGoPlayOn</strong>, специализируюсь на процедурной генерации с Houdini и создании реалистичных игровых окружений.",
+    "title": "Портфолио Игоря Унгурьянова",
+    "description": "Сайт-портфолио Senior 3D Environment Artist"
   },
   "about": {
     "title": "О себе",
-    "description": "Познакомьтесь с {name}, инженер-дизайнер",
+    "description": "Познакомьтесь с {name}, Senior 3D Environment Artist из {location}",
     "location": "Местоположение",
     "languages": "Языки",
     "schedule": "Запланировать звонок"
@@ -24,12 +26,14 @@
   },
   "work": {
     "title": "Работы",
-    "viewProject": "Смотреть проект"
+    "viewProject": "Смотреть проект",
+    "featured": "Избранные работы"
   },
   "gallery": {
     "title": "Галерея"
   },
   "footer": {
-    "rights": "Все права защищены"
+    "rights": "Все права защищены",
+    "buildWith": "Создайте своё портфолио с"
   }
 }

@@ -7,12 +7,14 @@
     "gallery": "Gallery"
   },
   "home": {
-    "title": "Building bridges between design and code",
-    "description": "Portfolio website showcasing my work"
+    "headline": "Creating immersive 3D environments for games",
+    "subline": "I'm Igor, a Lead Environment Artist at <strong>EveGoPlayOn</strong>, specializing in procedural generation with Houdini and creating realistic game environments.",
+    "title": "Igor Unguryanov's Portfolio",
+    "description": "Portfolio website showcasing my work as a Senior 3D Environment Artist"
   },
   "about": {
     "title": "About",
-    "description": "Meet {name}, Design Engineer",
+    "description": "Meet {name}, Senior 3D Environment Artist from {location}",
     "location": "Location",
     "languages": "Languages",
     "schedule": "Schedule a call"
@@ -24,12 +26,14 @@
   },
   "work": {
     "title": "Work",
-    "viewProject": "View project"
+    "viewProject": "View project",
+    "featured": "Featured work"
   },
   "gallery": {
     "title": "Gallery"
   },
   "footer": {
-    "rights": "All rights reserved"
+    "rights": "All rights reserved",
+    "buildWith": "Build your portfolio with"
   }
 }
