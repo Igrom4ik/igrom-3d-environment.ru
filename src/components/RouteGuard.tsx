@@ -20,7 +20,7 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const performChecks = async () => {
+    const performChecks = () => {
       setLoading(true);
       setIsRouteEnabled(false);
       setIsPasswordRequired(false);
@@ -49,10 +49,9 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
       if (protectedRoutes[pathname as keyof typeof protectedRoutes]) {
         setIsPasswordRequired(true);
 
-        const response = await fetch("/api/check-auth");
-        if (response.ok) {
-          setIsAuthenticated(true);
-        }
+        // Check if already authenticated in sessionStorage
+        const isAuth = sessionStorage.getItem("authenticated") === "true";
+        setIsAuthenticated(isAuth);
       }
 
       setLoading(false);
@@ -61,14 +60,13 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
     performChecks();
   }, [pathname]);
 
-  const handlePasswordSubmit = async () => {
-    const response = await fetch("/api/authenticate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
+  const handlePasswordSubmit = () => {
+    // For static export, password is checked client-side
+    // In production, use proper server-side authentication
+    const correctPassword = "password"; // This should match PAGE_ACCESS_PASSWORD from .env
 
-    if (response.ok) {
+    if (password === correctPassword) {
+      sessionStorage.setItem("authenticated", "true");
       setIsAuthenticated(true);
       setError(undefined);
     } else {
