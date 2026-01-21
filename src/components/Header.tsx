@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 
 import { Fade, Flex, Line, Row, ToggleButton } from "@once-ui-system/core";
 
-import { routes, display, person, about, blog, work, gallery } from "@/resources";
+import { routes, display, person } from "@/resources";
 import { ThemeToggle } from "./ThemeToggle";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
 import styles from "./Header.module.scss";
 
 type TimeDisplayProps = {
@@ -44,6 +46,7 @@ export default TimeDisplay;
 
 export const Header = () => {
   const pathname = usePathname() ?? "";
+  const { t } = useLanguage();
 
   return (
     <>
@@ -96,7 +99,7 @@ export const Header = () => {
                     <ToggleButton
                       prefixIcon="person"
                       href="/about"
-                      label={about.label}
+                      label={t('nav.about')}
                       selected={pathname === "/about"}
                     />
                   </Row>
@@ -115,7 +118,7 @@ export const Header = () => {
                     <ToggleButton
                       prefixIcon="grid"
                       href="/work"
-                      label={work.label}
+                      label={t('nav.work')}
                       selected={pathname.startsWith("/work")}
                     />
                   </Row>
@@ -134,7 +137,7 @@ export const Header = () => {
                     <ToggleButton
                       prefixIcon="book"
                       href="/blog"
-                      label={blog.label}
+                      label={t('nav.blog')}
                       selected={pathname.startsWith("/blog")}
                     />
                   </Row>
@@ -153,7 +156,7 @@ export const Header = () => {
                     <ToggleButton
                       prefixIcon="gallery"
                       href="/gallery"
-                      label={gallery.label}
+                      label={t('nav.gallery')}
                       selected={pathname.startsWith("/gallery")}
                     />
                   </Row>
@@ -172,6 +175,8 @@ export const Header = () => {
                   <ThemeToggle />
                 </>
               )}
+              <Line background="neutral-alpha-medium" vert maxHeight="24" />
+              <LanguageSwitcher />
             </Row>
           </Row>
         </Row>

@@ -18,8 +18,15 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
     const performChecks = () => {
       setLoading(true);
       setIsRouteEnabled(false);
@@ -49,16 +56,18 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
       if (protectedRoutes[pathname as keyof typeof protectedRoutes]) {
         setIsPasswordRequired(true);
 
-        // Check if already authenticated in sessionStorage
-        const isAuth = sessionStorage.getItem("authenticated") === "true";
-        setIsAuthenticated(isAuth);
+        // Check if already authenticated in sessionStorage (only on client)
+        if (typeof window !== "undefined") {
+          const isAuth = sessionStorage.getItem("authenticated") === "true";
+          setIsAuthenticated(isAuth);
+        }
       }
 
       setLoading(false);
     };
 
     performChecks();
-  }, [pathname]);
+  }, [pathname, isMounted]);
 
   const handlePasswordSubmit = () => {
     // For static export, password is checked client-side
@@ -66,7 +75,9 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
     const correctPassword = "password"; // This should match PAGE_ACCESS_PASSWORD from .env
 
     if (password === correctPassword) {
-      sessionStorage.setItem("authenticated", "true");
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("authenticated", "true");
+      }
       setIsAuthenticated(true);
       setError(undefined);
     } else {

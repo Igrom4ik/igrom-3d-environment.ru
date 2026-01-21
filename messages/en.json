@@ -1,0 +1,35 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "blog": "Blog",
+    "work": "Work",
+    "gallery": "Gallery"
+  },
+  "home": {
+    "title": "Building bridges between design and code",
+    "description": "Portfolio website showcasing my work"
+  },
+  "about": {
+    "title": "About",
+    "description": "Meet {name}, Design Engineer",
+    "location": "Location",
+    "languages": "Languages",
+    "schedule": "Schedule a call"
+  },
+  "blog": {
+    "title": "Blog",
+    "readMore": "Read more",
+    "publishedOn": "Published on"
+  },
+  "work": {
+    "title": "Work",
+    "viewProject": "View project"
+  },
+  "gallery": {
+    "title": "Gallery"
+  },
+  "footer": {
+    "rights": "All rights reserved"
+  }
+}
