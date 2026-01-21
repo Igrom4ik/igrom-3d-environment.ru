@@ -2,13 +2,13 @@ import { About, Blog, Gallery, Home, Newsletter, Person, Social, Work } from "@/
 import { Line, Row, Text } from "@once-ui-system/core";
 
 const person: Person = {
-  firstName: "Selene",
-  lastName: "Yu",
-  name: `Selene Yu`,
-  role: "Design Engineer",
+  firstName: "Igor",
+  lastName: "Unguryanov",
+  name: `Igor Unguryanov`,
+  role: "Senior 3D Environment Artist",
   avatar: "/images/avatar.jpg",
-  email: "example@gmail.com",
-  location: "Asia/Jakarta", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
+  email: "igrom4ikus@gmail.com",
+  location: "Europe/Kaliningrad", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
   languages: ["English", "Русский"], // optional: Leave the array empty if you don't want to display languages
 };
 
@@ -23,33 +23,27 @@ const social: Social = [
   // Import new icons in /once-ui/icons.ts
   // Set essentials: true for links you want to show on the about page
   {
-    name: "GitHub",
-    icon: "github",
-    link: "https://github.com/once-ui-system",
+    name: "ArtStation",
+    icon: "artstation",
+    link: "https://www.artstation.com/igrom",
     essential: true,
   },
   {
-    name: "LinkedIn",
-    icon: "linkedin",
-    link: "https://www.linkedin.com/company/once-ui/",
-    essential: true,
-  },
-  {
-    name: "Instagram",
-    icon: "instagram",
-    link: "https://www.instagram.com/once_ui/",
-    essential: false,
-  },
-  {
-    name: "Threads",
-    icon: "threads",
-    link: "https://www.threads.com/@once_ui",
+    name: "Telegram",
+    icon: "telegram",
+    link: "https://t.me/igrom",
     essential: true,
   },
   {
     name: "Email",
     icon: "email",
     link: `mailto:${person.email}`,
+    essential: true,
+  },
+  {
+    name: "Phone",
+    icon: "phone",
+    link: "tel:+79316067781",
     essential: true,
   },
 ];
@@ -60,23 +54,23 @@ const home: Home = {
   label: "Home",
   title: `${person.name}'s Portfolio`,
   description: `Portfolio website showcasing my work as a ${person.role}`,
-  headline: <>Building bridges between design and code</>,
+  headline: <>Creating immersive 3D environments for games</>,
   featured: {
-    display: true,
+    display: false,
     title: (
       <Row gap="12" vertical="center">
-        <strong className="ml-4">Once UI</strong>{" "}
+        <strong className="ml-4">Featured Project</strong>{" "}
         <Line background="brand-alpha-strong" vert height="20" />
         <Text marginRight="4" onBackground="brand-medium">
           Featured work
         </Text>
       </Row>
     ),
-    href: "/work/building-once-ui-a-customizable-design-system",
+    href: "/work",
   },
   subline: (
     <>
-    I'm Selene, a design engineer at <Text as="span" size="xl" weight="strong">ONCE UI</Text>, where I craft intuitive <br /> user experiences. After hours, I build my own projects.
+    I'm Igor, a Lead Environment Artist at <Text as="span" size="xl" weight="strong">EveGoPlayOn</Text>, specializing in <br /> procedural generation with Houdini and creating realistic game environments.
 </>
   ),
 };
