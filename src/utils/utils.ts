@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 export type Team = {
   name: string;
   role: string;
@@ -49,10 +51,13 @@ function readMDXFile(filePath: string) {
         ? data.publishedAt.toISOString() 
         : String(data.publishedAt || new Date().toISOString()),
       summary: data.summary || "",
-      image: data.image || "",
-      images: data.images || [],
+      image: data.image ? (data.image.startsWith('/') ? `${basePath}${data.image}` : data.image) : "",
+      images: (data.images || []).map((img: string) => img.startsWith('/') ? `${basePath}${img}` : img),
       tag: data.tag || [],
-      team: data.team || [],
+      team: (data.team || []).map((member: any) => ({
+        ...member,
+        avatar: member.avatar && member.avatar.startsWith('/') ? `${basePath}${member.avatar}` : member.avatar
+      })),
       link: data.link || "",
     };
 
