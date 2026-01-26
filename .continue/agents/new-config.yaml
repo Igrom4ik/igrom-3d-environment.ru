@@ -1,18 +1,5 @@
 
-name: local-lmstudio
-version: 1.0.0
-schema: v1
-
-models:
-  - name: qwen-2.5-coder-14b
-    provider: openai
-    model: qwen2.5-coder-14b
-    apiBase: http://localhost:1234/v1
-    apiKey: local
-    roles:
-      - chat
-      - edit
-      - apply
-      - autocomplete
-
-
+name: git-mcp
+command: uvx
+args:
+  - mcp-server-git

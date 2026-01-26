@@ -17,15 +17,15 @@ export function Posts({
   exclude = [],
   direction,
 }: PostsProps) {
-  let allBlogs = getPosts(["src", "app", "blog", "posts"]);
+  let allBlogs = getPosts(["src", "app", "(site)", "blog", "posts"]);
 
   // Exclude by slug (exact match)
-  if (exclude.length) {
+  if (exclude && exclude.length > 0) {
     allBlogs = allBlogs.filter((post) => !exclude.includes(post.slug));
   }
 
   const sortedBlogs = allBlogs.sort((a, b) => {
-    return new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime();
+    return new Date(b.metadata.publishedAt || 0).getTime() - new Date(a.metadata.publishedAt || 0).getTime();
   });
 
   const displayedBlogs = range

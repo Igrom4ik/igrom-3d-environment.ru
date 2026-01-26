@@ -5,10 +5,17 @@ const withMDX = mdx({
   options: {},
 });
 
+const isProd = process.env.NODE_ENV === 'production';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
-  basePath: "/igrom-3d-environment.ru",
+  allowedDevOrigins: [
+    'localhost',
+    '127.0.0.1',
+    '*.localhost',
+  ],
+  output: isProd ? "export" : undefined,
+  basePath: isProd ? "/igrom-3d-environment.ru" : undefined,
   pageExtensions: ["ts", "tsx", "md", "mdx"],
   transpilePackages: ["next-mdx-remote"],
   images: {

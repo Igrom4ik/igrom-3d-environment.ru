@@ -2,14 +2,14 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-type Team = {
+export type Team = {
   name: string;
   role: string;
   avatar: string;
   linkedIn: string;
 };
 
-type Metadata = {
+export type Metadata = {
   title: string;
   subtitle?: string;
   publishedAt: string;
@@ -25,7 +25,8 @@ import { notFound } from "next/navigation";
 
 function getMDXFiles(dir: string) {
   if (!fs.existsSync(dir)) {
-    notFound();
+    console.error(`Directory not found: ${dir}`);
+    return [];
   }
 
   return fs.readdirSync(dir).filter((file) => path.extname(file) === ".mdx");
@@ -33,25 +34,45 @@ function getMDXFiles(dir: string) {
 
 function readMDXFile(filePath: string) {
   if (!fs.existsSync(filePath)) {
-    notFound();
+    console.error(`File not found: ${filePath}`);
+    return { metadata: {} as Metadata, content: "" };
   }
 
-  const rawContent = fs.readFileSync(filePath, "utf-8");
-  const { data, content } = matter(rawContent);
+  try {
+    const rawContent = fs.readFileSync(filePath, "utf-8");
+    const { data, content } = matter(rawContent);
 
-  const metadata: Metadata = {
-    title: data.title || "",
-    subtitle: data.subtitle || "",
-    publishedAt: data.publishedAt,
-    summary: data.summary || "",
-    image: data.image || "",
-    images: data.images || [],
-    tag: data.tag || [],
-    team: data.team || [],
-    link: data.link || "",
-  };
+    const metadata: Metadata = {
+      title: data.title || "",
+      subtitle: data.subtitle || "",
+      publishedAt: data.publishedAt instanceof Date 
+        ? data.publishedAt.toISOString() 
+        : String(data.publishedAt || new Date().toISOString()),
+      summary: data.summary || "",
+      image: data.image || "",
+      images: data.images || [],
+      tag: data.tag || [],
+      team: data.team || [],
+      link: data.link || "",
+    };
 
-  return { metadata, content };
+    return { metadata, content };
+  } catch (error) {
+    console.error(`Error reading MDX file: ${filePath}`, error);
+    // Return safe default metadata to prevent crashes
+    const safeMetadata: Metadata = {
+      title: "Error loading post",
+      subtitle: "",
+      publishedAt: new Date().toISOString(),
+      summary: "There was an error loading this post.",
+      image: "",
+      images: [],
+      tag: "",
+      team: [],
+      link: "",
+    };
+    return { metadata: safeMetadata, content: "" };
+  }
 }
 
 function getMDXData(dir: string) {
