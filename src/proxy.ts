@@ -18,7 +18,12 @@ export function proxy(request: NextRequest) {
 
     // If no cookie or wrong value, rewrite to 404 (hide existence of admin)
     if (!adminAccess || adminAccess.value !== 'true') {
-      // Using rewrite to /404 to show the custom Not Found page without changing URL
+      // In development, redirect to the login page for convenience
+      if (process.env.NODE_ENV === 'development') {
+        return NextResponse.redirect(new URL('/secret-login', request.url))
+      }
+      
+      // In production, show 404 to hide the admin panel
       return NextResponse.rewrite(new URL('/404-not-found', request.url))
     }
   }
