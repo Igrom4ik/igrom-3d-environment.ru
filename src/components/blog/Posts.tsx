@@ -1,6 +1,6 @@
+import { ThumbnailCard } from "@/components";
 import { getPosts } from "@/utils/utils";
 import { Grid } from "@once-ui-system/core";
-import { ThumbnailCard } from "@/components";
 
 interface PostsProps {
   range?: [number] | [number, number];
@@ -25,7 +25,10 @@ export function Posts({
   }
 
   const sortedBlogs = allBlogs.sort((a, b) => {
-    return new Date(b.metadata.publishedAt || 0).getTime() - new Date(a.metadata.publishedAt || 0).getTime();
+    return (
+      new Date(b.metadata.publishedAt || 0).getTime() -
+      new Date(a.metadata.publishedAt || 0).getTime()
+    );
   });
 
   const displayedBlogs = range
@@ -35,21 +38,21 @@ export function Posts({
   return (
     <>
       {displayedBlogs.length > 0 && (
-        <Grid 
-            columns={columns} 
-            tabletColumns="2" 
-            mobileColumns="1" 
-            fillWidth 
-            marginBottom="40" 
-            gap="m"
+        <Grid
+          columns={columns}
+          m={{ columns: 2 }}
+          s={{ columns: 1 }}
+          fillWidth
+          marginBottom="40"
+          gap="m"
         >
           {displayedBlogs.map((post) => (
             <ThumbnailCard
-                key={post.slug}
-                href={`/blog/${post.slug}`}
-                image={post.metadata.image}
-                title={post.metadata.title}
-                tag={post.metadata.tag}
+              key={post.slug}
+              href={`/blog/${post.slug}`}
+              image={post.metadata.image || ""}
+              title={post.metadata.title}
+              tag={post.metadata.tag}
             />
           ))}
         </Grid>

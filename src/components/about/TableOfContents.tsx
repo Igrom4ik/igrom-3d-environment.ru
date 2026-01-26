@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import { Column, Flex, Text } from "@once-ui-system/core";
+import type React from "react";
 import styles from "./about.module.scss";
 
 interface TableOfContentsProps {
@@ -49,8 +49,8 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ structure, about }) =
     >
       {structure
         .filter((section) => section.display)
-        .map((section, sectionIndex) => (
-          <Column key={sectionIndex} gap="12">
+        .map((section) => (
+          <Column key={section.title} gap="12">
             <Flex
               cursor="interactive"
               className={styles.hover}
@@ -58,15 +58,15 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ structure, about }) =
               vertical="center"
               onClick={() => scrollTo(section.title, 80)}
             >
-              <Flex height="1" minWidth="16" background="neutral-strong"></Flex>
+              <Flex height="1" minWidth="16" background="neutral-strong" />
               <Text>{section.title}</Text>
             </Flex>
             {about.tableOfContent.subItems && (
               <>
-                {section.items.map((item, itemIndex) => (
+                {section.items.map((item) => (
                   <Flex
                     l={{ hide: true }}
-                    key={itemIndex}
+                    key={item}
                     style={{ cursor: "pointer" }}
                     className={styles.hover}
                     gap="12"
@@ -74,7 +74,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ structure, about }) =
                     vertical="center"
                     onClick={() => scrollTo(item, 80)}
                   >
-                    <Flex height="1" minWidth="8" background="neutral-strong"></Flex>
+                    <Flex height="1" minWidth="8" background="neutral-strong" />
                     <Text>{item}</Text>
                   </Flex>
                 ))}

@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 
 import { Fade, Flex, Line, Row, ToggleButton } from "@once-ui-system/core";
 
-import { routes, display, person } from "@/resources";
-import { ThemeToggle } from "./ThemeToggle";
-import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { display, person, routes } from "@/resources";
 import styles from "./Header.module.scss";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
 
 type TimeDisplayProps = {
   timeZone: string;
@@ -99,7 +99,7 @@ export const Header = () => {
                     <ToggleButton
                       prefixIcon="person"
                       href="/about"
-                      label={t('nav.about')}
+                      label={t("nav.about")}
                       selected={pathname === "/about"}
                     />
                   </Row>
@@ -118,7 +118,7 @@ export const Header = () => {
                     <ToggleButton
                       prefixIcon="grid"
                       href="/work"
-                      label={t('nav.work')}
+                      label={t("nav.work")}
                       selected={pathname.startsWith("/work")}
                     />
                   </Row>
@@ -137,7 +137,7 @@ export const Header = () => {
                     <ToggleButton
                       prefixIcon="book"
                       href="/blog"
-                      label={t('nav.blog')}
+                      label={t("nav.blog")}
                       selected={pathname.startsWith("/blog")}
                     />
                   </Row>
@@ -156,7 +156,7 @@ export const Header = () => {
                     <ToggleButton
                       prefixIcon="gallery"
                       href="/gallery"
-                      label={t('nav.gallery')}
+                      label={t("nav.gallery")}
                       selected={pathname.startsWith("/gallery")}
                     />
                   </Row>

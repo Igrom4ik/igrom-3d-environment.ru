@@ -1,7 +1,7 @@
 import type { About, Blog, Gallery, Home, Newsletter, Person, Social, Work } from "@/types";
 import { Line, Row, Text } from "@once-ui-system/core";
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const person: Person = {
   firstName: "Igor",
@@ -72,7 +72,12 @@ const home: Home = {
   },
   subline: (
     <>
-      I'm Igor, a Lead Environment Artist at <Text as="span" size="xl" weight="strong">EveGoPlayOn</Text>, specializing in <br /> procedural generation with Houdini and creating realistic game environments.
+      I'm Igor, a Lead Environment Artist at{" "}
+      <Text as="span" size="xl" weight="strong">
+        EveGoPlayOn
+      </Text>
+      , specializing in <br /> procedural generation with Houdini and creating realistic game
+      environments.
     </>
   ),
 };
@@ -96,7 +101,8 @@ const about: About = {
   intro: {
     display: true,
     title: "Introduction",
-    description: "Selene is a Jakarta-based design engineer with a passion for transforming complex challenges into simple, elegant design solutions. Her work spans digital interfaces, interactive experiences, and the convergence of design and technology.",
+    description:
+      "Selene is a Jakarta-based design engineer with a passion for transforming complex challenges into simple, elegant design solutions. Her work spans digital interfaces, interactive experiences, and the convergence of design and technology.",
   },
   work: {
     display: true,

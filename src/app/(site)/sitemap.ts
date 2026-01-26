@@ -1,5 +1,5 @@
-import { getPosts } from "@/utils/utils";
 import { baseURL, routes as routesConfig } from "@/resources";
+import { getPosts } from "@/utils/utils";
 import type { MetadataRoute } from "next";
 
 export const dynamic = "force-static";

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { Column, Flex, Spinner, Text } from "@once-ui-system/core";
 import { useRouter } from "next/navigation";
-import { Flex, Spinner, Text, Column } from "@once-ui-system/core";
+import { useEffect } from "react";
 
 export default function SecretEntry() {
   const router = useRouter();
@@ -10,8 +10,8 @@ export default function SecretEntry() {
   useEffect(() => {
     // Set the cookie that middleware checks
     // max-age=2592000 (30 days)
-    document.cookie = "admin-access=true; path=/; max-age=2592000; SameSite=Lax"; 
-    
+    document.cookie = "admin-access=true; path=/; max-age=2592000; SameSite=Lax";
+
     // Redirect to the actual admin path
     router.push("/keystatic");
   }, [router]);

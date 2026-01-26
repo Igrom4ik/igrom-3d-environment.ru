@@ -1,4 +1,4 @@
-import KeystaticPage from './KeystaticPage';
+import KeystaticPage from "./KeystaticPage";
 
 export default function Page() {
   return <KeystaticPage />;

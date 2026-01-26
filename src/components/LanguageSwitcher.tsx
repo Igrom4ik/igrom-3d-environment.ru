@@ -9,16 +9,16 @@ export function LanguageSwitcher() {
   return (
     <Row gap="8" padding="4">
       <Button
-        variant={locale === 'en' ? 'primary' : 'secondary'}
+        variant={locale === "en" ? "primary" : "secondary"}
         size="s"
-        onClick={() => setLocale('en')}
+        onClick={() => setLocale("en")}
       >
         EN
       </Button>
       <Button
-        variant={locale === 'ru' ? 'primary' : 'secondary'}
+        variant={locale === "ru" ? "primary" : "secondary"}
         size="s"
-        onClick={() => setLocale('ru')}
+        onClick={() => setLocale("ru")}
       >
         RU
       </Button>

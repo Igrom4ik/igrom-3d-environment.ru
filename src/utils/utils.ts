@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export type Team = {
   name: string;
@@ -17,7 +17,9 @@ export type Metadata = {
   publishedAt: string;
   summary: string;
   image?: string;
+  cover?: string;
   images: string[];
+  media?: any[];
   tag?: string;
   team: Team[];
   link?: string;
@@ -44,19 +46,65 @@ function readMDXFile(filePath: string) {
     const rawContent = fs.readFileSync(filePath, "utf-8");
     const { data, content } = matter(rawContent);
 
+    // Handle legacy images array
+    let images = (data.images || []).map((img: string) =>
+      img.startsWith("/") ? `${basePath}${img}` : img,
+    );
+
+    // Handle new media blocks
+    const media = data.media || [];
+    if (media.length > 0) {
+      // If media exists, we can extract images for backward compatibility if needed,
+      // or just rely on the new components to handle media.
+      // For the grid view, we might want to populate 'images' from media if it's empty
+      if (images.length === 0) {
+        images = media
+          .filter((m: any) => m.discriminator === "image")
+          .map((m: any) => {
+            const img = m.value.image;
+            return img.startsWith("/") ? `${basePath}${img}` : img;
+          });
+      }
+    }
+
+    // Handle cover image
+    let cover = data.cover
+      ? data.cover.startsWith("/")
+        ? `${basePath}${data.cover}`
+        : data.cover
+      : "";
+
+    // Fallback: if no cover, use first image
+    if (!cover && images.length > 0) {
+      cover = images[0];
+    }
+
+    // Fallback: if no cover and no images, but media has video/other, maybe try to get something?
+    // For now, let's stick to images.
+
     const metadata: Metadata = {
       title: data.title || "",
       subtitle: data.subtitle || "",
-      publishedAt: data.publishedAt instanceof Date 
-        ? data.publishedAt.toISOString() 
-        : String(data.publishedAt || new Date().toISOString()),
+      publishedAt:
+        data.publishedAt instanceof Date
+          ? data.publishedAt.toISOString()
+          : String(data.publishedAt || new Date().toISOString()),
       summary: data.summary || "",
-      image: data.image ? (data.image.startsWith('/') ? `${basePath}${data.image}` : data.image) : "",
-      images: (data.images || []).map((img: string) => img.startsWith('/') ? `${basePath}${img}` : img),
+      image: data.image
+        ? data.image.startsWith("/")
+          ? `${basePath}${data.image}`
+          : data.image
+        : "",
+      cover: cover,
+      images: images,
+      media: media,
       tag: data.tag || [],
       team: (data.team || []).map((member: any) => ({
         ...member,
-        avatar: member.avatar && member.avatar.startsWith('/') ? `${basePath}${member.avatar}` : member.avatar
+        avatar:
+          member.avatar && member.avatar.startsWith("/")
+            ? `${basePath}${member.avatar}`
+            : member.avatar,
       })),
       link: data.link || "",
     };
@@ -71,7 +119,9 @@ function readMDXFile(filePath: string) {
       publishedAt: new Date().toISOString(),
       summary: "There was an error loading this post.",
       image: "",
+      cover: "",
       images: [],
+      media: [],
       tag: "",
       team: [],
       link: "",

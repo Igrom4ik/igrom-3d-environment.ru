@@ -8,7 +8,7 @@ export function TranslatedHomeHeadline() {
 
   return (
     <Heading wrap="balance" variant="display-strong-s">
-      {t('home.headline')}
+      {t("home.headline")}
     </Heading>
   );
 }
@@ -21,7 +21,7 @@ export function TranslatedHomeSubline() {
       wrap="balance"
       onBackground="neutral-weak"
       variant="body-default-l"
-      dangerouslySetInnerHTML={{ __html: t('home.subline') }}
+      dangerouslySetInnerHTML={{ __html: t("home.subline") }}
     />
   );
 }

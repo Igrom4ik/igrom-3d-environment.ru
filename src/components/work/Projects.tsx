@@ -1,6 +1,6 @@
+import { ThumbnailCard } from "@/components";
 import { getPosts } from "@/utils/utils";
 import { Grid } from "@once-ui-system/core";
-import { ThumbnailCard } from "@/components";
 
 interface ProjectsProps {
   range?: [number, number?];
@@ -16,7 +16,10 @@ export function Projects({ range, exclude }: ProjectsProps) {
   }
 
   const sortedProjects = allProjects.sort((a, b) => {
-    return new Date(b.metadata.publishedAt || 0).getTime() - new Date(a.metadata.publishedAt || 0).getTime();
+    return (
+      new Date(b.metadata.publishedAt || 0).getTime() -
+      new Date(a.metadata.publishedAt || 0).getTime()
+    );
   });
 
   const displayedProjects = range
@@ -26,8 +29,8 @@ export function Projects({ range, exclude }: ProjectsProps) {
   return (
     <Grid
       columns="3"
-      tabletColumns="2"
-      mobileColumns="1"
+      m={{ columns: 2 }}
+      s={{ columns: 1 }}
       fillWidth
       gap="m"
       marginBottom="40"
@@ -38,7 +41,11 @@ export function Projects({ range, exclude }: ProjectsProps) {
           priority={index < 2}
           key={post.slug}
           href={`/work/${post.slug}`}
-          image={post.metadata.image || (post.metadata.images && post.metadata.images.length > 0 ? post.metadata.images[0] : "")}
+          image={
+            post.metadata.cover ||
+            post.metadata.image ||
+            (post.metadata.images && post.metadata.images.length > 0 ? post.metadata.images[0] : "")
+          }
           title={post.metadata.title}
           tag={post.metadata.tag}
         />
