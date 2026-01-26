@@ -1,5 +1,6 @@
-import fs from "fs";
-import path from "path";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import fs from "node:fs";
+import path from "node:path";
 import matter from "gray-matter";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -19,7 +20,10 @@ export type Metadata = {
   image?: string;
   cover?: string;
   images: string[];
+  // biome-ignore lint/suspicious/noExplicitAny: metadata media
   media?: any[];
+  software?: string[];
+  artstation?: string;
   tag?: string;
   team: Team[];
   link?: string;
@@ -59,7 +63,9 @@ function readMDXFile(filePath: string) {
       // For the grid view, we might want to populate 'images' from media if it's empty
       if (images.length === 0) {
         images = media
+          // biome-ignore lint/suspicious/noExplicitAny: metadata media
           .filter((m: any) => m.discriminator === "image")
+          // biome-ignore lint/suspicious/noExplicitAny: metadata media
           .map((m: any) => {
             const img = m.value.image;
             return img.startsWith("/") ? `${basePath}${img}` : img;
@@ -98,13 +104,17 @@ function readMDXFile(filePath: string) {
       cover: cover,
       images: images,
       media: media,
+      software: data.software || [],
+      artstation: data.artstation || "",
       tag: data.tag || [],
+      // biome-ignore lint/suspicious/noExplicitAny: metadata team
       team: (data.team || []).map((member: any) => ({
-        ...member,
-        avatar:
-          member.avatar && member.avatar.startsWith("/")
-            ? `${basePath}${member.avatar}`
-            : member.avatar,
+        name: member.name,
+        role: member.role,
+        avatar: member.avatar.startsWith("/")
+          ? `${basePath}${member.avatar}`
+          : member.avatar,
+        linkedIn: member.linkedIn,
       })),
       link: data.link || "",
     };

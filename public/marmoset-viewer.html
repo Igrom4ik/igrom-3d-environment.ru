@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Marmoset Viewer</title>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; background-color: transparent; }
+        #marmoset-viewer { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+    <script src="https://viewer.marmoset.co/main/marmoset.js"></script>
+    <div id="marmoset-viewer"></div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const file = urlParams.get('file');
+        const autoStart = urlParams.get('autoStart') === 'true';
+
+        if (file) {
+            const viewer = new marmoset.WebViewer(
+                window.innerWidth, 
+                window.innerHeight, 
+                file
+            );
+            document.getElementById('marmoset-viewer').appendChild(viewer.domRoot);
+            
+            viewer.onLoad = function() {
+                if (autoStart) {
+                    viewer.loadScene();
+                }
+            };
+            
+            window.addEventListener('resize', function() {
+                viewer.resize(window.innerWidth, window.innerHeight);
+            });
+        }
+    </script>
+</body>
+</html>

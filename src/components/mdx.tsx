@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MDXRemote, type MDXRemoteProps } from "next-mdx-remote/rsc";
 import type React from "react";
 import type { ReactNode } from "react";
@@ -27,6 +28,14 @@ import {
   Text,
   type TextProps,
 } from "@once-ui-system/core";
+
+import { 
+  ImageFull, 
+  VideoLoop, 
+  YoutubeEmbed, 
+  SketchfabEmbed, 
+  ComparisonSlider 
+} from "./ProjectBlocks";
 
 type CustomLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
   href: string;
@@ -122,9 +131,10 @@ function createInlineCode({ children }: { children: ReactNode }) {
   return <InlineCode>{children}</InlineCode>;
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: mdx props
 function createCodeBlock(props: any) {
   // For pre tags that contain code blocks
-  if (props.children && props.children.props && props.children.props.className) {
+  if (props.children?.props?.className) {
     const { className, children } = props.children.props;
 
     // Extract language from className (format: language-xxx)
@@ -172,20 +182,35 @@ function createHR() {
 }
 
 const components = {
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   p: createParagraph as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   h1: createHeading("h1") as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   h2: createHeading("h2") as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   h3: createHeading("h3") as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   h4: createHeading("h4") as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   h5: createHeading("h5") as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   h6: createHeading("h6") as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   img: createImage as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   a: CustomLink as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   code: createInlineCode as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   pre: createCodeBlock as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   ol: createList("ol") as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   ul: createList("ul") as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   li: createListItem as any,
+  // biome-ignore lint/suspicious/noExplicitAny: mdx component mapping
   hr: createHR as any,
   Heading,
   Text,
@@ -203,6 +228,12 @@ const components = {
   Icon,
   Media,
   SmartLink,
+  // Keystatic Component Blocks Mapping
+  'image-full': ImageFull,
+  'video-loop': VideoLoop,
+  'youtube-embed': YoutubeEmbed,
+  'sketchfab-embed': SketchfabEmbed,
+  'comparison-slider': ComparisonSlider,
 };
 
 type CustomMDXProps = MDXRemoteProps & {

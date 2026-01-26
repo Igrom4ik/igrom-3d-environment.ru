@@ -5,6 +5,7 @@ import { formatDate } from "@/utils/formatDate";
 import { getPosts } from "@/utils/utils";
 import {
   AvatarGroup,
+  Button,
   Column,
   Heading,
   Line,
@@ -18,17 +19,20 @@ import {
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import {
+  ImageFull,
+  VideoLoop,
+  YoutubeEmbed,
+  SketchfabEmbed,
+  ComparisonSlider,
+  MarmosetViewer,
+  Pano360
+} from "@/components/ProjectBlocks";
+
 interface ProjectMediaItem {
-  discriminator: "image" | "video" | "youtube" | "sketchfab";
-  value: {
-    image?: string;
-    caption?: string;
-    src?: string;
-    autoPlay?: boolean;
-    muted?: boolean;
-    loop?: boolean;
-    url?: string;
-  };
+  discriminator: "image" | "video" | "youtube" | "sketchfab" | "marmoset" | "compare" | "pano";
+  // biome-ignore lint/suspicious/noExplicitAny: generic media item value
+  value: any;
 }
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
@@ -98,133 +102,74 @@ export default async function Project({
         image={
           post.metadata.image || `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`
         }
-        author={{
-          name: person.name,
-          url: `${baseURL}${about.path}`,
-          image: `${baseURL}${person.avatar}`,
-        }}
       />
-      <Column maxWidth="s" gap="16" horizontal="center" align="center">
-        <SmartLink href="/work">
-          <Text variant="label-strong-m">Projects</Text>
-        </SmartLink>
-        <Text variant="body-default-xs" onBackground="neutral-weak" marginBottom="12">
-          {post.metadata.publishedAt && formatDate(post.metadata.publishedAt)}
-        </Text>
-        <Heading variant="display-strong-m">{post.metadata.title}</Heading>
-      </Column>
-      <Row marginBottom="32" horizontal="center">
-        <Row gap="16" vertical="center">
-          {post.metadata.team && <AvatarGroup reverse avatars={avatars} size="s" />}
-          <Text variant="label-default-m" onBackground="brand-weak">
-            {post.metadata.team?.map((member, idx) => (
-              <span key={member.name || idx}>
-                {idx > 0 && (
-                  <Text as="span" onBackground="neutral-weak">
-                    ,{" "}
-                  </Text>
-                )}
-                <SmartLink href={member.linkedIn}>{member.name}</SmartLink>
-              </span>
-            ))}
-          </Text>
+      
+      {/* Header Section */}
+      <Column fillWidth gap="m" horizontal="start">
+        <Row fillWidth horizontal="between" vertical="center">
+            <Heading variant="display-strong-s">{post.metadata.title}</Heading>
+            {post.metadata.artstation && (
+                <SmartLink href={post.metadata.artstation} target="_blank">
+                    <Button variant="secondary" size="s" prefixIcon="arrowUpRight">
+                        Artstation
+                    </Button>
+                </SmartLink>
+            )}
         </Row>
-      </Row>
-
-      <Column fillWidth gap="24" marginBottom="40">
-        {post.metadata.media && post.metadata.media.length > 0
-          ? post.metadata.media.map((item: ProjectMediaItem, index: number) => {
-              if (item.discriminator === "image") {
-                return (
-                  <Column key={item.value.image || index} fillWidth gap="8" horizontal="center">
-                    <Media
-                      src={item.value.image || ""}
-                      alt={item.value.caption || post.metadata.title}
-                      radius="m"
-                      aspectRatio="16 / 9"
-                      objectFit="cover"
-                    />
-                    {item.value.caption && (
-                      <Text variant="body-default-xs" onBackground="neutral-weak">
-                        {item.value.caption}
-                      </Text>
-                    )}
-                  </Column>
-                );
-              }
-              if (item.discriminator === "video") {
-                return (
-                  <Column key={item.value.src || index} fillWidth>
-                    <video
-                      src={item.value.src}
-                      autoPlay={item.value.autoPlay}
-                      muted={item.value.muted}
-                      loop={item.value.loop}
-                      playsInline
-                      controls
-                      style={{ width: "100%", borderRadius: "var(--radius-m)" }}
-                    />
-                  </Column>
-                );
-              }
-              if (item.discriminator === "youtube") {
-                return (
-                  <Column key={item.value.url || index} fillWidth>
-                    <iframe
-                      width="100%"
-                      height="500"
-                      src={item.value.url}
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      style={{ borderRadius: "var(--radius-m)" }}
-                    />
-                  </Column>
-                );
-              }
-              if (item.discriminator === "sketchfab") {
-                return (
-                  <Column key={item.value.url || index} fillWidth>
-                    <iframe
-                      width="100%"
-                      height="600"
-                      src={item.value.url}
-                      title="Sketchfab Model"
-                      frameBorder="0"
-                      allow="autoplay; fullscreen; vr"
-                      allowFullScreen
-                      style={{ borderRadius: "var(--radius-m)" }}
-                    />
-                  </Column>
-                );
-              }
-              return null;
-            })
-          : /* Fallback for legacy data: show all images */
-            post.metadata.images.length > 0 &&
-            post.metadata.images.map((img, index) => (
-              <Media
-                key={img || index}
-                priority={index === 0}
-                aspectRatio="16 / 9"
-                radius="m"
-                alt="image"
-                src={img}
-              />
-            ))}
+        <Text variant="body-default-m" onBackground="neutral-medium">
+          {post.metadata.summary}
+        </Text>
+        
+        {/* Metadata: Date, Software, Team */}
+        <Row gap="l" vertical="center" wrap>
+            <Text variant="label-default-s" onBackground="neutral-weak">
+                {formatDate(post.metadata.publishedAt)}
+            </Text>
+            {post.metadata.software && post.metadata.software.length > 0 && (
+                <Row gap="8" vertical="center">
+                    <Text variant="label-default-s" onBackground="neutral-weak">Software:</Text>
+                    {post.metadata.software.map((sw) => (
+                        <Text key={sw} variant="label-default-s" style={{ padding: '4px 8px', background: 'var(--neutral-alpha-weak)', borderRadius: '4px' }}>
+                            {sw}
+                        </Text>
+                    ))}
+                </Row>
+            )}
+        </Row>
       </Column>
 
-      <Column style={{ margin: "auto" }} as="article" maxWidth="xs">
+      <Line />
+
+      {/* Media Gallery (Artstation Style) */}
+      <Column fillWidth gap="l" marginBottom="l">
+        {post.metadata.media?.map((item: ProjectMediaItem, index: number) => {
+            const key = `${item.discriminator}-${index}`;
+            switch (item.discriminator) {
+                case 'image':
+                    return <ImageFull key={key} src={item.value.image} caption={item.value.caption} />;
+                case 'video':
+                    return <VideoLoop key={key} src={item.value.src} autoPlay={item.value.autoPlay} muted={item.value.muted} loop={item.value.loop} />;
+                case 'youtube':
+                    return <YoutubeEmbed key={key} url={item.value.url} />;
+                case 'sketchfab':
+                    return <SketchfabEmbed key={key} url={item.value.url} />;
+                case 'marmoset':
+                    return <MarmosetViewer key={key} src={item.value.src} width={item.value.width} height={item.value.height} autoStart={item.value.autoStart} />;
+                case 'pano':
+                    return <Pano360 key={key} image={item.value.image} caption={item.value.caption} />;
+                case 'compare':
+                    return <ComparisonSlider key={key} leftImage={item.value.leftImage} rightImage={item.value.rightImage} />;
+                default:
+                    return null;
+            }
+        })}
+      </Column>
+
+      {/* Main Content */}
+      <Column fillWidth>
         <CustomMDX source={post.content} />
       </Column>
-      <Column fillWidth gap="40" horizontal="center" marginTop="40">
-        <Line maxWidth="40" />
-        <Heading as="h2" variant="heading-strong-xl" marginBottom="24">
-          Related projects
-        </Heading>
-        <Projects exclude={[post.slug]} range={[2]} />
-      </Column>
+
       <ScrollToHash />
     </Column>
   );
