@@ -1,7 +1,7 @@
 import { About, Blog, Gallery, Home, Newsletter, Person, Social, Work } from "@/types";
 import { Line, Row, Text } from "@once-ui-system/core";
 
-const basePath = process.env.NODE_ENV === 'production' ? '/igrom-3d-environment.ru' : '';
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 const person: Person = {
   firstName: "Igor",
