@@ -1,20 +1,22 @@
 "use client";
 
 import {
-  BorderStyle,
-  ChartMode,
-  ChartVariant,
   DataThemeProvider,
   IconProvider,
   LayoutProvider,
+  ThemeProvider,
+  ToastProvider,
+} from "@once-ui-system/core";
+import type {
+  BorderStyle,
+  ChartMode,
+  ChartVariant,
   NeutralColor,
   ScalingSize,
   Schemes,
   SolidStyle,
   SolidType,
   SurfaceStyle,
-  ThemeProvider,
-  ToastProvider,
   TransitionStyle,
 } from "@once-ui-system/core";
 import { style, dataStyle } from "../resources";
