@@ -47,7 +47,7 @@ export const Mailchimp: React.FC<React.ComponentProps<typeof Column>> = ({ ...fl
     }
   };
 
-  if (newsletter.display === false) return null;
+  if (!newsletter.display) return null;
 
   return (
     <Column
