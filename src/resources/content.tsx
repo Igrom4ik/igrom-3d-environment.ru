@@ -203,18 +203,21 @@ const about: About = {
 };
 
 const blog: Blog = {
+  path: "/blog",
   label: "Blog",
   title: "Writing about design and tech...",
   description: `Read what ${person.name} has been up to recently`,
 };
 
 const work: Work = {
+  path: "/work",
   label: "Work",
   title: "My projects",
   description: `Design and dev projects by ${person.name}`,
 };
 
 const gallery: Gallery = {
+  path: "/gallery",
   label: "Gallery",
   title: "My photo gallery",
   description: `A photo collection by ${person.name}`,
