@@ -73,7 +73,7 @@ export default config({
         media: fields.blocks(
             {
                 image: {
-                    label: 'HQ Images',
+                    label: 'HQ Image',
                     itemLabel: (props) => props.fields.caption.value || 'HQ Image',
                     schema: fields.object({
                         image: fields.image({
@@ -95,7 +95,7 @@ export default config({
                     }),
                 },
                 youtube: {
-                    label: 'Video (YouTube, Vimeo)',
+                    label: 'Embed (YT/Vimeo)',
                     itemLabel: (props) => `Embed: ${props.fields.url.value}`,
                     schema: fields.object({
                         url: fields.text({ label: 'Video URL' }),

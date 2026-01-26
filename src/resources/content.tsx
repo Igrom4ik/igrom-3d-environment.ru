@@ -131,14 +131,8 @@ const about: About = {
         timeframe: "2018 - 2022",
         role: "Lead Designer",
         achievements: [
-          <>
-            Developed a design system that unified the brand across multiple platforms, improving
-            design consistency by 40%.
-          </>,
-          <>
-            Led a cross-functional team to launch a new product line, contributing to a 15% increase
-            in overall company revenue.
-          </>,
+          "Developed a design system that unified the brand across multiple platforms, improving design consistency by 40%.",
+          "Led a cross-functional team to launch a new product line, contributing to a 15% increase in overall company revenue.",
         ],
         images: [],
       },
@@ -216,6 +210,11 @@ const gallery: Gallery = {
   title: "My photo gallery",
   description: `A photo collection by ${person.name}`,
   images: [
+    {
+      src: "/marmoset/MikitarHat.mview",
+      alt: "Mikitar Hat 3D Model",
+      orientation: "horizontal",
+    },
     {
       src: `${basePath}/images/gallery/vertical-1.jpg`,
       alt: "image",

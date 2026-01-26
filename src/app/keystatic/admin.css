@@ -1,0 +1,150 @@
+:root {
+  --bg-primary: #101014;
+  --bg-secondary: #202024;
+  --bg-tertiary: #303034;
+  --bg-hover: #404044;
+  --bg-active: #505054;
+  
+  --text-primary: #e6e6ea;
+  --text-secondary: #bebec2;
+  --text-muted: #96969a;
+  --text-disabled: #707074;
+  
+  --accent-primary: #26bbff;
+  --accent-hover: #61cdff;
+  
+  --border-color: #505054;
+  --focus-border: #808084;
+}
+
+/* Global Background and Typography */
+body, html {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Keystatic UI Overrides */
+
+/* Main Layout Backgrounds */
+[class*="keystatic"] {
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+}
+
+/* Header/Sidebar Backgrounds */
+header, nav, aside {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Inputs, Textareas, Selects */
+input, textarea, select {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 4.8px !important;
+  padding: 8.4px 11.9px !important;
+  color: var(--text-primary) !important;
+  font-size: 14px !important;
+  transition: border-color 0.2s linear !important;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--focus-border) !important;
+  outline: none !important;
+}
+
+/* Buttons */
+button {
+  transition: background-color 0.2s linear, color 0.2s linear !important;
+}
+
+/* Primary Action Buttons (approximation) */
+button[type="submit"], 
+button[class*="primary"],
+[role="button"][class*="primary"] {
+  background-color: var(--accent-primary) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px !important; /* Square style per request */
+  padding: 10px 16px !important;
+}
+
+button[type="submit"]:hover,
+button[class*="primary"]:hover {
+  background-color: var(--accent-hover) !important;
+}
+
+/* Cards / Containers */
+div[class*="Card"], div[class*="Box"] {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+  border-radius: 8px;
+}
+
+/* Dialogs / Modals */
+[role="dialog"] {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4) !important;
+}
+
+/* Dropdowns / Popups - TRANSFORM TO PANEL */
+/* This is a CSS hack to make the dropdown menu look like a grid panel */
+[role="menu"][aria-orientation="vertical"] {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+  
+  /* Grid Layout for Menu Items */
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+  gap: 8px !important;
+  min-width: 320px !important; /* Make menu wider to accommodate grid */
+}
+
+/* Menu Items as Cards/Buttons */
+[role="menuitem"] {
+  background-color: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 6px !important;
+  padding: 12px !important;
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 80px !important;
+  transition: all 0.2s ease !important;
+}
+
+[role="menuitem"]:hover {
+  background-color: var(--bg-hover) !important;
+  border-color: var(--accent-primary) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Hide icons if they exist in SVG form inside menu items to prevent clutter, 
+   or style them if they are useful. Assuming text only for now. */
+[role="menuitem"] svg {
+  margin-bottom: 8px !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-active);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-disabled);
+}

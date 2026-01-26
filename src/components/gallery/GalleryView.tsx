@@ -6,7 +6,36 @@ import { MasonryGrid, Media } from "@once-ui-system/core";
 export default function GalleryView() {
   return (
     <MasonryGrid columns={2} s={{ columns: 1 }}>
-      {gallery.images.map((image, index) => (
+      {gallery.images.map((image, index) => {
+        const isMarmoset = image.src.endsWith('.mview');
+        
+        if (isMarmoset) {
+           return (
+             <div 
+                key={index}
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  aspectRatio: image.orientation === "horizontal" ? "16 / 9" : "3 / 4",
+                  borderRadius: 'var(--radius-m)',
+                  overflow: 'hidden',
+                  background: '#000'
+                }}
+             >
+               <iframe
+                 src={`/marmoset-viewer.html?file=${image.src}&autoStart=false`}
+                 width="100%"
+                 height="100%"
+                 frameBorder="0"
+                 allowFullScreen
+                 title={image.alt}
+                 style={{ display: 'block' }}
+               />
+             </div>
+           );
+        }
+
+        return (
         <Media
           enlarge
           priority={index < 10}
@@ -17,7 +46,7 @@ export default function GalleryView() {
           src={image.src}
           alt={image.alt}
         />
-      ))}
+      )})}
     </MasonryGrid>
   );
 }
