@@ -16,7 +16,9 @@ const nextConfig = {
   ],
   output: isProd ? "export" : undefined,
   basePath: isProd ? "/igrom-3d-environment.ru" : undefined,
-  pageExtensions: ["ts", "tsx", "md", "mdx"],
+  pageExtensions: isProd 
+    ? ["ts", "tsx", "md", "mdx"] 
+    : ["ts", "tsx", "md", "mdx", "local.ts"],
   transpilePackages: ["next-mdx-remote"],
   images: {
     unoptimized: true,
