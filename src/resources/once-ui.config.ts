@@ -14,7 +14,7 @@ import {
 import { home } from "./content";
 
 // IMPORTANT: Replace with your own domain address - it's used for SEO in meta tags and schema
-const baseURL: string = "https://demo.magic-portfolio.com";
+const baseURL: string = "https://igrom4ik.github.io/igrom-3d-environment.ru";
 
 const routes: RoutesConfig = {
   "/": true,

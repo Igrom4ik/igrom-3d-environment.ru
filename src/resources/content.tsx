@@ -1,12 +1,14 @@
 import { About, Blog, Gallery, Home, Newsletter, Person, Social, Work } from "@/types";
 import { Line, Row, Text } from "@once-ui-system/core";
 
+const basePath = process.env.NODE_ENV === 'production' ? '/igrom-3d-environment.ru' : '';
+
 const person: Person = {
   firstName: "Igor",
   lastName: "Unguryanov",
   name: `Igor Unguryanov`,
   role: "Senior 3D Environment Artist",
-  avatar: "/images/avatar.jpg",
+  avatar: `${basePath}/images/avatar.jpg`,
   email: "igrom4ikus@gmail.com",
   location: "Europe/Kaliningrad", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
   languages: ["English", "Русский"], // optional: Leave the array empty if you don't want to display languages
@@ -50,7 +52,7 @@ const social: Social = [
 
 const home: Home = {
   path: "/",
-  image: "/images/og/home.jpg",
+  image: `${basePath}/images/og/home.jpg`,
   label: "Home",
   title: `${person.name}'s Portfolio`,
   description: `Portfolio website showcasing my work as a ${person.role}`,
@@ -103,7 +105,7 @@ const about: About = {
     ),
   },
   work: {
-    display: true, // set to false to hide this section
+    display: true,
     title: "Work Experience",
     experiences: [
       {
@@ -112,7 +114,7 @@ const about: About = {
         role: "Senior Design Engineer",
         achievements: [
           <>
-            Redesigned the UI/UX for the FLY platform, resulting in a 20% increase in user
+            Redesigned the UI/UX for the FLY platform, resulting in a 10% increase in user
             engagement and 30% faster load times.
           </>,
           <>
@@ -123,7 +125,7 @@ const about: About = {
         images: [
           // optional: leave the array empty if you don't want to display images
           {
-            src: "/images/projects/project-01/cover-01.jpg",
+            src: `${basePath}/images/projects/project-01/cover-01.jpg`,
             alt: "Once UI Project",
             width: 16,
             height: 9,
@@ -149,7 +151,7 @@ const about: About = {
     ],
   },
   studies: {
-    display: true, // set to false to hide this section
+    display: true,
     title: "Studies",
     institutions: [
       {
@@ -163,31 +165,22 @@ const about: About = {
     ],
   },
   technical: {
-    display: true, // set to false to hide this section
+    display: true,
     title: "Technical skills",
     skills: [
       {
         title: "Figma",
-        description: (
-          <>Able to prototype in Figma with Once UI with unnatural speed.</>
-        ),
-        tags: [
-          {
-            name: "Figma",
-            icon: "figma",
-          },
-        ],
-        // optional: leave the array empty if you don't want to display images
+        description: <>Able to prototype in Figma with Once UI with unnatural speed.</>,
         images: [
           {
-            src: "/images/projects/project-01/cover-02.jpg",
-            alt: "Project image",
+            src: `${basePath}/images/projects/project-01/cover-02.jpg`,
+            alt: "Project 01",
             width: 16,
             height: 9,
           },
           {
-            src: "/images/projects/project-01/cover-03.jpg",
-            alt: "Project image",
+            src: `${basePath}/images/projects/project-01/cover-03.jpg`,
+            alt: "Project 01",
             width: 16,
             height: 9,
           },
@@ -195,28 +188,11 @@ const about: About = {
       },
       {
         title: "Next.js",
-        description: (
-          <>Building next gen apps with Next.js + Once UI + Supabase.</>
-        ),
-        tags: [
-          {
-            name: "JavaScript",
-            icon: "javascript",
-          },
-          {
-            name: "Next.js",
-            icon: "nextjs",
-          },
-          {
-            name: "Supabase",
-            icon: "supabase",
-          },
-        ],
-        // optional: leave the array empty if you don't want to display images
+        description: <>Building next gen apps with Next.js + Once UI + Supabase.</>,
         images: [
           {
-            src: "/images/projects/project-01/cover-04.jpg",
-            alt: "Project image",
+            src: `${basePath}/images/projects/project-01/cover-04.jpg`,
+            alt: "Project 01",
             width: 16,
             height: 9,
           },
@@ -227,70 +203,91 @@ const about: About = {
 };
 
 const blog: Blog = {
-  path: "/blog",
   label: "Blog",
   title: "Writing about design and tech...",
   description: `Read what ${person.name} has been up to recently`,
-  // Create new blog posts by adding a new .mdx file to app/blog/posts
-  // All posts will be listed on the /blog route
 };
 
 const work: Work = {
-  path: "/work",
   label: "Work",
-  title: `Projects – ${person.name}`,
+  title: "My projects",
   description: `Design and dev projects by ${person.name}`,
-  // Create new project pages by adding a new .mdx file to app/blog/posts
-  // All projects will be listed on the /home and /work routes
 };
 
 const gallery: Gallery = {
-  path: "/gallery",
   label: "Gallery",
-  title: `Photo gallery – ${person.name}`,
+  title: "My photo gallery",
   description: `A photo collection by ${person.name}`,
-  // Images by https://lorant.one
-  // These are placeholder images, replace with your own
   images: [
     {
-      src: "/images/gallery/horizontal-1.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/vertical-4.jpg",
+      src: `${basePath}/images/gallery/img-01.jpg`,
       alt: "image",
       orientation: "vertical",
     },
     {
-      src: "/images/gallery/horizontal-3.jpg",
+      src: `${basePath}/images/gallery/img-02.jpg`,
       alt: "image",
       orientation: "horizontal",
     },
     {
-      src: "/images/gallery/vertical-1.jpg",
+      src: `${basePath}/images/gallery/img-03.jpg`,
       alt: "image",
       orientation: "vertical",
     },
     {
-      src: "/images/gallery/vertical-2.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-    {
-      src: "/images/gallery/horizontal-2.jpg",
+      src: `${basePath}/images/gallery/img-04.jpg`,
       alt: "image",
       orientation: "horizontal",
     },
     {
-      src: "/images/gallery/horizontal-4.jpg",
+      src: `${basePath}/images/gallery/img-05.jpg`,
       alt: "image",
       orientation: "horizontal",
     },
     {
-      src: "/images/gallery/vertical-3.jpg",
+      src: `${basePath}/images/gallery/img-06.jpg`,
       alt: "image",
       orientation: "vertical",
+    },
+    {
+      src: `${basePath}/images/gallery/img-07.jpg`,
+      alt: "image",
+      orientation: "horizontal",
+    },
+    {
+      src: `${basePath}/images/gallery/img-08.jpg`,
+      alt: "image",
+      orientation: "vertical",
+    },
+    {
+      src: `${basePath}/images/gallery/img-09.jpg`,
+      alt: "image",
+      orientation: "horizontal",
+    },
+    {
+      src: `${basePath}/images/gallery/img-10.jpg`,
+      alt: "image",
+      orientation: "horizontal",
+    },
+    {
+      src: `${basePath}/images/gallery/img-11.jpg`,
+      alt: "image",
+      orientation: "vertical",
+    },
+    {
+      src: `${basePath}/images/gallery/img-12.jpg`,
+      alt: "image",
+      orientation: "horizontal",
+    },
+    {
+      src: `${basePath}/images/gallery/img-13.jpg`,
+      alt: "image",
+      orientation: "horizontal",
+    },
+    {
+      src: `${basePath}/images/gallery/img-14.jpg`,
+      alt: "image",
+      orientation: "horizontal",
     },
   ],
 };
