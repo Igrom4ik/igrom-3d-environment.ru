@@ -7,7 +7,7 @@ const person: Person = {
   firstName: "Igor",
   lastName: "Unguryanov",
   name: "Igor Unguryanov",
-  role: "Senior 3D Environment Artist",
+  role: "Senior Environment Artist",
   avatar: `${basePath}/images/avatar.jpg`,
   email: "igrom4ikus@gmail.com",
   location: "Europe/Kaliningrad", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
