@@ -2,17 +2,27 @@ import { PageBuilder } from "@/components/PageBuilder";
 import type { PageBlock } from "@/components/PageBuilder";
 import { getBlogSettings, getHomeSettings, getWorkSettings } from "@/utils/reader";
 import { Column } from "@once-ui-system/core";
-import About from "../(site)/about/page";
-import Gallery from "../(site)/gallery/page";
+import About from "../../(site)/about/page";
+import Gallery from "../../(site)/gallery/page";
 
 interface PreviewPageProps {
-  searchParams: Promise<{
-    type?: string;
+  params: Promise<{
+    type: string;
   }>;
 }
 
-export default async function PreviewPage({ searchParams }: PreviewPageProps) {
-  const { type } = await searchParams;
+export async function generateStaticParams() {
+  return [
+    { type: 'home' },
+    { type: 'work' },
+    { type: 'blog' },
+    { type: 'about' },
+    { type: 'gallery' },
+  ];
+}
+
+export default async function PreviewPage({ params }: PreviewPageProps) {
+  const { type } = await params;
 
   let blocks: PageBlock[] = [];
 

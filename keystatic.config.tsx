@@ -319,7 +319,7 @@ export default config({
         label: 'Главная страница',
         path: 'src/content/home',
         format: 'json',
-        previewUrl: '/preview?type=home',
+        previewUrl: '/preview/home',
         schema: {
             blocks: fields.blocks({
                 hero: {
@@ -454,6 +454,7 @@ export default config({
         label: 'Страница "О себе"',
         path: 'src/content/about',
         format: 'json',
+        previewUrl: '/preview/about',
         schema: {
             title: fields.text({ label: 'Заголовок страницы' }),
             description: fields.text({ label: 'Описание страницы' }),
@@ -785,7 +786,7 @@ export default config({
       label: 'Портфолио',
       path: 'src/content/work',
       format: 'json',
-      previewUrl: '/preview?type=work',
+      previewUrl: '/preview/work',
       schema: {
         title: fields.text({ label: 'Заголовок', description: 'Главный заголовок страницы портфолио.' }),
         description: fields.text({ label: 'Описание', multiline: true, description: 'Вступительный текст под заголовком.' }),
@@ -842,7 +843,7 @@ export default config({
       label: 'Страница блога',
       path: 'src/content/blog',
       format: 'json',
-      previewUrl: '/preview?type=blog',
+      previewUrl: '/preview/blog',
       schema: {
         title: fields.text({ label: 'Заголовок', description: 'Главный заголовок страницы блога.' }),
         description: fields.text({ label: 'Описание', multiline: true, description: 'Вступительный текст под заголовком.' }),
@@ -916,7 +917,7 @@ export default config({
       label: 'Галерея',
       path: 'src/content/gallery',
       format: 'json',
-      previewUrl: '/preview?type=gallery',
+      previewUrl: '/preview/gallery',
       schema: {
         title: fields.text({ label: 'Заголовок', description: 'Главный заголовок страницы галереи.' }),
         description: fields.text({ label: 'Описание', multiline: true, description: 'Вступительный текст под заголовком.' }),

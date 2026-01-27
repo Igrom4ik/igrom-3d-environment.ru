@@ -5,6 +5,7 @@ import {
   HiArrowTopRightOnSquare,
   HiArrowUpRight,
   HiCalendarDays,
+  HiCommandLine,
   HiEnvelope,
   HiOutlineDocument,
   HiOutlineEye,
@@ -75,6 +76,7 @@ export const iconLibrary: Record<string, IconType> = {
   instagram: FaInstagram,
   artstation: SiArtstation,
   phone: HiPhone,
+  terminal: HiCommandLine,
 };
 
 export type IconLibrary = typeof iconLibrary;
