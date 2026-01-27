@@ -17,16 +17,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<Record<string, any>>({});
 
   useEffect(() => {
-    // Load saved locale from localStorage
-    if (typeof window !== "undefined") {
-      const savedLocale = localStorage.getItem("locale") as Locale;
-      if (savedLocale && (savedLocale === "en" || savedLocale === "ru")) {
-        setLocaleState(savedLocale);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
     // Load messages for current locale
     const loadMessages = async () => {
       try {
@@ -41,9 +31,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("locale", newLocale);
-    }
   };
 
   const t = (key: string, params?: Record<string, string>): string => {

@@ -53,9 +53,8 @@
   /*
 }*/
 
-/* Hide Google Translate widget */
+/* Hide Google Translate top banner */
 .goog-te-banner-frame,
-.goog-te-gadget,
 .skiptranslate {
   display: none !important;
 }
@@ -64,15 +63,7 @@ body {
   top: 0 !important;
 }
 
-/* Hide Google Translate top banner */
-.goog-te-banner-frame.skiptranslate {
-  display: none !important;
-}
-
-iframe.goog-te-banner-frame {
-  display: none !important;
-}
-
-body > .skiptranslate {
+/* Ensure the gadget is hidden as we use custom UI */
+.goog-te-gadget {
   display: none !important;
 }
