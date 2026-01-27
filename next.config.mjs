@@ -33,6 +33,8 @@ const nextConfig = {
         pathname: "**",
       },
     ],
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [16, 32, 48, 64, 96],
   },
   sassOptions: {
     compiler: "modern",
@@ -40,7 +42,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '200mb',
+      bodySizeLimit: '500mb',
     },
   },
   webpack: (config) => {
@@ -56,15 +58,6 @@ const nextConfig = {
         ],
       };
       return config;
-    },
-    experimental: {
-        serverActions: {
-            bodySizeLimit: '500mb',
-        },
-    },
-    images: {
-        deviceSizes: [640, 750, 828, 1080, 1200],
-        imageSizes: [16, 32, 48, 64, 96],
     },
 };
 

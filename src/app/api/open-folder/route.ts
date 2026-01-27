@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import path from 'path';
+import { exec } from 'node:child_process';
+import path from 'node:path';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

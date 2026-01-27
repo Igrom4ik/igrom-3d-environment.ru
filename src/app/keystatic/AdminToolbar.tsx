@@ -181,8 +181,8 @@ export function AdminToolbar() {
             gap: 6px;
             width: fit-content;
         `;
-        openBtn.onmouseover = () => openBtn.style.backgroundColor = '#333';
-        openBtn.onmouseout = () => openBtn.style.backgroundColor = '#262626';
+        openBtn.onmouseover = () => { openBtn.style.backgroundColor = '#333'; };
+        openBtn.onmouseout = () => { openBtn.style.backgroundColor = '#262626'; };
         
         openBtn.onclick = (e) => {
             e.preventDefault();
