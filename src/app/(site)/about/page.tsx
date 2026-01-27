@@ -91,7 +91,7 @@ export default async function About() {
           gap="32"
           s={{ hide: true }}
         >
-          <TableOfContents structure={structure} about={about} />
+          <TableOfContents structure={structure} about={{ tableOfContent: about.tableOfContent }} />
         </Column>
       )}
       <Row fillWidth s={{ direction: "column" }} horizontal="center">
