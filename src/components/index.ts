@@ -10,4 +10,5 @@ export { ScrollToHash } from "@/components/ScrollToHash";
 export { ThemeToggle } from "@/components/ThemeToggle";
 export { LanguageSwitcher } from "@/components/LanguageSwitcher";
 export { GoogleTranslate } from "@/components/GoogleTranslate";
+export { JDoodleEmbed } from "@/components/JDoodleEmbed";
 export { CustomMDX } from "@/components/mdx";

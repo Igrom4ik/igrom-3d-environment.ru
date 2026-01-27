@@ -1,4 +1,6 @@
 {
+  "preset": "ios-liquid-glass",
+  "backgroundEffect": "aurora",
   "theme": "system",
   "brand": "cyan",
   "accent": "red",

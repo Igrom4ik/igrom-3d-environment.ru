@@ -34,7 +34,23 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const settings = await getDesignSettings();
-  const activeStyle = settings ? { ...style, ...settings } : style;
+  let activeStyle = settings ? { ...style, ...settings } : style;
+
+  if (settings?.preset === 'ios-liquid-glass') {
+    activeStyle = {
+      ...activeStyle,
+      theme: 'light',
+      brand: 'blue',
+      accent: 'blue',
+      neutral: 'slate',
+      border: 'playful',
+      solid: 'contrast',
+      solidStyle: 'flat',
+      surface: 'translucent',
+    };
+  }
+
+  const backgroundEffect = settings?.backgroundEffect ?? 'none';
 
   return (
     <Flex
@@ -57,6 +73,7 @@ export default async function RootLayout({
               const defaultTheme = 'system';
               
               const config = ${JSON.stringify({
+                preset: settings?.preset,
                 brand: activeStyle.brand,
                 accent: activeStyle.accent,
                 neutral: activeStyle.neutral,
@@ -85,12 +102,15 @@ export default async function RootLayout({
               root.setAttribute('data-theme', resolvedTheme);
               
               const styleKeys = Object.keys(config);
+              // Commenting out local storage override to ensure preset settings take precedence
+              /*
               styleKeys.forEach(key => {
                 const value = localStorage.getItem('data-' + key);
                 if (value) {
                   root.setAttribute('data-' + key, value);
                 }
               });
+              */
             } catch (e) {
               console.error('Failed to initialize theme:', e);
               document.documentElement.setAttribute('data-theme', 'dark');
@@ -117,7 +137,7 @@ export default async function RootLayout({
                 cursor: effects.mask.cursor,
               }}
               gradient={{
-                display: effects.gradient.display,
+                display: backgroundEffect === 'aurora',
                 opacity: effects.gradient.opacity as opacity,
                 x: effects.gradient.x,
                 y: effects.gradient.y,
@@ -128,20 +148,20 @@ export default async function RootLayout({
                 colorEnd: effects.gradient.colorEnd,
               }}
               dots={{
-                display: effects.dots.display,
+                display: backgroundEffect === 'particles',
                 opacity: effects.dots.opacity as opacity,
                 size: effects.dots.size as SpacingToken,
                 color: effects.dots.color,
               }}
               grid={{
-                display: effects.grid.display,
+                display: backgroundEffect === 'grid',
                 opacity: effects.grid.opacity as opacity,
                 color: effects.grid.color,
                 width: effects.grid.width,
                 height: effects.grid.height,
               }}
               lines={{
-                display: effects.lines.display,
+                display: false,
                 opacity: effects.lines.opacity as opacity,
                 size: effects.lines.size as SpacingToken,
                 thickness: effects.lines.thickness,
@@ -151,7 +171,7 @@ export default async function RootLayout({
             />
           </RevealFx>
           <Flex fillWidth minHeight="16" s={{ hide: true }} />
-          <Header />
+          <Header preset={settings?.preset} />
           <Flex zIndex={0} fillWidth padding="l" horizontal="center" flex={1}>
             <Flex horizontal="center" fillWidth minHeight="0">
               <RouteGuard>{children}</RouteGuard>

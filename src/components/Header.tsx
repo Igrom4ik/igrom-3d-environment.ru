@@ -44,14 +44,15 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ timeZone, locale = "en-GB" })
 
 export default TimeDisplay;
 
-export const Header = () => {
+export const Header = ({ preset }: { preset?: string }) => {
   const pathname = usePathname() ?? "";
   const { t } = useLanguage();
+  const isLiquid = preset === 'ios-liquid-glass';
 
   return (
     <>
-      <Fade s={{ hide: true }} fillWidth position="fixed" height="80" zIndex={9} />
-      <Fade
+      {!isLiquid && <Fade s={{ hide: true }} fillWidth position="fixed" height="80" zIndex={9} />}
+      {!isLiquid && <Fade
         hide
         s={{ hide: false }}
         fillWidth
@@ -60,19 +61,22 @@ export const Header = () => {
         to="top"
         height="80"
         zIndex={9}
-      />
+      />}
       <Row
         fitHeight
-        className={styles.position}
+        className={isLiquid ? undefined : styles.position}
         position="sticky"
         as="header"
         zIndex={9}
         fillWidth
         padding="8"
         horizontal="center"
-        data-border="rounded"
+        data-border={isLiquid ? undefined : "rounded"}
+        background={isLiquid ? "transparent" : undefined}
         s={{
           position: "fixed",
+          top: isLiquid ? "24" : undefined,
+          background: isLiquid ? "transparent" : undefined,
         }}
       >
         <Row paddingLeft="12" fillWidth vertical="center" textVariant="body-default-s">
@@ -80,11 +84,12 @@ export const Header = () => {
         </Row>
         <Row fillWidth horizontal="center">
           <Row
-            background="page"
-            border="neutral-alpha-weak"
-            radius="m-4"
-            shadow="l"
-            padding="4"
+            background={isLiquid ? undefined : "page"}
+            border={isLiquid ? undefined : "neutral-alpha-weak"}
+            radius={isLiquid ? undefined : "m-4"}
+            shadow={isLiquid ? undefined : "l"}
+            padding={isLiquid ? undefined : "4"}
+            className={isLiquid ? "navbar-liquid" : undefined}
             horizontal="center"
             zIndex={1}
           >
@@ -165,6 +170,25 @@ export const Header = () => {
                       prefixIcon="gallery"
                       href="/gallery"
                       selected={pathname.startsWith("/gallery")}
+                    />
+                  </Row>
+                </>
+              )}
+              {routes["/coding"] && (
+                <>
+                  <Row s={{ hide: true }}>
+                    <ToggleButton
+                      prefixIcon="terminal"
+                      href="/coding"
+                      label={t("nav.coding")}
+                      selected={pathname.startsWith("/coding")}
+                    />
+                  </Row>
+                  <Row hide s={{ hide: false }}>
+                    <ToggleButton
+                      prefixIcon="terminal"
+                      href="/coding"
+                      selected={pathname.startsWith("/coding")}
                     />
                   </Row>
                 </>

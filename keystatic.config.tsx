@@ -543,6 +543,24 @@ export default config({
         format: 'json',
         previewUrl: '/style-guide',
         schema: {
+            preset: fields.select({
+                label: 'Theme Preset',
+                options: [
+                    { label: 'Custom (Use below settings)', value: 'custom' },
+                    { label: 'Apple iOS Liquid Glass 🍏', value: 'ios-liquid-glass' },
+                ],
+                defaultValue: 'custom',
+            }),
+            backgroundEffect: fields.select({
+                label: 'Background Effect',
+                options: [
+                    { label: 'None (Static)', value: 'none' },
+                    { label: 'Aurora (Gradient Animation)', value: 'aurora' },
+                    { label: 'Particles (Dots)', value: 'particles' },
+                    { label: 'Grid', value: 'grid' },
+                ],
+                defaultValue: 'none',
+            }),
             theme: fields.select({
                 label: 'Theme (System/Dark/Light)',
                 options: [

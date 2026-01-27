@@ -34,22 +34,6 @@
   --scheme-accent-600-10: rgba(138,152,159,0.1);
   --scheme-accent-600-30: rgba(138,152,159,0.3);
   --scheme-accent-600-50: rgba(138,152,159,0.5);
-
-  --scheme-neutral-100:  #020b10;
-  --scheme-neutral-200:  #0b181d;
-  --scheme-neutral-300:  #344248;
-  --scheme-neutral-400:  #4f5d64;
-  --scheme-neutral-500:  #68777e;
-  --scheme-neutral-600:  #89989f;
-  --scheme-neutral-700:  #a7b7be;
-  --scheme-neutral-800:  #c7d7df;
-  --scheme-neutral-900:  #d4e4ec;
-  --scheme-neutral-1000: #e1f2f9;
-  --scheme-neutral-1100: #e7f8ff;
-  --scheme-neutral-1200: #eeffff;
-  --scheme-neutral-600-10: rgba(137,152,159,0.1);
-  --scheme-neutral-600-30: rgba(137,152,159,0.3);
-  --scheme-neutral-600-50: rgba(137,152,159,0.5);
   /*
 }*/
 
@@ -66,4 +50,218 @@ body {
 /* Ensure the gadget is hidden as we use custom UI */
 .goog-te-gadget {
   display: none !important;
+}
+
+/* 
+  APPLE IOS LIQUID GLASS PRESET 
+  Refined based on user's reference: 
+  - Dynamic "liquid" background with refraction
+  - Glassmorphism with deep shadows and blur
+  - "Living" highlight animation
+*/
+
+[data-preset="ios-liquid-glass"] {
+  /* Variables for glass effect */
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-surface: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 18px 45px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(148, 163, 184, 0.35);
+  --glass-blur: 22px;
+  --glass-saturate: 180%;
+}
+
+[data-preset="ios-liquid-glass"][data-theme="dark"] {
+  --glass-surface: rgba(15, 23, 42, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 18px 45px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(148, 163, 184, 0.15);
+}
+
+/* 
+  Dynamic Background - "Liquid" effect
+  Using the user's radial gradient approach for depth 
+*/
+[data-preset="ios-liquid-glass"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
+  /* Deep dark liquid background as base - Updated to Pitch Black/Subtle Gradient */
+  background: 
+    radial-gradient(circle at 0% 0%, rgba(15, 23, 42, 0.4), transparent 60%), 
+    radial-gradient(circle at 100% 100%, rgba(30, 27, 75, 0.4), transparent 60%), 
+    #000000;
+  background-size: cover;
+  animation: none; /* Static base, but we can animate if needed */
+}
+
+[data-preset="ios-liquid-glass"][data-theme="light"] body::before {
+  /* Light mode variation */
+  background: 
+    radial-gradient(circle at 0% 0%, #38bdf8, transparent 50%), 
+    radial-gradient(circle at 100% 100%, #c084fc, transparent 55%), 
+    #f0f9ff;
+}
+
+/* 
+  Glass Surface Implementation 
+  Applying the "liquid-glass-card" styles to Once UI surfaces 
+*/
+[data-preset="ios-liquid-glass"] [data-surface="translucent"] {
+  position: relative;
+  /* The complex gradient background from the example */
+  background: 
+    radial-gradient(circle at 0 0, rgba(255,255,255,0.25), transparent 55%), 
+    radial-gradient(circle at 100% 100%, rgba(148,163,184,0.25), transparent 60%), 
+    var(--glass-surface) !important;
+  
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) !important;
+  
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: 28px !important; /* Matching the example */
+  overflow: hidden !important; /* Crucial for the sway effect */
+}
+
+/* 
+  "Liquid Sway" Animation
+  The moving highlight effect 
+*/
+[data-preset="ios-liquid-glass"] [data-surface="translucent"]::before {
+  content: ""; 
+  position: absolute; 
+  inset: -40%; 
+  background: 
+    radial-gradient(circle at 0 0, rgba(255,255,255,0.35), transparent 60%), 
+    radial-gradient(circle at 100% 0, rgba(148,163,184,0.35), transparent 55%); 
+  mix-blend-mode: overlay; /* 'screen' can be too bright on white text, 'overlay' or 'soft-light' blends better */
+  opacity: 0.55; 
+  transform: translate3d(-10%, -10%, 0); 
+  animation: liquid-sway 14s ease-in-out infinite alternate; 
+  pointer-events: none; 
+  z-index: 2;
+}
+
+/* Ensure content sits above the sway effect */
+[data-preset="ios-liquid-glass"] [data-surface="translucent"] > * {
+  position: relative;
+  z-index: 3;
+}
+
+@keyframes liquid-sway { 
+  0%   { transform: translate3d(-12%, -16%, 0) rotate(0deg); } 
+  50%  { transform: translate3d(4%, -6%, 0) rotate(4deg); } 
+  100% { transform: translate3d(-8%, 8%, 0) rotate(-3deg); } 
+}
+
+/* Enhanced Borders for specific UI elements */
+[data-preset="ios-liquid-glass"] [data-border="playful"] {
+  border-radius: 28px !important;
+}
+
+/* Coding Embed Container Fix */
+.jdoodle-embed-container {
+  position: relative;
+  z-index: 10;
+  background: white; /* Fallback */
+}
+
+/* 
+  LIQUID NAVBAR IMPLEMENTATION
+  Specific style for the navigation bar in Liquid Glass mode
+*/
+.navbar-liquid { 
+  position: relative; 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 12px; 
+  padding: 10px 18px; 
+  border-radius: 999px; /* сильный pill‑радиус */ 
+  background: 
+    radial-gradient(circle at 0 0, rgba(255,255,255,0.14), transparent 55%), 
+    radial-gradient(circle at 100% 100%, rgba(148,163,184,0.18), transparent 55%), 
+    rgba(15, 23, 42, 0.72);               /* полупрозрачный тёмный слой */ 
+  border: 1px solid rgba(148, 163, 184, 0.45); 
+  box-shadow: 
+    0 18px 45px rgba(0, 0, 0, 0.7),       /* внешняя тень */ 
+    0 0 0 1px rgba(15, 23, 42, 0.8);      /* лёгкий обвод по контуру */ 
+  backdrop-filter: blur(22px); 
+  -webkit-backdrop-filter: blur(22px); 
+  color: #f9fafb; 
+} 
+
+/* жидкий блик по краю бара */ 
+.navbar-liquid::before { 
+  content: ""; 
+  position: absolute; 
+  inset: -40%; 
+  background: 
+    radial-gradient(circle at 0 0, rgba(255,255,255,0.40), transparent 60%), 
+    radial-gradient(circle at 100% 0, rgba(129,140,248,0.35), transparent 55%); 
+  mix-blend-mode: screen; 
+  opacity: 0.6; 
+  transform: translate3d(-10%, -15%, 0); 
+  animation: navbar-liquid-sway 18s ease-in-out infinite alternate; 
+  pointer-events: none; 
+} 
+
+/* 
+  BUTTON HOVER EFFECTS
+  Apply liquid glass effect to anchor tags and buttons inside the navbar on hover
+*/
+.navbar-liquid a,
+.navbar-liquid button {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px; /* Smooth rounded corners for buttons */
+  position: relative;
+  overflow: hidden;
+  /* Reset default button styles if needed */
+  background: transparent; 
+  cursor: pointer;
+  border: none; /* Ensure no default border on buttons */
+}
+
+.navbar-liquid a:hover,
+.navbar-liquid button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4); /* Inner highlight top */
+  backdrop-filter: blur(4px);
+  transform: translateY(-1px);
+}
+
+/* Inner liquid shine for buttons */
+.navbar-liquid a::after,
+.navbar-liquid button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: none;
+  pointer-events: none;
+}
+
+.navbar-liquid a:hover::after,
+.navbar-liquid button:hover::after {
+  left: 150%;
+  transition: left 0.7s ease-in-out;
+}
+
+@keyframes navbar-liquid-sway { 
+  0%   { transform: translate3d(-12%, -20%, 0) rotate(0deg); } 
+  50%  { transform: translate3d(6%, -8%, 0) rotate(3deg); } 
+  100% { transform: translate3d(-6%, 10%, 0) rotate(-2deg); } 
 }
