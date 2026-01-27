@@ -80,8 +80,8 @@ export default config({
         media: fields.blocks(
             {
                 gallery: {
-                    label: 'Image Gallery (Grid)',
-                    itemLabel: (props) => `Gallery (${props.fields.images.elements.length} images)`,
+                    label: 'Image Gallery',
+                    itemLabel: (props) => `Gallery (${props.fields.images.elements?.length || 0} images)`,
                     schema: fields.object({
                         images: fields.array(
                             fields.image({

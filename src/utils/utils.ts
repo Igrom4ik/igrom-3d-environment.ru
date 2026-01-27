@@ -71,6 +71,16 @@ function readMDXFile(filePath: string) {
             const img = m.value.image;
             return img.startsWith("/") ? `${basePath}${img}` : img;
           });
+        
+        // Extract images from gallery blocks
+        const galleryImages = media
+          // biome-ignore lint/suspicious/noExplicitAny: metadata media
+          .filter((m: any) => m.discriminator === "gallery")
+          // biome-ignore lint/suspicious/noExplicitAny: metadata media
+          .flatMap((m: any) => m.value.images || [])
+          .map((img: string) => (img.startsWith("/") ? `${basePath}${img}` : img));
+          
+        images = [...images, ...galleryImages];
       }
     }
 
