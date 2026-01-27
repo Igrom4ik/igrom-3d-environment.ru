@@ -23,6 +23,7 @@ export type Metadata = {
   // biome-ignore lint/suspicious/noExplicitAny: metadata media
   media?: any[];
   software?: string[];
+  tags?: string[];
   artstation?: string;
   tag?: string;
   team: Team[];

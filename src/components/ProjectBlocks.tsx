@@ -194,3 +194,28 @@ export const Pano360: FC<Pano360Props> = ({ image, caption }) => {
         </Column>
     );
 };
+
+interface ImageGalleryProps {
+    images: string[];
+    columns?: '2' | '3' | '4';
+}
+
+export const ImageGallery: FC<ImageGalleryProps> = ({ images, columns = '2' }) => {
+    if (!images || images.length === 0) return null;
+
+    return (
+        <Column fillWidth marginBottom="32">
+             <Grid columns={columns} gap="16" s={{ columns: 1 }}>
+                {images.map((img, idx) => (
+                    <Media 
+                        key={idx} 
+                        src={img} 
+                        alt={`Gallery Image ${idx + 1}`} 
+                        radius="l" 
+                        style={{ width: '100%', height: 'auto', objectFit: 'cover' }} 
+                    />
+                ))}
+            </Grid>
+        </Column>
+    );
+};

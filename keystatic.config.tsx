@@ -69,9 +69,39 @@ export default config({
                 itemLabel: props => props.value
             }
         ),
+        tags: fields.array(
+            fields.text({ label: 'Tag' }),
+            {
+                label: 'Tags',
+                itemLabel: props => props.value
+            }
+        ),
         artstation: fields.url({ label: 'Artstation Link' }),
         media: fields.blocks(
             {
+                gallery: {
+                    label: 'Image Gallery (Grid)',
+                    itemLabel: (props) => `Gallery (${props.fields.images.value.length} images)`,
+                    schema: fields.object({
+                        images: fields.array(
+                            fields.image({
+                                label: 'Image',
+                                directory: 'public/images/projects',
+                                publicPath: '/images/projects',
+                            }),
+                            { label: 'Images' }
+                        ),
+                        columns: fields.select({
+                            label: 'Columns',
+                            options: [
+                                { label: '2 Columns', value: '2' },
+                                { label: '3 Columns', value: '3' },
+                                { label: '4 Columns', value: '4' },
+                            ],
+                            defaultValue: '2',
+                        }),
+                    }),
+                },
                 image: {
                     label: 'HQ Image',
                     itemLabel: (props) => props.fields.caption.value || 'HQ Image',

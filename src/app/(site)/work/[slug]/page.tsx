@@ -15,6 +15,7 @@ import {
   Schema,
   SmartLink,
   Text,
+  Grid
 } from "@once-ui-system/core";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -26,11 +27,12 @@ import {
   SketchfabEmbed,
   ComparisonSlider,
   MarmosetViewer,
-  Pano360
+  Pano360,
+  ImageGallery
 } from "@/components/ProjectBlocks";
 
 interface ProjectMediaItem {
-  discriminator: "image" | "video" | "youtube" | "sketchfab" | "marmoset" | "compare" | "pano";
+  discriminator: "image" | "video" | "youtube" | "sketchfab" | "marmoset" | "compare" | "pano" | "gallery";
   // biome-ignore lint/suspicious/noExplicitAny: generic media item value
   value: any;
 }
@@ -90,7 +92,7 @@ export default async function Project({
     })) || [];
 
   return (
-    <Column as="section" maxWidth="m" horizontal="center" gap="l">
+    <Column as="section" maxWidth="xl" horizontal="center" gap="l">
       <Schema
         as="blogPosting"
         baseURL={baseURL}
@@ -103,73 +105,117 @@ export default async function Project({
           post.metadata.image || `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`
         }
       />
-      
-      {/* Header Section */}
-      <Column fillWidth gap="m" horizontal="start">
-        <Row fillWidth horizontal="between" vertical="center">
-            <Heading variant="display-strong-s">{post.metadata.title}</Heading>
-            {post.metadata.artstation && (
-                <SmartLink href={post.metadata.artstation} target="_blank">
-                    <Button variant="secondary" size="s" prefixIcon="arrowUpRight">
-                        Artstation
-                    </Button>
-                </SmartLink>
-            )}
-        </Row>
-        <Text variant="body-default-m" onBackground="neutral-medium">
-          {post.metadata.summary}
-        </Text>
-        
-        {/* Metadata: Date, Software, Team */}
-        <Row gap="l" vertical="center" wrap>
-            <Text variant="label-default-s" onBackground="neutral-weak">
-                {formatDate(post.metadata.publishedAt)}
-            </Text>
-            {post.metadata.software && post.metadata.software.length > 0 && (
-                <Row gap="8" vertical="center">
-                    <Text variant="label-default-s" onBackground="neutral-weak">Software:</Text>
-                    {post.metadata.software.map((sw) => (
-                        <Text key={sw} variant="label-default-s" style={{ padding: '4px 8px', background: 'var(--neutral-alpha-weak)', borderRadius: '4px' }}>
-                            {sw}
-                        </Text>
-                    ))}
-                </Row>
-            )}
-        </Row>
-      </Column>
 
-      <Line />
-
-      {/* Media Gallery (Artstation Style) */}
-      <Column fillWidth gap="l" marginBottom="l">
-        {post.metadata.media?.map((item: ProjectMediaItem, index: number) => {
-            const key = `${item.discriminator}-${index}`;
-            switch (item.discriminator) {
+      <Grid columns="3fr 1fr" gap="32" m={{ columns: 1 }}>
+        {/* Left Column: Media & Content */}
+        <Column fillWidth>
+          {/* Media Gallery */}
+          <Column fillWidth gap="l" marginBottom="l">
+            {post.metadata.media?.map((item: ProjectMediaItem, index: number) => {
+              const key = `${item.discriminator}-${index}`;
+              switch (item.discriminator) {
                 case 'image':
-                    return <ImageFull key={key} src={item.value.image} caption={item.value.caption} />;
+                  return <ImageFull key={key} src={item.value.image} caption={item.value.caption} />;
+                case 'gallery':
+                  return <ImageGallery key={key} images={item.value.images} columns={item.value.columns} />;
                 case 'video':
-                    return <VideoLoop key={key} src={item.value.src} autoPlay={item.value.autoPlay} muted={item.value.muted} loop={item.value.loop} />;
+                  return <VideoLoop key={key} src={item.value.src} autoPlay={item.value.autoPlay} muted={item.value.muted} loop={item.value.loop} />;
                 case 'youtube':
-                    return <YoutubeEmbed key={key} url={item.value.url} />;
+                  return <YoutubeEmbed key={key} url={item.value.url} />;
                 case 'sketchfab':
-                    return <SketchfabEmbed key={key} url={item.value.url} />;
+                  return <SketchfabEmbed key={key} url={item.value.url} />;
                 case 'marmoset':
-                    return <MarmosetViewer key={key} src={item.value.src} width={item.value.width} height={item.value.height} autoStart={item.value.autoStart} />;
+                  return <MarmosetViewer key={key} src={item.value.src} width={item.value.width} height={item.value.height} autoStart={item.value.autoStart} />;
                 case 'pano':
-                    return <Pano360 key={key} image={item.value.image} caption={item.value.caption} />;
+                  return <Pano360 key={key} image={item.value.image} caption={item.value.caption} />;
                 case 'compare':
-                    return <ComparisonSlider key={key} leftImage={item.value.leftImage} rightImage={item.value.rightImage} />;
+                  return <ComparisonSlider key={key} leftImage={item.value.leftImage} rightImage={item.value.rightImage} />;
                 default:
-                    return null;
-            }
-        })}
-      </Column>
+                  return null;
+              }
+            })}
+          </Column>
 
-      {/* Main Content */}
-      <Column fillWidth>
-        <CustomMDX source={post.content} />
-      </Column>
+          {/* Main Content */}
+          <Column fillWidth>
+            <CustomMDX source={post.content} />
+          </Column>
+        </Column>
 
+        {/* Right Column: Sidebar */}
+        <Column fillWidth gap="m" style={{ height: 'fit-content' }}>
+            {/* Header Info */}
+            <Heading variant="display-strong-s">{post.metadata.title}</Heading>
+            
+            {/* Author / Profile */}
+            <Row gap="s" vertical="center">
+                 {avatars.length > 0 ? (
+                    <AvatarGroup size="m" avatars={avatars} />
+                 ) : (
+                    // Default avatar fallback if needed, or just hide
+                     <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#333' }} />
+                 )}
+                 <Column>
+                    <Text variant="body-strong-m">Igrom4ik</Text>
+                    <Text variant="body-default-s" onBackground="neutral-weak">3D Environment Artist</Text>
+                 </Column>
+            </Row>
+
+            <Line />
+
+            {/* Actions */}
+            <Row gap="s">
+                <Button fillWidth variant="primary">Follow</Button>
+                <Button variant="secondary" prefixIcon="bookmark" />
+            </Row>
+
+            {/* Description */}
+             <Text variant="body-default-m" onBackground="neutral-medium">
+                {post.metadata.summary}
+            </Text>
+
+            {/* Software Used */}
+            {post.metadata.software && post.metadata.software.length > 0 && (
+                 <Column gap="xs">
+                    <Text variant="label-strong-s" onBackground="neutral-weak">Software Used</Text>
+                    <Row gap="xs" wrap>
+                        {post.metadata.software.map((sw) => (
+                             <Text key={sw} variant="label-default-s" style={{ padding: '4px 8px', background: 'var(--neutral-alpha-weak)', borderRadius: '4px' }}>
+                                {sw}
+                            </Text>
+                        ))}
+                    </Row>
+                 </Column>
+            )}
+
+             {/* Tags */}
+            {post.metadata.tags && post.metadata.tags.length > 0 && (
+                 <Column gap="xs">
+                    <Text variant="label-strong-s" onBackground="neutral-weak">Tags</Text>
+                    <Row gap="xs" wrap>
+                        {post.metadata.tags.map((tag) => (
+                             <Text key={tag} variant="label-default-s" onBackground="neutral-weak">
+                                #{tag}
+                            </Text>
+                        ))}
+                    </Row>
+                 </Column>
+            )}
+            
+             <Line />
+
+            {/* Meta */}
+            <Column gap="xs">
+                 <Text variant="label-default-s" onBackground="neutral-weak">Posted {formatDate(post.metadata.publishedAt)}</Text>
+                 {post.metadata.artstation && (
+                     <SmartLink href={post.metadata.artstation} target="_blank">
+                        <Text variant="label-strong-s" style={{ color: '#13AFF0' }}>View on ArtStation</Text>
+                     </SmartLink>
+                 )}
+            </Column>
+        </Column>
+      </Grid>
+      
       <ScrollToHash />
     </Column>
   );
