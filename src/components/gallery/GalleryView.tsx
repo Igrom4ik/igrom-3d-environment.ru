@@ -13,7 +13,7 @@ export default function GalleryView() {
         if (isMarmoset) {
            return (
              <div 
-                key={index}
+                key={image.src}
                 style={{
                   position: 'relative',
                   width: '100%',
@@ -27,10 +27,9 @@ export default function GalleryView() {
                  src={`${basePath}/marmoset-viewer.html?file=${image.src}&autoStart=false`}
                  width="100%"
                  height="100%"
-                 frameBorder="0"
                  allowFullScreen
                  title={image.alt}
-                 style={{ display: 'block' }}
+                 style={{ display: 'block', border: 0 }}
                />
              </div>
            );
@@ -41,7 +40,7 @@ export default function GalleryView() {
           enlarge
           priority={index < 10}
           sizes="(max-width: 560px) 100vw, 50vw"
-          key={index}
+          key={image.src}
           radius="m"
           aspectRatio={image.orientation === "horizontal" ? "16 / 9" : "3 / 4"}
           src={image.src}

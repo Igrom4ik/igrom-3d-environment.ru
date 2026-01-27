@@ -130,9 +130,8 @@ export const MarmosetViewer: FC<MarmosetViewerProps> = ({ src, width = '100%', h
                     src={`/marmoset-viewer.html?file=${encodeURIComponent(src)}&autoStart=${autoStart}`}
                     width="100%" 
                     height="100%" 
-                    frameBorder="0"
                     allowFullScreen
-                    style={{ borderRadius: 'var(--radius-l)' }}
+                    style={{ border: 0, borderRadius: 'var(--radius-l)' }}
                     title="Marmoset Viewer"
                  />
              </div>
@@ -208,7 +207,7 @@ export const ImageGallery: FC<ImageGalleryProps> = ({ images, columns = '2' }) =
              <Grid columns={columns} gap="16" s={{ columns: 1 }}>
                 {images.map((img, idx) => (
                     <Media 
-                        key={idx} 
+                        key={img} 
                         src={img} 
                         alt={`Gallery Image ${idx + 1}`} 
                         radius="l" 

@@ -106,9 +106,9 @@ export default async function Project({
         }
       />
 
-      <Grid columns="3fr 1fr" gap="32" m={{ columns: 1 }}>
+      <Row gap="32" m={{ direction: 'column' }}>
         {/* Left Column: Media & Content */}
-        <Column fillWidth>
+        <Column fillWidth flex={3}>
           {/* Media Gallery */}
           <Column fillWidth gap="l" marginBottom="l">
             {post.metadata.media?.map((item: ProjectMediaItem, index: number) => {
@@ -119,31 +119,26 @@ export default async function Project({
                 case 'gallery':
                   return <ImageGallery key={key} images={item.value.images} columns={item.value.columns} />;
                 case 'video':
-                  return <VideoLoop key={key} src={item.value.src} autoPlay={item.value.autoPlay} muted={item.value.muted} loop={item.value.loop} />;
+                  return <VideoLoop key={key} src={item.value.video} autoPlay={item.value.autoPlay} muted={item.value.muted} loop={item.value.loop} caption={item.value.caption} />;
                 case 'youtube':
                   return <YoutubeEmbed key={key} url={item.value.url} />;
                 case 'sketchfab':
                   return <SketchfabEmbed key={key} url={item.value.url} />;
                 case 'marmoset':
-                  return <MarmosetViewer key={key} src={item.value.src} width={item.value.width} height={item.value.height} autoStart={item.value.autoStart} />;
-                case 'pano':
-                  return <Pano360 key={key} image={item.value.image} caption={item.value.caption} />;
+                  return <MarmosetViewer key={key} src={item.value.src} height={item.value.height} autoStart={item.value.autoStart} />;
                 case 'compare':
                   return <ComparisonSlider key={key} leftImage={item.value.leftImage} rightImage={item.value.rightImage} />;
+                case 'pano':
+                  return <Pano360 key={key} image={item.value.image} caption={item.value.caption} />;
                 default:
                   return null;
               }
             })}
           </Column>
-
-          {/* Main Content */}
-          <Column fillWidth>
-            <CustomMDX source={post.content} />
-          </Column>
         </Column>
 
         {/* Right Column: Sidebar */}
-        <Column fillWidth gap="m" style={{ height: 'fit-content' }}>
+        <Column fillWidth flex={1} style={{ height: 'fit-content', position: 'sticky', top: '2rem' }}>
             {/* Header Info */}
             <Heading variant="display-strong-s">{post.metadata.title}</Heading>
             
@@ -214,7 +209,7 @@ export default async function Project({
                  )}
             </Column>
         </Column>
-      </Grid>
+      </Row>
       
       <ScrollToHash />
     </Column>
