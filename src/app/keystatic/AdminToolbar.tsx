@@ -50,9 +50,9 @@ export function AdminToolbar() {
             margin-top: 12px;
             margin-bottom: 24px;
             padding: 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
           }
           .custom-toolbar-btn {
             display: flex;
@@ -61,9 +61,9 @@ export function AdminToolbar() {
             justify-content: center;
             gap: 8px;
             padding: 12px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
             color: var(--text-primary);
             cursor: pointer;
             transition: all 0.2s ease;
@@ -72,8 +72,8 @@ export function AdminToolbar() {
             text-align: center;
           }
           .custom-toolbar-btn:hover {
-            background: var(--bg-hover);
-            border-color: var(--accent-primary);
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
           }
@@ -220,8 +220,8 @@ export function AdminToolbar() {
             gap: 6px;
             width: fit-content;
         `;
-        testBtn.onmouseover = () => testBtn.style.backgroundColor = '#333';
-        testBtn.onmouseout = () => testBtn.style.backgroundColor = '#262626';
+        testBtn.onmouseover = () => { testBtn.style.backgroundColor = '#333'; };
+        testBtn.onmouseout = () => { testBtn.style.backgroundColor = '#262626'; };
 
         testBtn.onclick = (e) => {
             e.preventDefault();

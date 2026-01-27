@@ -1,27 +1,39 @@
 import { Projects } from "@/components/work/Projects";
 import { about, baseURL, person, work } from "@/resources";
+import { getWorkSettings } from "@/utils/reader";
 import { Column, Heading, Meta, Schema } from "@once-ui-system/core";
+import { PageBuilder } from "@/components/PageBuilder";
 
 export async function generateMetadata() {
+  const settings = await getWorkSettings();
+  const title = settings?.title || work.title;
+  const description = settings?.description || work.description;
+
   return Meta.generate({
-    title: work.title,
-    description: work.description,
+    title,
+    description,
     baseURL: baseURL,
-    image: `/api/og/generate?title=${encodeURIComponent(work.title)}`,
+    image: `/api/og/generate?title=${encodeURIComponent(title)}`,
     path: work.path,
   });
 }
 
-export default function Work() {
+export default async function Work() {
+  const settings = await getWorkSettings();
+  const title = settings?.title || work.title;
+  const description = settings?.description || work.description;
+  const blocks = Array.isArray(settings?.blocks) ? settings.blocks : [];
+  const showFallback = blocks.length === 0;
+
   return (
     <Column fillWidth maxWidth="l" paddingTop="24">
       <Schema
         as="webPage"
         baseURL={baseURL}
         path={work.path}
-        title={work.title}
-        description={work.description}
-        image={`/api/og/generate?title=${encodeURIComponent(work.title)}`}
+        title={title}
+        description={description}
+        image={`/api/og/generate?title=${encodeURIComponent(title)}`}
         author={{
           name: person.name,
           url: `${baseURL}${about.path}`,
@@ -29,9 +41,14 @@ export default function Work() {
         }}
       />
       <Heading marginBottom="l" variant="heading-strong-xl" align="center">
-        {work.title}
+        {title}
       </Heading>
-      <Projects />
+      
+      {showFallback ? (
+        <Projects />
+      ) : (
+        <PageBuilder blocks={blocks} />
+      )}
     </Column>
   );
 }

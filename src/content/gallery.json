@@ -1,0 +1,78 @@
+{
+  "title": "My photo gallery",
+  "description": "A photo collection by Igor Unguryanov",
+  "images": [
+    {
+      "discriminant": "marmoset",
+      "value": {
+        "manualPath": "/marmoset/MikitarHat.mview",
+        "alt": "Mikitar Hat 3D Model",
+        "orientation": "horizontal"
+      }
+    },
+    {
+      "discriminant": "image",
+      "value": {
+        "src": "/images/gallery/vertical-1.jpg",
+        "alt": "image",
+        "orientation": "vertical"
+      }
+    },
+    {
+      "discriminant": "image",
+      "value": {
+        "src": "/images/gallery/horizontal-1.jpg",
+        "alt": "image",
+        "orientation": "horizontal"
+      }
+    },
+    {
+      "discriminant": "image",
+      "value": {
+        "src": "/images/gallery/vertical-2.jpg",
+        "alt": "image",
+        "orientation": "vertical"
+      }
+    },
+    {
+      "discriminant": "image",
+      "value": {
+        "src": "/images/gallery/horizontal-2.jpg",
+        "alt": "image",
+        "orientation": "horizontal"
+      }
+    },
+    {
+      "discriminant": "image",
+      "value": {
+        "src": "/images/gallery/horizontal-3.jpg",
+        "alt": "image",
+        "orientation": "horizontal"
+      }
+    },
+    {
+      "discriminant": "image",
+      "value": {
+        "src": "/images/gallery/vertical-3.jpg",
+        "alt": "image",
+        "orientation": "vertical"
+      }
+    },
+    {
+      "discriminant": "image",
+      "value": {
+        "src": "/images/gallery/horizontal-4.jpg",
+        "alt": "image",
+        "orientation": "horizontal"
+      }
+    },
+    {
+      "discriminant": "image",
+      "value": {
+        "src": "/images/gallery/vertical-4.jpg",
+        "alt": "image",
+        "orientation": "vertical"
+      }
+    }
+  ]
+}

@@ -1,7 +1,7 @@
-import KeystaticPage from "./KeystaticPage";
+import KeystaticWrapper from "./KeystaticWrapper";
 
 export default function Page() {
-  return <KeystaticPage />;
+  return <KeystaticWrapper />;
 }
 
 export function generateStaticParams() {

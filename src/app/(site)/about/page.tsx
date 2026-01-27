@@ -1,6 +1,6 @@
 import TableOfContents from "@/components/about/TableOfContents";
 import styles from "@/components/about/about.module.scss";
-import { about, baseURL, person, social } from "@/resources";
+import { baseURL, person, social } from "@/resources";
 import {
   Avatar,
   Button,
@@ -16,18 +16,35 @@ import {
   Text,
 } from "@once-ui-system/core";
 import React from "react";
+import { createReader } from '@keystatic/core/reader';
+import keystaticConfig from '../../../../keystatic.config';
+import { DocumentRenderer } from '@keystatic/core/renderer';
+
+const reader = createReader(process.cwd(), keystaticConfig);
 
 export async function generateMetadata() {
+  const about = await reader.singletons.about.read();
+  if (!about) return {};
+  
   return Meta.generate({
     title: about.title,
     description: about.description,
     baseURL: baseURL,
     image: `/api/og/generate?title=${encodeURIComponent(about.title)}`,
-    path: about.path,
+    path: '/about',
   });
 }
 
-export default function About() {
+export default async function About() {
+  const about = await reader.singletons.about.read();
+  
+  if (!about) return null;
+
+  const introDoc =
+    typeof about.intro.description === 'function'
+      ? await about.intro.description()
+      : about.intro.description;
+
   const structure = [
     {
       title: about.intro.title,
@@ -57,11 +74,11 @@ export default function About() {
         baseURL={baseURL}
         title={about.title}
         description={about.description}
-        path={about.path}
+        path={'/about'}
         image={`/api/og/generate?title=${encodeURIComponent(about.title)}`}
         author={{
           name: person.name,
-          url: `${baseURL}${about.path}`,
+          url: `${baseURL}/about`,
           image: `${baseURL}${person.avatar}`,
         }}
       />
@@ -198,7 +215,7 @@ export default function About() {
 
           {about.intro.display && (
             <Column textVariant="body-default-l" fillWidth gap="m" marginBottom="xl">
-              {about.intro.description}
+          <DocumentRenderer document={introDoc} />
             </Column>
           )}
 
@@ -236,20 +253,20 @@ export default function About() {
                     </Column>
                     {experience.images && experience.images.length > 0 && (
                       <Row fillWidth paddingTop="m" paddingLeft="40" gap="12" wrap>
-                        {experience.images.map((image) => (
+                        {experience.images.map((image, index) => (
                           <Row
-                            key={image.src}
+                            key={image.src ?? index}
                             border="neutral-medium"
                             radius="m"
-                            minWidth={image.width}
-                            height={image.height}
+                            minWidth={image.width ?? undefined}
+                            height={image.height ?? undefined}
                           >
                             <Media
                               enlarge
                               radius="m"
-                              sizes={image.width.toString()}
-                              alt={image.alt}
-                              src={image.src}
+                              sizes={(image.width ?? 16).toString()}
+                              alt={image.alt ?? ''}
+                              src={image.src ?? ''}
                             />
                           </Row>
                         ))}
@@ -311,20 +328,20 @@ export default function About() {
                     )}
                     {skill.images && skill.images.length > 0 && (
                       <Row fillWidth paddingTop="m" gap="12" wrap>
-                        {skill.images.map((image) => (
+                        {skill.images.map((image, index) => (
                           <Row
-                            key={image.src}
+                            key={image.src ?? index}
                             border="neutral-medium"
                             radius="m"
-                            minWidth={image.width}
-                            height={image.height}
+                            minWidth={image.width ?? undefined}
+                            height={image.height ?? undefined}
                           >
                             <Media
                               enlarge
                               radius="m"
-                              sizes={image.width.toString()}
-                              alt={image.alt}
-                              src={image.src}
+                              sizes={(image.width ?? 16).toString()}
+                              alt={image.alt ?? ''}
+                              src={image.src ?? ''}
                             />
                           </Row>
                         ))}

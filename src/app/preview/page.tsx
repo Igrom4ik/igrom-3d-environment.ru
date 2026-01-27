@@ -1,0 +1,69 @@
+import { PageBuilder } from "@/components/PageBuilder";
+import type { PageBlock } from "@/components/PageBuilder";
+import { getBlogSettings, getHomeSettings, getWorkSettings } from "@/utils/reader";
+import { Column } from "@once-ui-system/core";
+import About from "../(site)/about/page";
+import Gallery from "../(site)/gallery/page";
+
+interface PreviewPageProps {
+  searchParams: Promise<{
+    type?: string;
+  }>;
+}
+
+export default async function PreviewPage({ searchParams }: PreviewPageProps) {
+  const { type } = await searchParams;
+
+  let blocks: PageBlock[] = [];
+
+  switch (type) {
+    case 'home':
+      {
+        const homeSettings = await getHomeSettings();
+        const maybeBlocks =
+          (homeSettings as { blocks?: PageBlock[]; home?: PageBlock[] } | undefined)?.blocks ??
+          (homeSettings as { blocks?: PageBlock[]; home?: PageBlock[] } | undefined)?.home;
+        const nextBlocks = Array.isArray(maybeBlocks) ? maybeBlocks : [];
+        blocks = nextBlocks;
+      }
+      break;
+    case 'work':
+      {
+        const workSettings = await getWorkSettings();
+        blocks = (Array.isArray(workSettings?.blocks) ? workSettings.blocks : []) as PageBlock[];
+      }
+      break;
+    case 'blog':
+      {
+        const blogSettings = await getBlogSettings();
+        blocks = (Array.isArray(blogSettings?.blocks) ? blogSettings.blocks : []) as PageBlock[];
+      }
+      break;
+    case 'about':
+      return <About />;
+    case 'gallery':
+      return <Gallery />;
+    default:
+      return (
+        <Column fillWidth padding="l" horizontal="center" align="center">
+          <h1>Preview</h1>
+          <p>Please select a page to preview.</p>
+        </Column>
+      );
+  }
+
+  if (!blocks || blocks.length === 0) {
+    return (
+      <Column fillWidth padding="l" horizontal="center" align="center">
+        <h1>Empty Preview</h1>
+        <p>No blocks found for {type}. Add some blocks in the editor.</p>
+      </Column>
+    );
+  }
+
+  return (
+    <Column fillWidth>
+      <PageBuilder blocks={blocks} />
+    </Column>
+  );
+}

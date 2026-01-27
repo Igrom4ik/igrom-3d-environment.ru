@@ -1,0 +1,40 @@
+{
+  "blocks": [
+    {
+      "discriminant": "hero",
+      "value": {
+        "content": {
+          "headline": "Creating immersive 3D environments for games",
+          "subline": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "I'm Igor, a Lead Environment Artist at "
+                },
+                {
+                  "text": "EveGoPlayOn",
+                  "bold": true
+                },
+                {
+                  "text": ", specializing in procedural generation with Houdini and creating realistic game environments."
+                }
+              ]
+            }
+          ]
+        },
+        "layout": {
+          "alignment": "center",
+          "height": "auto"
+        }
+      }
+    },
+    {
+      "discriminant": "gallery",
+      "value": {
+        "title": "Latest Work",
+        "limit": 6
+      }
+    }
+  ]
+}

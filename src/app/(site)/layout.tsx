@@ -6,6 +6,8 @@ import classNames from "classnames";
 
 import { Footer, Header, Providers, RouteGuard } from "@/components";
 import { baseURL, dataStyle, effects, fonts, home, style } from "@/resources";
+import { getDesignSettings } from "@/utils/reader";
+import Script from "next/script";
 import {
   Background,
   Column,
@@ -31,6 +33,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = await getDesignSettings();
+  const activeStyle = settings ? { ...style, ...settings } : style;
+
   return (
     <Flex
       suppressHydrationWarning
@@ -45,63 +50,53 @@ export default async function RootLayout({
       )}
     >
       <head>
-        <script
-          id="theme-init"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  const root = document.documentElement;
-                  const defaultTheme = 'system';
-                  
-                  // Set defaults from config
-                  const config = ${JSON.stringify({
-                    brand: style.brand,
-                    accent: style.accent,
-                    neutral: style.neutral,
-                    solid: style.solid,
-                    "solid-style": style.solidStyle,
-                    border: style.border,
-                    surface: style.surface,
-                    transition: style.transition,
-                    scaling: style.scaling,
-                    "viz-style": dataStyle.variant,
-                  })};
-                  
-                  // Apply default values
-                  Object.entries(config).forEach(([key, value]) => {
-                    root.setAttribute('data-' + key, value);
-                  });
-                  
-                  // Resolve theme
-                  const resolveTheme = (themeValue) => {
-                    if (!themeValue || themeValue === 'system') {
-                      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                    }
-                    return themeValue;
-                  };
-                  
-                  // Apply saved theme
-                  const savedTheme = localStorage.getItem('data-theme');
-                  const resolvedTheme = resolveTheme(savedTheme);
-                  root.setAttribute('data-theme', resolvedTheme);
-                  
-                  // Apply any saved style overrides
-                  const styleKeys = Object.keys(config);
-                  styleKeys.forEach(key => {
-                    const value = localStorage.getItem('data-' + key);
-                    if (value) {
-                      root.setAttribute('data-' + key, value);
-                    }
-                  });
-                } catch (e) {
-                  console.error('Failed to initialize theme:', e);
-                  document.documentElement.setAttribute('data-theme', 'dark');
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`(function() {
+            try {
+              const root = document.documentElement;
+              const defaultTheme = 'system';
+              
+              const config = ${JSON.stringify({
+                brand: activeStyle.brand,
+                accent: activeStyle.accent,
+                neutral: activeStyle.neutral,
+                solid: activeStyle.solid,
+                "solid-style": activeStyle.solidStyle,
+                border: activeStyle.border,
+                surface: activeStyle.surface,
+                transition: activeStyle.transition,
+                scaling: activeStyle.scaling,
+                "viz-style": dataStyle.variant,
+              })};
+              
+              Object.entries(config).forEach(([key, value]) => {
+                root.setAttribute('data-' + key, value);
+              });
+              
+              const resolveTheme = (themeValue) => {
+                if (!themeValue || themeValue === 'system') {
+                  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
                 }
-              })();
-            `,
-          }}
-        />
+                return themeValue;
+              };
+              
+              const savedTheme = localStorage.getItem('data-theme');
+              const resolvedTheme = resolveTheme(savedTheme);
+              root.setAttribute('data-theme', resolvedTheme);
+              
+              const styleKeys = Object.keys(config);
+              styleKeys.forEach(key => {
+                const value = localStorage.getItem('data-' + key);
+                if (value) {
+                  root.setAttribute('data-' + key, value);
+                }
+              });
+            } catch (e) {
+              console.error('Failed to initialize theme:', e);
+              document.documentElement.setAttribute('data-theme', 'dark');
+            }
+          })();`}
+        </Script>
       </head>
       <Providers>
         <Column

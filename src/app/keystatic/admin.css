@@ -1,150 +1,174 @@
 :root {
-  --bg-primary: #101014;
-  --bg-secondary: #202024;
-  --bg-tertiary: #303034;
-  --bg-hover: #404044;
-  --bg-active: #505054;
+  /* Core Colors - Dark & Professional */
+  --bg-app: #0f0f11;
+  --bg-panel: #18181b;
+  --bg-card: #222226;
+  --bg-card-hover: #2c2c31;
   
-  --text-primary: #e6e6ea;
-  --text-secondary: #bebec2;
-  --text-muted: #96969a;
-  --text-disabled: #707074;
+  --border-subtle: #2e2e33;
+  --border-strong: #3f3f46;
   
-  --accent-primary: #26bbff;
-  --accent-hover: #61cdff;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
   
-  --border-color: #505054;
-  --focus-border: #808084;
+  --accent: #3b82f6; /* Blue standard */
+  --accent-hover: #60a5fa;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
 }
 
-/* Global Background and Typography */
+/* Global Reset & Typography */
 body, html {
-  background-color: var(--bg-primary) !important;
+  background-color: var(--bg-app) !important;
   color: var(--text-primary) !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Keystatic UI Overrides */
+/* --- Keystatic Layout Overrides --- */
 
-/* Main Layout Backgrounds */
+/* Main Background */
 [class*="keystatic"] {
-  --background: var(--bg-primary);
+  --background: var(--bg-app);
   --foreground: var(--text-primary);
 }
 
-/* Header/Sidebar Backgrounds */
-header, nav, aside {
-  background-color: var(--bg-secondary) !important;
-  border-color: var(--border-color) !important;
+/* Sidebar / Navigation Container */
+aside {
+  background-color: var(--bg-panel) !important;
+  border-right: 1px solid var(--border-subtle) !important;
+  width: 280px !important; /* Wider sidebar for "Pro" feel */
 }
 
-/* Inputs, Textareas, Selects */
-input, textarea, select {
-  background-color: var(--bg-secondary) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 4.8px !important;
-  padding: 8.4px 11.9px !important;
-  color: var(--text-primary) !important;
-  font-size: 14px !important;
-  transition: border-color 0.2s linear !important;
-}
-
-input:focus, textarea:focus, select:focus {
-  border-color: var(--focus-border) !important;
-  outline: none !important;
-}
-
-/* Buttons */
-button {
-  transition: background-color 0.2s linear, color 0.2s linear !important;
-}
-
-/* Primary Action Buttons (approximation) */
-button[type="submit"], 
-button[class*="primary"],
-[role="button"][class*="primary"] {
-  background-color: var(--accent-primary) !important;
-  color: var(--text-primary) !important;
-  border-radius: 8px !important; /* Square style per request */
-  padding: 10px 16px !important;
-}
-
-button[type="submit"]:hover,
-button[class*="primary"]:hover {
-  background-color: var(--accent-hover) !important;
-}
-
-/* Cards / Containers */
-div[class*="Card"], div[class*="Box"] {
-  background-color: var(--bg-secondary);
-  border-color: var(--border-color);
-  border-radius: 8px;
-}
-
-/* Dialogs / Modals */
-[role="dialog"] {
-  background-color: var(--bg-secondary) !important;
-  border: 1px solid var(--border-color) !important;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4) !important;
-}
-
-/* Dropdowns / Popups - TRANSFORM TO PANEL */
-/* This is a CSS hack to make the dropdown menu look like a grid panel */
-[role="menu"][aria-orientation="vertical"] {
-  background-color: var(--bg-secondary) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 8px !important;
-  padding: 8px !important;
-  
-  /* Grid Layout for Menu Items */
-  display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
-  gap: 8px !important;
-  min-width: 320px !important; /* Make menu wider to accommodate grid */
-}
-
-/* Menu Items as Cards/Buttons */
-[role="menuitem"] {
-  background-color: var(--bg-tertiary) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 6px !important;
-  padding: 12px !important;
-  text-align: center !important;
+/* Navigation List Container */
+nav {
+  padding: 16px !important;
   display: flex !important;
   flex-direction: column !important;
+  gap: 4px !important;
+}
+
+/* Group Headers (Blog, Portfolio, Settings) */
+nav h3, 
+div[class*="GroupLabel"] {
+  text-transform: uppercase !important;
+  font-size: 11px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--text-muted) !important;
+  margin-top: 24px !important;
+  margin-bottom: 12px !important;
+  padding-left: 12px !important;
+  font-weight: 700 !important;
+  opacity: 0.8;
+}
+
+/* Sidebar Links (The Items) */
+nav a {
+  display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
-  min-height: 80px !important;
-  transition: all 0.2s ease !important;
+  gap: 12px !important;
+  color: var(--text-secondary) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px 12px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  border: 1px solid transparent !important;
+  text-decoration: none !important;
 }
 
-[role="menuitem"]:hover {
-  background-color: var(--bg-hover) !important;
-  border-color: var(--accent-primary) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+/* Hover State */
+nav a:hover {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  transform: translateX(2px);
 }
 
-/* Hide icons if they exist in SVG form inside menu items to prevent clutter, 
-   or style them if they are useful. Assuming text only for now. */
-[role="menuitem"] svg {
-  margin-bottom: 8px !important;
-  width: 24px !important;
-  height: 24px !important;
+/* Active State */
+nav a[aria-current="page"] {
+  background-color: var(--accent) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
 }
 
-/* Scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* --- Custom Icons via Mask Image --- */
+/* Common base for icons */
+nav a::before {
+  content: "";
+  display: block;
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+
+/* Specific Icons based on href or order would require :nth-child or href selectors if possible */
+/* Since we can't easily target by text, we rely on generic or specific structure overrides if needed */
+
+
+/* --- Block Picker / Menu Items --- */
+/* Target the menu container */
+div[role="menu"] {
+    padding: 8px !important;
+    gap: 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background-color: var(--bg-panel) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
 }
-::-webkit-scrollbar-thumb {
-  background: var(--bg-active);
-  border-radius: 4px;
+  
+/* Target the menu items (Blocks) */
+div[role="menuitem"], 
+button[role="menuitem"] {
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 12px 16px !important;
+    background-color: var(--bg-card) !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    cursor: pointer !important;
+    margin-bottom: 4px !important;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-disabled);
+
+div[role="menuitem"]:hover, 
+button[role="menuitem"]:hover {
+    background-color: var(--bg-card-hover) !important;
+    border-color: var(--accent) !important;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Add a generic icon to blocks */
+div[role="menuitem"]::before, 
+button[role="menuitem"]::before {
+    content: "🧩";
+    font-size: 16px;
+    opacity: 0.7;
+    filter: grayscale(1);
+}
+
+div[role="menuitem"]:hover::before, 
+button[role="menuitem"]:hover::before {
+    filter: grayscale(0);
+    transform: scale(1.2);
+    transition: transform 0.2s;
+}
+
+/* Text styling inside menu items */
+div[role="menuitem"] span, 
+button[role="menuitem"] span {
+    font-weight: 500 !important;
+    font-size: 14px !important;
 }

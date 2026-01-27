@@ -6,9 +6,29 @@ import { Flex, Text, ToggleButton, Column } from "@once-ui-system/core";
 
 declare global {
   interface Window {
-    google: any;
-    googleTranslateElementInit: any;
+    googleTranslateElementInit?: () => void;
   }
+}
+
+interface GoogleTranslateWindow extends Window {
+  google?: {
+    translate?: {
+      TranslateElement: {
+        new (
+          options: {
+            pageLanguage: string;
+            includedLanguages: string;
+            layout: unknown;
+            autoDisplay: boolean;
+          },
+          elementId: string
+        ): unknown;
+        InlineLayout: {
+          SIMPLE: unknown;
+        };
+      };
+    };
+  };
 }
 
 const languages = [
@@ -27,11 +47,13 @@ export const GoogleTranslate = () => {
     // Initialize Google Translate
     if (!initializedRef.current) {
       window.googleTranslateElementInit = () => {
-        new window.google.translate.TranslateElement(
+        const g = (window as unknown as GoogleTranslateWindow).google;
+        if (!g?.translate?.TranslateElement) return;
+        new g.translate.TranslateElement(
           {
             pageLanguage: "en",
             includedLanguages: "en,ru,zh-CN",
-            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+            layout: g.translate.TranslateElement.InlineLayout.SIMPLE,
             autoDisplay: false,
           },
           "google_translate_element"
@@ -74,7 +96,7 @@ export const GoogleTranslate = () => {
     
     // Clear existing cookies to be safe
     document.cookie = `googtrans=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
-    document.cookie = `googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+    document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
 
     // Set new cookie
     // The format Google Translate expects is /sourceLang/targetLang or /auto/targetLang
@@ -108,15 +130,13 @@ export const GoogleTranslate = () => {
             <Column
                 position="absolute"
                 zIndex={10}
-                top="100%"
-                right="0"
                 padding="4"
                 background="page"
                 border="neutral-alpha-medium"
                 radius="m"
                 shadow="l"
                 gap="4"
-                style={{ marginTop: '8px', minWidth: '140px' }}
+                style={{ marginTop: '8px', minWidth: '140px', top: '100%', right: 0 }}
             >
                 {languages.map((lang) => (
                     <Flex

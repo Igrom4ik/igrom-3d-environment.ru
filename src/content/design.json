@@ -1,0 +1,10 @@
+{
+  "theme": "system",
+  "brand": "cyan",
+  "accent": "red",
+  "neutral": "gray",
+  "border": "playful",
+  "solid": "contrast",
+  "solidStyle": "flat",
+  "surface": "translucent"
+}

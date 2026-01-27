@@ -12,9 +12,13 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+interface NestedMessages {
+  [key: string]: string | NestedMessages;
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("en");
-  const [messages, setMessages] = useState<Record<string, any>>({});
+  const [messages, setMessages] = useState<NestedMessages>({});
 
   useEffect(() => {
     // Load messages for current locale
@@ -35,11 +39,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const t = (key: string, params?: Record<string, string>): string => {
     const keys = key.split(".");
-    let value: any = messages;
+    let value: string | NestedMessages = messages;
 
     for (const k of keys) {
-      if (value && typeof value === "object") {
-        value = value[k];
+      if (value && typeof value === "object" && k in value) {
+        value = (value as NestedMessages)[k];
       } else {
         return key;
       }
