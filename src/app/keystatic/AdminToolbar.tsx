@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 
-// Block types mapping based on keystatic.config.tsx
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const BLOCK_TYPES = [
   { id: 'image', label: 'HQ Image', icon: '🖼️' },
   { id: 'video', label: 'Video Clip (MP4)', icon: '📹' },
@@ -147,9 +148,138 @@ export function AdminToolbar() {
 
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
+    // --- Observer 2: Inject "Open Folder" button for Manual Path ---
+    const manualPathObserver = new MutationObserver(() => {
+        // Find label for Manual Path
+        const elements = Array.from(document.querySelectorAll('label'));
+        const labelEl = elements.find(el => el.textContent?.includes('Manual Path (for large files)'));
 
-    return () => observer.disconnect();
+        if (!labelEl) return;
+
+        // Check if button already injected
+        const container = labelEl.closest('div'); // The field container
+        if (!container || container.querySelector('#manual-open-folder-btn')) return;
+
+        // 1. Create "Open Folder" button
+        const openBtn = document.createElement('button');
+        openBtn.id = 'manual-open-folder-btn';
+        openBtn.type = 'button';
+        openBtn.textContent = '📂 Open Folder';
+        openBtn.style.cssText = `
+            margin-top: 8px;
+            margin-bottom: 8px;
+            margin-right: 8px;
+            padding: 8px 16px;
+            background-color: #262626;
+            color: #fff;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: fit-content;
+        `;
+        openBtn.onmouseover = () => openBtn.style.backgroundColor = '#333';
+        openBtn.onmouseout = () => openBtn.style.backgroundColor = '#262626';
+        
+        openBtn.onclick = (e) => {
+            e.preventDefault();
+            // Call API to open folder
+            fetch('/api/open-folder?folder=marmoset')
+                .then(() => {
+                    const originalText = openBtn.textContent;
+                    openBtn.textContent = '✅ Opened!';
+                    openBtn.style.borderColor = '#4caf50';
+                    setTimeout(() => {
+                        openBtn.textContent = originalText;
+                        openBtn.style.borderColor = '#404040';
+                    }, 2000);
+                })
+                .catch(err => console.error('Failed to open folder', err));
+        };
+
+        // 2. Create "Test Viewer" button
+        const testBtn = document.createElement('button');
+        testBtn.id = 'manual-test-viewer-btn';
+        testBtn.type = 'button';
+        testBtn.textContent = '👁️ Test Viewer';
+        testBtn.style.cssText = `
+            margin-top: 8px;
+            margin-bottom: 8px;
+            padding: 8px 16px;
+            background-color: #262626;
+            color: #fff;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: fit-content;
+        `;
+        testBtn.onmouseover = () => testBtn.style.backgroundColor = '#333';
+        testBtn.onmouseout = () => testBtn.style.backgroundColor = '#262626';
+
+        testBtn.onclick = (e) => {
+            e.preventDefault();
+            const input = container.querySelector('input');
+            const pathValue = input ? input.value : '';
+
+            if (!pathValue) {
+                alert('Please enter a path first (e.g. /marmoset/file.mview)');
+                return;
+            }
+
+            let normalized = pathValue.replace(/\\/g, '/');
+            const publicIndex = normalized.indexOf('/public/');
+            if (publicIndex !== -1) {
+                normalized = normalized.slice(publicIndex + '/public'.length);
+            }
+            if (!normalized.startsWith('/')) {
+                normalized = `/${normalized}`;
+            }
+            const fileParam =
+                basePath && !normalized.startsWith(basePath)
+                    ? `${basePath}${normalized}`
+                    : normalized;
+
+            const viewerUrl = `${basePath || ''}/marmoset-viewer.html?file=${encodeURIComponent(
+                fileParam,
+            )}&autoStart=true`;
+            window.open(viewerUrl, '_blank');
+        };
+
+        // Wrapper for buttons
+        const btnWrapper = document.createElement('div');
+        btnWrapper.style.display = 'flex';
+        btnWrapper.style.flexWrap = 'wrap';
+        btnWrapper.appendChild(openBtn);
+        btnWrapper.appendChild(testBtn);
+
+        // Insert after label (before input) or after description
+        // Keystatic structure: Label -> Description -> Input
+        // Let's try to append to the container so it appears near the input
+        
+        // Find the description element if possible to insert after it
+        const descEl = Array.from(container.querySelectorAll('p, span')).find(el => el.textContent?.includes('For files > 100MB'));
+        
+        if (descEl) {
+             descEl.insertAdjacentElement('afterend', btnWrapper);
+        } else {
+             labelEl.insertAdjacentElement('afterend', btnWrapper);
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+    manualPathObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+        observer.disconnect();
+        manualPathObserver.disconnect();
+    };
   }, []);
 
   return null;

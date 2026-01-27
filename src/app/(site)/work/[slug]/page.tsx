@@ -32,7 +32,24 @@ import {
 } from "@/components/ProjectBlocks";
 
 interface ProjectMediaItem {
-  discriminator: "image" | "video" | "youtube" | "sketchfab" | "marmoset" | "compare" | "pano" | "gallery";
+  discriminant?:
+    | "image"
+    | "video"
+    | "youtube"
+    | "sketchfab"
+    | "marmoset"
+    | "compare"
+    | "pano"
+    | "gallery";
+  discriminator?:
+    | "image"
+    | "video"
+    | "youtube"
+    | "sketchfab"
+    | "marmoset"
+    | "compare"
+    | "pano"
+    | "gallery";
   // biome-ignore lint/suspicious/noExplicitAny: generic media item value
   value: any;
 }
@@ -112,20 +129,21 @@ export default async function Project({
           {/* Media Gallery */}
           <Column fillWidth gap="l" marginBottom="l">
             {post.metadata.media?.map((item: ProjectMediaItem, index: number) => {
-              const key = `${item.discriminator}-${index}`;
-              switch (item.discriminator) {
+              const type = item.discriminant || item.discriminator;
+              const key = `${type}-${index}`;
+              switch (type) {
                 case 'image':
                   return <ImageFull key={key} src={item.value.image} caption={item.value.caption} />;
                 case 'gallery':
                   return <ImageGallery key={key} images={item.value.images} columns={item.value.columns} />;
                 case 'video':
-                  return <VideoLoop key={key} src={item.value.video} autoPlay={item.value.autoPlay} muted={item.value.muted} loop={item.value.loop} caption={item.value.caption} />;
+                  return <VideoLoop key={key} src={item.value.video || item.value.src} autoPlay={item.value.autoPlay} muted={item.value.muted} loop={item.value.loop} caption={item.value.caption} />;
                 case 'youtube':
                   return <YoutubeEmbed key={key} url={item.value.url} />;
                 case 'sketchfab':
                   return <SketchfabEmbed key={key} url={item.value.url} />;
                 case 'marmoset':
-                  return <MarmosetViewer key={key} src={item.value.src} height={item.value.height} autoStart={item.value.autoStart} />;
+                  return <MarmosetViewer key={key} src={item.value.manualPath || item.value.src} height={item.value.height} autoStart={item.value.autoStart} />;
                 case 'compare':
                   return <ComparisonSlider key={key} leftImage={item.value.leftImage} rightImage={item.value.rightImage} />;
                 case 'pano':

@@ -2,6 +2,7 @@ import { fonts } from "@/resources";
 import type { Metadata } from "next";
 import { AdminToolbar } from "./AdminToolbar";
 import "./admin.css";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   title: "Igrom Dashboard",
@@ -10,10 +11,12 @@ export const metadata: Metadata = {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fonts.heading.variable} ${fonts.body.variable} ${fonts.label.variable} ${fonts.code.variable}`}>
-      <body style={{ margin: 0 }}>
-        <AdminToolbar />
-        {children}
+    <html lang="en" suppressHydrationWarning className={`${fonts.heading.variable} ${fonts.body.variable} ${fonts.label.variable} ${fonts.code.variable}`}>
+      <body style={{ margin: 0 }} suppressHydrationWarning>
+        <ErrorBoundary>
+          <AdminToolbar />
+          {children}
+        </ErrorBoundary>
       </body>
     </html>
   );

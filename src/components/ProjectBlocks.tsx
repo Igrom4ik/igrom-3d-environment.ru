@@ -1,5 +1,23 @@
-import type { FC } from 'react';
-import { Media, Text, Column, Grid } from '@once-ui-system/core';
+import type { FC } from "react";
+import { Media, Text, Column, Grid } from "@once-ui-system/core";
+
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+function normalizeMarmosetFilePath(file: string) {
+  if (!file) return "";
+  let normalized = file.replace(/\\/g, "/");
+  const publicIndex = normalized.indexOf("/public/");
+  if (publicIndex !== -1) {
+    normalized = normalized.slice(publicIndex + "/public".length);
+  }
+  if (!normalized.startsWith("/")) {
+    normalized = `/${normalized}`;
+  }
+  if (basePath && !normalized.startsWith(basePath)) {
+    normalized = `${basePath}${normalized}`;
+  }
+  return normalized;
+}
 
 interface ImageFullProps {
   src: string;
@@ -107,36 +125,39 @@ export const SketchfabEmbed: React.FC<EmbedProps> = ({ url }) => {
 };
 
 interface MarmosetViewerProps {
-    src: string;
-    width?: string;
-    height?: string;
-    autoStart?: boolean;
+  src: string;
+  width?: string;
+  height?: string;
+  autoStart?: boolean;
 }
 
-export const MarmosetViewer: FC<MarmosetViewerProps> = ({ src, width = '100%', height = '600px', autoStart = false }) => {
-    if (!src) return null;
-    
-    // Note: Marmoset Viewer requires the script to be loaded. 
-    // Ideally this should be in layout or loaded via useEffect hook
-    
-    return (
-         <Column fillWidth marginBottom="32" horizontal="center">
-            {/* We might need to ensure marmoset.js is loaded globally or via script tag */}
-             {/* <script src="https://viewer.marmoset.co/main/marmoset.js"></script> */}
-             {/* For now, we assume standard mviewer embedding which might need custom HTML structure */}
-             
-             <div style={{ width: width, height: height, position: 'relative' }}>
-                 <iframe 
-                    src={`/marmoset-viewer.html?file=${encodeURIComponent(src)}&autoStart=${autoStart}`}
-                    width="100%" 
-                    height="100%" 
-                    allowFullScreen
-                    style={{ border: 0, borderRadius: 'var(--radius-l)' }}
-                    title="Marmoset Viewer"
-                 />
-             </div>
-        </Column>
-    );
+export const MarmosetViewer: FC<MarmosetViewerProps> = ({
+  src,
+  width = "100%",
+  height = "600px",
+  autoStart = false,
+}) => {
+  if (!src) return null;
+
+  const fileParam = normalizeMarmosetFilePath(src);
+  const viewerPath = `${basePath || ""}/marmoset-viewer.html?file=${encodeURIComponent(
+    fileParam,
+  )}&autoStart=${autoStart}`;
+
+  return (
+    <Column fillWidth marginBottom="32" horizontal="center">
+      <div style={{ width, height, position: "relative" }}>
+        <iframe
+          src={viewerPath}
+          width="100%"
+          height="100%"
+          allowFullScreen
+          style={{ border: 0, borderRadius: "var(--radius-l)" }}
+          title="Marmoset Viewer"
+        />
+      </div>
+    </Column>
+  );
 };
 
 interface ComparisonSliderProps {

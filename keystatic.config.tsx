@@ -25,6 +25,7 @@ export default config({
       slugField: 'title',
       path: 'src/app/(site)/blog/posts/*',
       format: { contentField: 'content' },
+      previewUrl: '/blog/{slug}',
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         summary: fields.text({ label: 'Summary', multiline: true }),
@@ -52,6 +53,7 @@ export default config({
       slugField: 'title',
       path: 'src/app/(site)/work/projects/*',
       format: { contentField: 'content' },
+      previewUrl: '/work/{slug}',
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         summary: fields.text({ label: 'Summary', multiline: true }),
@@ -66,14 +68,14 @@ export default config({
             fields.text({ label: 'Software Name' }),
             {
                 label: 'Software Used',
-                itemLabel: props => props.value
+                itemLabel: props => props?.value || 'Software'
             }
         ),
         tags: fields.array(
             fields.text({ label: 'Tag' }),
             {
                 label: 'Tags',
-                itemLabel: props => props.value
+                itemLabel: props => props?.value || 'Tag'
             }
         ),
         artstation: fields.url({ label: 'Artstation Link' }),
@@ -81,7 +83,7 @@ export default config({
             {
                 gallery: {
                     label: 'Image Gallery',
-                    itemLabel: (props) => `Gallery (${props.fields.images.elements?.length || 0} images)`,
+                    itemLabel: (props) => `Gallery (${props?.fields?.images?.elements?.length || 0} images)`,
                     schema: fields.object({
                         images: fields.array(
                             fields.image({
@@ -126,7 +128,7 @@ export default config({
                 },
                 youtube: {
                     label: 'Embed (YT/Vimeo)',
-                    itemLabel: (props) => `Embed: ${props.fields.url.value}`,
+                    itemLabel: (props) => `Embed: ${props?.fields?.url?.value || ''}`,
                     schema: fields.object({
                         url: fields.text({ label: 'Video URL' }),
                     }),
@@ -143,9 +145,14 @@ export default config({
                     itemLabel: (props) => 'Marmoset',
                     schema: fields.object({
                         src: fields.file({
-                            label: 'MView File (<15MB recommended)',
-                            directory: 'public/images/projects',
-                            publicPath: '/images/projects',
+                            label: 'MView File',
+                            directory: 'public/marmoset',
+                            publicPath: '/marmoset',
+                            validation: { isRequired: false },
+                        }),
+                        manualPath: fields.text({
+                            label: 'Manual Path (for large files)',
+                            description: 'For files > 100MB: 1. Click the "Open Marmoset Folder" button. 2. Paste file there. 3. Enter path here (e.g. /marmoset/file.mview)',
                         }),
                         width: fields.text({ label: 'Width (px or %)', defaultValue: '100%' }),
                         height: fields.text({ label: 'Height (px)', defaultValue: '600px' }),

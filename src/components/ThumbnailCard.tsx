@@ -36,14 +36,22 @@ export const ThumbnailCard: React.FC<ThumbnailCardProps> = ({
             border: "neutral-medium",
           }}
         >
-          <Media
-            priority={priority}
-            src={image}
-            alt={title}
-            aspectRatio="16 / 9"
-            objectFit="cover"
-            sizes="(max-width: 960px) 100vw, 33vw"
-          />
+          {image ? (
+            <Media
+              priority={priority}
+              src={image}
+              alt={title}
+              aspectRatio="16 / 9"
+              objectFit="cover"
+              sizes="(max-width: 960px) 100vw, 33vw"
+            />
+          ) : (
+            <Flex
+              fillWidth
+              style={{ aspectRatio: "16 / 9" }}
+              background="neutral-weak"
+            />
+          )}
           <Flex fillWidth padding="12" gap="4" direction="column">
             <Text variant="label-strong-m" wrap="balance">
               {title}

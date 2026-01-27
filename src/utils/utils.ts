@@ -38,7 +38,12 @@ function getMDXFiles(dir: string) {
     return [];
   }
 
-  return fs.readdirSync(dir).filter((file) => path.extname(file) === ".mdx");
+  return fs
+    .readdirSync(dir)
+    .filter((file) => {
+      const ext = path.extname(file);
+      return ext === ".mdx" || ext === ".mdoc";
+    });
 }
 
 function readMDXFile(filePath: string) {
@@ -59,27 +64,25 @@ function readMDXFile(filePath: string) {
     // Handle new media blocks
     const media = data.media || [];
     if (media.length > 0) {
-      // If media exists, we can extract images for backward compatibility if needed,
-      // or just rely on the new components to handle media.
-      // For the grid view, we might want to populate 'images' from media if it's empty
       if (images.length === 0) {
         images = media
           // biome-ignore lint/suspicious/noExplicitAny: metadata media
-          .filter((m: any) => m.discriminator === "image")
+          .filter((m: any) => m.discriminant === "image")
           // biome-ignore lint/suspicious/noExplicitAny: metadata media
           .map((m: any) => {
             const img = m.value.image;
             return img.startsWith("/") ? `${basePath}${img}` : img;
           });
-        
-        // Extract images from gallery blocks
+
         const galleryImages = media
           // biome-ignore lint/suspicious/noExplicitAny: metadata media
-          .filter((m: any) => m.discriminator === "gallery")
+          .filter((m: any) => m.discriminant === "gallery")
           // biome-ignore lint/suspicious/noExplicitAny: metadata media
           .flatMap((m: any) => m.value.images || [])
-          .map((img: string) => (img.startsWith("/") ? `${basePath}${img}` : img));
-          
+          .map((img: string) =>
+            img.startsWith("/") ? `${basePath}${img}` : img,
+          );
+
         images = [...images, ...galleryImages];
       }
     }
