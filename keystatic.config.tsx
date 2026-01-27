@@ -81,7 +81,7 @@ export default config({
             {
                 gallery: {
                     label: 'Image Gallery (Grid)',
-                    itemLabel: (props) => `Gallery (${props.fields.images.value.length} images)`,
+                    itemLabel: (props) => `Gallery (${props.fields.images.elements.length} images)`,
                     schema: fields.object({
                         images: fields.array(
                             fields.image({

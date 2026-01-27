@@ -1,3 +1,7 @@
+/* eslint-disable */
+// @ts-nocheck
+// biome-ignore lint: vendor file
+// biome-ignore format: vendor file
 /*
 (Built: Fri Dec 16 16:10:16 CST 2022)
 Marmoset Viewer Code and Tools
