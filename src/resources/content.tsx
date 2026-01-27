@@ -211,7 +211,7 @@ const gallery: Gallery = {
   description: `A photo collection by ${person.name}`,
   images: [
     {
-      src: "/marmoset/MikitarHat.mview",
+      src: `${basePath}/marmoset/MikitarHat.mview`,
       alt: "Mikitar Hat 3D Model",
       orientation: "horizontal",
     },

@@ -8,6 +8,7 @@ export default function GalleryView() {
     <MasonryGrid columns={2} s={{ columns: 1 }}>
       {gallery.images.map((image, index) => {
         const isMarmoset = image.src.endsWith('.mview');
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
         
         if (isMarmoset) {
            return (
@@ -23,7 +24,7 @@ export default function GalleryView() {
                 }}
              >
                <iframe
-                 src={`/marmoset-viewer.html?file=${image.src}&autoStart=false`}
+                 src={`${basePath}/marmoset-viewer.html?file=${image.src}&autoStart=false`}
                  width="100%"
                  height="100%"
                  frameBorder="0"
