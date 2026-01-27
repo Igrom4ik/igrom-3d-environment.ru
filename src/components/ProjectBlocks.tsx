@@ -184,7 +184,7 @@ export const Pano360: FC<Pano360Props> = ({ image, caption }) => {
                 borderRadius: '32px',
                 pointerEvents: 'none'
              }}>
-                 <Text variant="body-default-m" onBackground="white-strong">360° Pano</Text>
+                 <Text variant="body-default-m" style={{ color: 'white' }}>360° Pano</Text>
              </div>
             {caption && (
                 <Text variant="body-default-s" onBackground="neutral-weak">
