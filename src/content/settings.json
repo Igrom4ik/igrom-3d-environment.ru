@@ -1,8 +1,9 @@
 {
   "person": {
-    "name": "Igor Unguryanov",
+    "name": "Игорь Унгурьянов",
     "role": "Senior Environment Artist",
-    "location": "Europe/Kaliningrad",
+    "location": "Калининград, Россия",
+    "timeZone": "Europe/Kaliningrad",
     "avatar": "/images/avatar.jpg"
   }
 }

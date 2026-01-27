@@ -19,6 +19,9 @@ import React from "react";
 import { createReader } from '@keystatic/core/reader';
 import keystaticConfig from '../../../../keystatic.config';
 import { DocumentRenderer } from '@keystatic/core/renderer';
+import { PageBuilder } from '@/components/PageBuilder';
+import type { AboutBlock } from '@/components/blocks/AboutBlock';
+import type { ComponentProps } from 'react';
 
 const reader = createReader(process.cwd(), keystaticConfig);
 
@@ -40,17 +43,14 @@ export default async function About() {
   
   if (!about) return null;
 
-  const introDoc =
-    typeof about.intro.description === 'function'
-      ? await about.intro.description()
-      : about.intro.description;
-
   const structure = [
-    {
-      title: about.intro.title,
-      display: about.intro.display,
-      items: [],
-    },
+    ...(about.blocks || [])
+      .filter((block) => block.discriminant === 'about')
+      .map((block) => ({
+        title: (block.value as ComponentProps<typeof AboutBlock>['data']).title || 'Обо мне',
+        display: true,
+        items: [],
+      })),
     {
       title: about.work.title,
       display: about.work.display,
@@ -128,7 +128,7 @@ export default async function About() {
         )}
         <Column className={styles.blockAlign} flex={9} maxWidth={40}>
           <Column
-            id={about.intro.title}
+            id="about-intro"
             fillWidth
             minHeight="160"
             vertical="center"
@@ -212,12 +212,6 @@ export default async function About() {
               </Row>
             )}
           </Column>
-
-          {about.intro.display && (
-            <Column textVariant="body-default-l" fillWidth gap="m" marginBottom="xl">
-          <DocumentRenderer document={introDoc} />
-            </Column>
-          )}
 
           {about.work.display && (
             <>
@@ -352,6 +346,8 @@ export default async function About() {
               </Column>
             </>
           )}
+
+          {about.blocks && <PageBuilder blocks={about.blocks} />}
         </Column>
       </Row>
     </Column>

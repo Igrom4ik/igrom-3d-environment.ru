@@ -32,7 +32,7 @@ interface BaseBlock<T = unknown> {
 export type PageBlock = BaseBlock;
 
 interface PageBuilderProps {
-  blocks: PageBlock[];
+  blocks: readonly PageBlock[];
 }
 
 export function PageBuilder({ blocks }: PageBuilderProps) {

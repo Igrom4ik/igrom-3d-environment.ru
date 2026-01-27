@@ -305,6 +305,7 @@ export default config({
           name: fields.text({ label: 'Полное имя', description: 'Ваше полное имя, отображаемое на сайте.' }),
           role: fields.text({ label: 'Должность', description: 'Ваша текущая должность или профессия.' }),
           location: fields.text({ label: 'Местоположение', description: 'Город и страна проживания.' }),
+          timeZone: fields.text({ label: 'Часовой пояс (IANA)', description: 'Например: Europe/Kaliningrad' }),
           avatar: fields.image({
             label: 'Аватар',
             directory: 'public/images',
@@ -467,15 +468,15 @@ export default config({
                 display: fields.checkbox({ label: 'Показывать кнопку календаря', defaultValue: true }),
                 link: fields.text({ label: 'Ссылка на календарь' }),
             }, { label: 'Календарь' }),
-            intro: fields.object({
+            /* intro: fields.object({
                 display: fields.checkbox({ label: 'Показывать введение', defaultValue: true }),
                 title: fields.text({ label: 'Заголовок секции' }),
-                description: fields.document({
+                content: fields.document({
                     label: 'Биография / Введение',
                     formatting: true,
                     links: true,
                 }),
-            }, { label: 'Введение (Биография)' }),
+            }, { label: 'Введение (Биография)' }), */
             work: fields.object({
                 display: fields.checkbox({ label: 'Показывать опыт работы', defaultValue: true }),
                 title: fields.text({ label: 'Заголовок секции' }),
@@ -484,7 +485,7 @@ export default config({
                         company: fields.text({ label: 'Компания' }),
                         timeframe: fields.text({ label: 'Период работы' }),
                         role: fields.text({ label: 'Должность' }),
-                        achievements: fields.array(fields.text({ label: 'Достижение' }), { label: 'Достижения' }),
+                        achievements: fields.array(fields.text({ label: 'Достижение', multiline: true }), { label: 'Достижения' }),
                         images: fields.array(
                             fields.object({
                                 src: fields.image({ label: 'Изображение', directory: 'public/images/projects', publicPath: '/images/projects' }),
@@ -504,7 +505,7 @@ export default config({
                 institutions: fields.array(
                     fields.object({
                         name: fields.text({ label: 'Название заведения' }),
-                        description: fields.text({ label: 'Описание' }),
+                        description: fields.text({ label: 'Описание', multiline: true }),
                     }),
                     { label: 'Учебные заведения', itemLabel: props => props.fields.name.value }
                 ),
@@ -515,7 +516,7 @@ export default config({
                 skills: fields.array(
                     fields.object({
                         title: fields.text({ label: 'Название навыка' }),
-                        description: fields.text({ label: 'Описание' }),
+                        description: fields.text({ label: 'Описание', multiline: true }),
                         tags: fields.array(
                             fields.object({
                                 name: fields.text({ label: 'Название тега' }),
@@ -536,6 +537,133 @@ export default config({
                     { label: 'Навыки', itemLabel: props => props.fields.title.value }
                 ),
             }, { label: 'Технические навыки' }),
+            blocks: fields.blocks({
+                hero: {
+                    label: 'Hero секция (Верхняя)',
+                    schema: fields.object({
+                        content: fields.object({
+                            headline: fields.text({ label: 'Заголовок' }),
+                            subline: fields.document({
+                                label: 'Подзаголовок',
+                                formatting: { inlineMarks: { bold: true, italic: true } },
+                            }),
+                        }, { label: 'Текстовый контент' }),
+                        layout: fields.object({
+                            alignment: fields.select({
+                                label: 'Выравнивание текста',
+                                options: [
+                                    { label: 'Слева', value: 'left' },
+                                    { label: 'По центру', value: 'center' }
+                                ],
+                                defaultValue: 'center'
+                            }),
+                            height: fields.select({
+                                label: 'Высота секции',
+                                options: [
+                                    { label: 'Авто', value: 'auto' },
+                                    { label: 'На весь экран', value: 'full' }
+                                ],
+                                defaultValue: 'auto'
+                            })
+                        }, { label: 'Макет и настройки' }),
+                    }),
+                    itemLabel: (props) => props.fields.content.fields.headline.value || 'Hero секция',
+                },
+                about: {
+                    label: 'Секция "О себе"',
+                    schema: fields.object({
+                        title: fields.text({ label: 'Заголовок секции' }),
+                        content: fields.document({
+                            label: 'Содержание',
+                            formatting: true,
+                            dividers: true,
+                            links: true,
+                        }),
+                    }),
+                    itemLabel: (props) => props.fields.title.value || 'Секция "О себе"',
+                },
+                gallery: {
+                    label: 'Превью галереи',
+                    schema: fields.object({
+                        title: fields.text({ label: 'Заголовок (например, Последние работы)' }),
+                        limit: fields.integer({ label: 'Количество изображений', defaultValue: 6 }),
+                    }),
+                    itemLabel: (props) => `Галерея: ${props.fields.title.value || 'Недавние'}`,
+                },
+                testimonial: {
+                    label: 'Отзыв / Цитата',
+                    schema: fields.object({
+                        quote: fields.text({ label: 'Цитата', multiline: true }),
+                        author: fields.text({ label: 'Автор' }),
+                        role: fields.text({ label: 'Должность / Компания' }),
+                        avatar: fields.image({
+                            label: 'Аватар автора',
+                            directory: 'public/images/avatars',
+                            publicPath: '/images/avatars',
+                        }),
+                    }),
+                    itemLabel: (props) => `Цитата: ${props.fields.author.value}`,
+                },
+                cta: {
+                    label: 'Призыв к действию (CTA)',
+                    schema: fields.object({
+                        title: fields.text({ label: 'Заголовок' }),
+                        text: fields.text({ label: 'Описание', multiline: true }),
+                        buttonLabel: fields.text({ label: 'Текст кнопки' }),
+                        buttonLink: fields.text({ label: 'Ссылка кнопки' }),
+                    }),
+                    itemLabel: (props) => `CTA: ${props.fields.title.value}`,
+                },
+                features: {
+                    label: 'Сетка преимуществ',
+                    schema: fields.object({
+                        title: fields.text({ label: 'Заголовок секции' }),
+                        columns: fields.select({
+                            label: 'Колонки',
+                            options: [
+                                { label: '2 Колонки', value: '2' },
+                                { label: '3 Колонки', value: '3' },
+                                { label: '4 Колонки', value: '4' },
+                            ],
+                            defaultValue: '3',
+                        }),
+                        features: fields.array(
+                            fields.object({
+                                title: fields.text({ label: 'Заголовок' }),
+                                description: fields.text({ label: 'Описание', multiline: true }),
+                                icon: fields.text({ label: 'Иконка (Once UI)' }),
+                            }),
+                            { label: 'Преимущества' }
+                        ),
+                    }),
+                    itemLabel: (props) => `Преимущества: ${props.fields.title.value}`,
+                },
+                video: {
+                    label: 'Видео секция',
+                    schema: fields.object({
+                        title: fields.text({ label: 'Заголовок' }),
+                        url: fields.text({ label: 'Ссылка на видео (YouTube/Vimeo/File)' }),
+                        autoplay: fields.checkbox({ label: 'Автовоспроизведение (без звука)' }),
+                    }),
+                    itemLabel: (props) => `Видео: ${props.fields.title.value}`,
+                },
+                spacer: {
+                    label: 'Разделитель',
+                    schema: fields.object({
+                        height: fields.select({
+                            label: 'Высота',
+                            options: [
+                                { label: 'Маленький (32px)', value: 'small' },
+                                { label: 'Средний (64px)', value: 'medium' },
+                                { label: 'Большой (128px)', value: 'large' },
+                                { label: 'Очень большой (256px)', value: 'xlarge' },
+                            ],
+                            defaultValue: 'medium',
+                        }),
+                    }),
+                    itemLabel: (props) => `Разделитель: ${props.fields.height.value}`,
+                },
+            }, { label: 'Блоки страницы' }),
         },
     }),
     design: singleton({

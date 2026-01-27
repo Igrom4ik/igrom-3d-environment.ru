@@ -4,20 +4,20 @@
       "discriminant": "hero",
       "value": {
         "content": {
-          "headline": "Creating immersive 3D environments for games",
+          "headline": "Создаю захватывающие 3D-окружения для игр",
           "subline": [
             {
               "type": "paragraph",
               "children": [
                 {
-                  "text": "I'm Igor, a Lead Environment Artist at "
+                  "text": "Я Игорь, Lead Environment Artist в "
                 },
                 {
                   "text": "EveGoPlayOn",
                   "bold": true
                 },
                 {
-                  "text": ", specializing in procedural generation with Houdini and creating realistic game environments."
+                  "text": ", специализируюсь на процедурной генерации с Houdini и создании реалистичных игровых окружений."
                 }
               ]
             }
@@ -32,7 +32,7 @@
     {
       "discriminant": "gallery",
       "value": {
-        "title": "Latest Work",
+        "title": "Последние работы",
         "limit": 6
       }
     }

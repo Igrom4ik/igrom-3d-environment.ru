@@ -1,6 +1,6 @@
 {
-  "title": "About – Igor Unguryanov",
-  "description": "Senior Environment Artist specializing in procedural generation and immersive game worlds.",
+  "title": "Обо мне – Игорь Унгурьянов",
+  "description": "Senior Environment Artist, специализирующийся на процедурной генерации и создании захватывающих игровых миров.",
   "tableOfContent": {
     "display": true,
     "subItems": false
@@ -9,70 +9,49 @@
     "display": true
   },
   "calendar": {
-    "display": false,
-    "link": ""
-  },
-  "intro": {
-    "display": true,
-    "title": "Introduction",
-    "description": [
-      {
-        "type": "paragraph",
-        "children": [
-          {
-            "text": "Igor Unguryanov is a Senior Environment Artist based in Kaliningrad, Russia, with over 6 years of experience in the game industry. He specializes in creating high-quality environments for games, combining manual modeling with procedural generation techniques using Houdini."
-          }
-        ]
-      },
-      {
-        "type": "paragraph",
-        "children": [
-          {
-            "text": "With a strong background in both artistic and technical aspects of environment art, Igor has successfully led teams, managed outsource pipelines, and delivered content for various platforms using Unreal Engine 5 and Unity."
-          }
-        ]
-      }
-    ]
+    "display": false
   },
   "work": {
     "display": true,
-    "title": "Work Experience",
+    "title": "Опыт работы",
     "experiences": [
       {
         "company": "EveGoPlayOn",
-        "timeframe": "Dec 2023 - Present",
+        "timeframe": "Дек 2023 - Наст. время",
         "role": "Lead Environment Artist",
         "achievements": [
-          "Creation of locations for game projects and procedural generation with Houdini.",
-          "Manual asset creation (Blender 3D) and texturing across various pipelines.",
-          "Coordinated outsource team of 10 specialists (Environment / Props / Level Design).",
-          "Planning, prioritization, and quality control of art assets.",
-          "Communication with producers and clients, managing scope and risks.",
-          "Development and improvement of art pipelines."
+          "Создание локаций для игровых проектов и процедурная генерация с использованием Houdini.",
+          "Ручное создание ассетов (Blender 3D) и текстурирование в рамках различных пайплайнов.",
+          "Координация команды аутсорса из 10 специалистов (Environment / Props / Level Design).",
+          "Планирование, приоритизация и контроль качества арт-ассетов.",
+          "Коммуникация с продюсерами и клиентами, управление объемом работ (scope) и рисками.",
+          "Разработка и улучшение арт-пайплайнов.",
+          "Работал надо локациями для игры SkyCombat2, участвовал в разрабокте пайплайнов на стороне студии.",
+          "Работал над окруженеим и пропсами, а так же участвовал в разработке рабочих процессов над неанонсированным проектом в реалистичном стиле для пдатформ Mobile и PC. "
         ],
         "images": []
       },
       {
         "company": "Jet Games",
-        "timeframe": "Oct 2020 - Present",
+        "timeframe": "Окт 2020 - Наст. время",
         "role": "3D Modeler / Level Designer",
         "achievements": [
-          "Grayboxing locations and modeling environment objects (exterior/interior).",
-          "Creating props, UV mapping, LODs, and texturing.",
-          "Optimization and setup of objects in the game engine.",
-          "Level design: placement of environment objects and key points.",
-          "Working in realism with PBR valid materials."
+          "Грейбоксинг локаций и моделирование объектов окружения (экстерьер/интерьер).",
+          "Создание пропсов, UV-развертка, LODs и текстурирование.",
+          "Оптимизация и настройка объектов в игровом движке.",
+          "Дизайн уровней: расстановка объектов окружения и ключевых точек.",
+          "Работа в реалистичном стиле с PBR-валидными материалами."
         ],
         "images": []
       },
       {
         "company": "STSTC",
-        "timeframe": "Aug 2019 - Nov 2020",
+        "timeframe": "Авг 2019 - Ноя 2020",
         "role": "3D Modeler",
         "achievements": [
-          "Modeling environment elements and props.",
-          "UV mapping, LODs, texturing.",
-          "Integration and setup of models in the engine."
+          "Моделирование элементов окружения и пропсов.",
+          "UV-развертка, создание LODs, текстурирование.",
+          "Интеграция и настройка моделей в движке."
         ],
         "images": []
       }
@@ -80,33 +59,62 @@
   },
   "studies": {
     "display": true,
-    "title": "Education",
+    "title": "Образование",
     "institutions": [
       {
-        "name": "Syktyvkar Medical College",
-        "description": "General Medicine (2010)"
+        "name": "Сыктывкарский медицинский колледж",
+        "description": "Лечебное дело (2010)"
       }
     ]
   },
   "technical": {
     "display": true,
-    "title": "Skills",
+    "title": "Навыки",
     "skills": [
       {
         "title": "3D Modeling & Texturing",
         "description": "Blender 3D, Rizom UV, Substance Painter, Substance Designer, Marmoset Toolbag, Adobe Photoshop.",
+        "tags": [],
         "images": []
       },
       {
-        "title": "Game Engines & Procedural",
-        "description": "Unreal Engine 5, Unity, Houdini, Gaea, Level Design.",
+        "title": "Game Engines",
+        "description": "Unreal Engine 5, Unity.",
+        "tags": [],
         "images": []
       },
       {
-        "title": "Soft Skills",
-        "description": "Team Leadership, Outsource Management, Planning & Estimation, Mentoring.",
+        "title": "Procedural",
+        "description": "Houdini (Procedural Modeling, HDA).",
+        "tags": [],
         "images": []
       }
     ]
-  }
+  },
+  "blocks": [
+    {
+      "discriminant": "about",
+      "value": {
+        "title": "Обо мне",
+        "content": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "text": "Игорь Унгурьянов — Senior Environment Artist из Калининграда, Россия, с более чем 6-летним опытом работы в игровой индустрии. Он специализируется на создании высококачественного окружения для игр, сочетая ручное моделирование с методами процедурной генерации с использованием Houdini."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "text": "Обладая сильным бэкграундом как в художественных, так и в технических аспектах Environment Art, Игорь успешно руководил командами, управлял пайплайнами аутсорса и поставлял контент для различных платформ с использованием Unreal Engine 5 и Unity."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }
