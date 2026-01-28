@@ -4,6 +4,11 @@ import keystaticConfig from '../../../../../../keystatic.config';
 
 const reader = createReader(process.cwd(), keystaticConfig);
 
+export async function generateStaticParams() {
+    const slugs = await reader.collections.telegramPosts.list();
+    return slugs.map(slug => ({ slug }));
+}
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
     

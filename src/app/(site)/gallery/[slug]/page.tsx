@@ -43,24 +43,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function AlbumPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  console.log(`[AlbumPage] DEBUG: Requested slug: ${slug}`);
 
   const album = await getAlbum(slug);
   
   if (!album) {
-      console.error(`[AlbumPage] DEBUG: Album not found for slug: ${slug}`);
       notFound();
-  }
-
-  console.log(`[AlbumPage] DEBUG: Album found. Title: ${album.title}`);
-  console.log(`[AlbumPage] DEBUG: Images array length: ${album.images?.length}`);
-  
-  if (album.images) {
-      album.images.forEach((img: any, idx: number) => {
-          console.log(`[AlbumPage] DEBUG: Image [${idx}]:`, JSON.stringify(img, null, 2));
-      });
-  } else {
-      console.warn(`[AlbumPage] DEBUG: No images array in album data.`);
   }
 
   const description = await album.description();
