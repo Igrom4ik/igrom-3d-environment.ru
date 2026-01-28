@@ -87,7 +87,7 @@ export async function HeroBlock({ data }: HeroBlockProps) {
             variant="secondary"
             size="m"
             weight="default"
-            label="About me"
+            label={about.label}
             suffixIcon="arrowRight"
           />
         </RevealFx>
