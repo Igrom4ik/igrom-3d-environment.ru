@@ -2391,3 +2391,75 @@
 [2026-01-28T19:51:01.270Z] Checking for index.mdoc in: military-hat
 [2026-01-28T19:51:01.271Z] Successfully parsed fallback for: military-hat
 [2026-01-28T19:51:01.271Z] Total fallback albums found: | Data: 2
+[2026-01-28T19:58:01.929Z] getAlbums called
+[2026-01-28T19:58:02.075Z] Keystatic albums count:
+[2026-01-28T19:58:02.076Z] Fallback: Checking directory: | Data: "D:\\igrom-3d-environment.ru\\src\\content\\albums"
+[2026-01-28T19:58:02.077Z] Directories found in albumsDir: | Data: [
+  "main-gallery",
+  "military-hat"
+]
+[2026-01-28T19:58:02.080Z] Checking for index.mdoc in: main-gallery
+[2026-01-28T19:58:02.093Z] Successfully parsed fallback for: main-gallery
+[2026-01-28T19:58:02.094Z] Checking for index.mdoc in: military-hat
+[2026-01-28T19:58:02.095Z] Successfully parsed fallback for: military-hat
+[2026-01-28T19:58:02.096Z] Total fallback albums found: | Data: 2
+[2026-01-28T19:58:08.594Z] getAlbums called
+[2026-01-28T19:58:08.601Z] Keystatic albums count:
+[2026-01-28T19:58:08.603Z] Fallback: Checking directory: | Data: "D:\\igrom-3d-environment.ru\\src\\content\\albums"
+[2026-01-28T19:58:08.604Z] Directories found in albumsDir: | Data: [
+  "main-gallery",
+  "military-hat"
+]
+[2026-01-28T19:58:08.605Z] Checking for index.mdoc in: main-gallery
+[2026-01-28T19:58:08.606Z] Successfully parsed fallback for: main-gallery
+[2026-01-28T19:58:08.608Z] Checking for index.mdoc in: military-hat
+[2026-01-28T19:58:08.609Z] Successfully parsed fallback for: military-hat
+[2026-01-28T19:58:08.610Z] Total fallback albums found: | Data: 2
+[2026-01-28T19:58:10.552Z] getAlbums called
+[2026-01-28T19:58:10.559Z] Keystatic albums count:
+[2026-01-28T19:58:10.559Z] Fallback: Checking directory: | Data: "D:\\igrom-3d-environment.ru\\src\\content\\albums"
+[2026-01-28T19:58:10.560Z] Directories found in albumsDir: | Data: [
+  "main-gallery",
+  "military-hat"
+]
+[2026-01-28T19:58:10.561Z] Checking for index.mdoc in: main-gallery
+[2026-01-28T19:58:10.565Z] Successfully parsed fallback for: main-gallery
+[2026-01-28T19:58:10.566Z] Checking for index.mdoc in: military-hat
+[2026-01-28T19:58:10.567Z] Successfully parsed fallback for: military-hat
+[2026-01-28T19:58:10.567Z] Total fallback albums found: | Data: 2
+[2026-01-28T19:58:10.595Z] Rendering AlbumPage for slug: military-hat
+[2026-01-28T19:58:10.597Z] getAlbum called with slug: military-hat
+[2026-01-28T19:58:10.607Z] getAlbum called with slug: military-hat
+[2026-01-28T19:58:10.611Z] Keystatic could not find album: military-hat. Trying fallback...
+[2026-01-28T19:58:10.613Z] Trying fallback path: D:\igrom-3d-environment.ru\src\content\albums\military-hat\index.mdoc
+[2026-01-28T19:58:10.614Z] Found file at: D:\igrom-3d-environment.ru\src\content\albums\military-hat\index.mdoc
+[2026-01-28T19:58:10.614Z] Successfully parsed album data for: military-hat
+[2026-01-28T19:58:10.615Z] Keystatic could not find album: military-hat. Trying fallback...
+[2026-01-28T19:58:10.616Z] Trying fallback path: D:\igrom-3d-environment.ru\src\content\albums\military-hat\index.mdoc
+[2026-01-28T19:58:10.616Z] Found file at: D:\igrom-3d-environment.ru\src\content\albums\military-hat\index.mdoc
+[2026-01-28T19:58:10.616Z] Successfully parsed album data for: military-hat
+[2026-01-28T19:58:10.617Z] Album found: Military Hat. Images count: 4
+[2026-01-28T20:00:41.654Z] getAlbums called
+[2026-01-28T20:00:41.660Z] Keystatic albums count:
+[2026-01-28T20:00:41.661Z] Fallback: Checking directory: | Data: "D:\\igrom-3d-environment.ru\\src\\content\\albums"
+[2026-01-28T20:00:41.661Z] Directories found in albumsDir: | Data: [
+  "main-gallery",
+  "military-hat"
+]
+[2026-01-28T20:00:41.662Z] Checking for index.mdoc in: main-gallery
+[2026-01-28T20:00:41.665Z] Successfully parsed fallback for: main-gallery
+[2026-01-28T20:00:41.666Z] Checking for index.mdoc in: military-hat
+[2026-01-28T20:00:41.667Z] Successfully parsed fallback for: military-hat
+[2026-01-28T20:00:41.667Z] Total fallback albums found: | Data: 2
+[2026-01-28T20:00:41.811Z] Rendering AlbumPage for slug: military-hat
+[2026-01-28T20:00:41.828Z] getAlbum called with slug: military-hat
+[2026-01-28T20:00:41.836Z] getAlbum called with slug: military-hat
+[2026-01-28T20:00:41.878Z] Keystatic could not find album: military-hat. Trying fallback...
+[2026-01-28T20:00:41.879Z] Trying fallback path: D:\igrom-3d-environment.ru\src\content\albums\military-hat\index.mdoc
+[2026-01-28T20:00:41.879Z] Found file at: D:\igrom-3d-environment.ru\src\content\albums\military-hat\index.mdoc
+[2026-01-28T20:00:41.883Z] Successfully parsed album data for: military-hat
+[2026-01-28T20:00:41.883Z] Keystatic could not find album: military-hat. Trying fallback...
+[2026-01-28T20:00:41.884Z] Trying fallback path: D:\igrom-3d-environment.ru\src\content\albums\military-hat\index.mdoc
+[2026-01-28T20:00:41.884Z] Found file at: D:\igrom-3d-environment.ru\src\content\albums\military-hat\index.mdoc
+[2026-01-28T20:00:41.885Z] Successfully parsed album data for: military-hat
+[2026-01-28T20:00:41.885Z] Album found: Military Hat. Images count: 4
