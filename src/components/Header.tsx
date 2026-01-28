@@ -102,11 +102,12 @@ export const Header = ({ preset }: { preset?: string }) => {
                 <>
                   <Row s={{ hide: true }}>
                     <ToggleButton
-                      prefixIcon="person"
-                      href="/about"
-                      label={t("nav.about")}
-                      selected={pathname === "/about"}
-                    />
+                  className={styles.navItem}
+                  prefixIcon="person"
+                  href="/about"
+                  label={t("nav.about")}
+                  selected={pathname === "/about"}
+                />
                   </Row>
                   <Row hide s={{ hide: false }}>
                     <ToggleButton
@@ -121,11 +122,12 @@ export const Header = ({ preset }: { preset?: string }) => {
                 <>
                   <Row s={{ hide: true }}>
                     <ToggleButton
-                      prefixIcon="grid"
-                      href="/work"
-                      label={t("nav.work")}
-                      selected={pathname.startsWith("/work")}
-                    />
+                  className={styles.navItem}
+                  prefixIcon="grid"
+                  href="/work"
+                  label={t("nav.work")}
+                  selected={pathname.startsWith("/work")}
+                />
                   </Row>
                   <Row hide s={{ hide: false }}>
                     <ToggleButton
@@ -140,11 +142,12 @@ export const Header = ({ preset }: { preset?: string }) => {
                 <>
                   <Row s={{ hide: true }}>
                     <ToggleButton
-                      prefixIcon="book"
-                      href="/blog"
-                      label={t("nav.blog")}
-                      selected={pathname.startsWith("/blog")}
-                    />
+                  className={styles.navItem}
+                  prefixIcon="book"
+                  href="/blog"
+                  label={t("nav.blog")}
+                  selected={pathname.startsWith("/blog")}
+                />
                   </Row>
                   <Row hide s={{ hide: false }}>
                     <ToggleButton
@@ -159,11 +162,12 @@ export const Header = ({ preset }: { preset?: string }) => {
                 <>
                   <Row s={{ hide: true }}>
                     <ToggleButton
-                      prefixIcon="gallery"
-                      href="/gallery"
-                      label={t("nav.gallery")}
-                      selected={pathname.startsWith("/gallery")}
-                    />
+                  className={styles.navItem}
+                  prefixIcon="gallery"
+                  href="/gallery"
+                  label={t("nav.gallery")}
+                  selected={pathname.startsWith("/gallery")}
+                />
                   </Row>
                   <Row hide s={{ hide: false }}>
                     <ToggleButton
@@ -178,11 +182,12 @@ export const Header = ({ preset }: { preset?: string }) => {
                 <>
                   <Row s={{ hide: true }}>
                     <ToggleButton
-                      prefixIcon="terminal"
-                      href="/coding"
-                      label={t("nav.coding")}
-                      selected={pathname.startsWith("/coding")}
-                    />
+                  className={styles.navItem}
+                  prefixIcon="terminal"
+                  href="/coding"
+                  label={t("nav.coding")}
+                  selected={pathname.startsWith("/coding")}
+                />
                   </Row>
                   <Row hide s={{ hide: false }}>
                     <ToggleButton

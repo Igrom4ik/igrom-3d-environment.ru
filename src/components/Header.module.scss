@@ -8,6 +8,13 @@
     mask-size: 100% 100%;
 }
 
+.navItem {
+    white-space: nowrap;
+    width: auto;
+    min-width: fit-content;
+    flex-shrink: 0;
+}
+
 @media (max-width: breakpoints.$s) {
     .position {
         top: auto;
