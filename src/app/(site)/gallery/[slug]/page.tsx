@@ -25,22 +25,40 @@ const normalizeMarmosetFilePath = (file: string) => {
 };
 
 export async function generateStaticParams() {
-  const albums = await getAlbums();
+  console.log('🔍 Generating static params for gallery...');
   
-  if (albums.length === 0) {
-      // Fallback: Read directories from src/content/albums
-      const albumsDir = path.join(process.cwd(), 'src/content/albums');
-      if (fs.existsSync(albumsDir)) {
-          const dirs = fs.readdirSync(albumsDir).filter(file => {
-              return fs.statSync(path.join(albumsDir, file)).isDirectory();
-          });
-          return dirs.map(slug => ({ slug }));
-      }
+  // Hardcoded slugs to ensure they are always generated during static export
+  const staticSlugs = [
+    { slug: 'main-gallery' },
+    { slug: 'military-hat' },
+  ];
+
+  try {
+    const albums = await getAlbums();
+    console.log('📦 Albums found in DB/Filesystem:', albums.length);
+    
+    if (albums && albums.length > 0) {
+      const dbSlugs = albums.map((album: { slug: string }) => ({
+        slug: album.slug,
+      }));
+      
+      // Combine hardcoded and DB slugs, removing duplicates
+      const allSlugs = [...staticSlugs];
+      dbSlugs.forEach((dbSlug: { slug: string }) => {
+        if (!allSlugs.some(s => s.slug === dbSlug.slug)) {
+          allSlugs.push(dbSlug);
+        }
+      });
+      
+      console.log('🚀 Total slugs to generate:', allSlugs.length);
+      return allSlugs;
+    }
+  } catch (error) {
+    console.error('❌ Error fetching albums in generateStaticParams:', error);
   }
 
-  return albums.map((album: { slug: string }) => ({
-    slug: album.slug,
-  }));
+  console.warn('⚠️ Using only hardcoded slugs for gallery');
+  return staticSlugs;
 }
 
 export const dynamicParams = false;

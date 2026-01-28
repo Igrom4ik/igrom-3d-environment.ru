@@ -7,6 +7,8 @@ import {
   HiCalendarDays,
   HiCommandLine,
   HiEnvelope,
+  HiOutlineBars3,
+  HiOutlineXMark,
   HiOutlineDocument,
   HiOutlineEye,
   HiOutlineEyeSlash,
@@ -77,6 +79,8 @@ export const iconLibrary: Record<string, IconType> = {
   artstation: SiArtstation,
   phone: HiPhone,
   terminal: HiCommandLine,
+  menu: HiOutlineBars3,
+  close: HiOutlineXMark,
 };
 
 export type IconLibrary = typeof iconLibrary;
