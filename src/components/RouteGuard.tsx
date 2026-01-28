@@ -34,20 +34,29 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
       setIsAuthenticated(false);
 
       const checkRouteEnabled = () => {
-        if (!pathname) return false;
+        if (!pathname) return true;
 
-        if (pathname in routes) {
-          return routes[pathname as keyof typeof routes];
+        // Allow internal and API routes
+        if (pathname.startsWith("/_next") || pathname.startsWith("/api") || pathname.startsWith("/keystatic")) {
+          return true;
         }
 
+        const normalizedPath = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
+
+        // Check if route is explicitly disabled in config
+        if (normalizedPath in routes && routes[normalizedPath as keyof typeof routes] === false) {
+          return false;
+        }
+
+        // Check dynamic routes
         const dynamicRoutes = ["/blog", "/work", "/gallery"] as const;
         for (const route of dynamicRoutes) {
-          if (pathname?.startsWith(route) && routes[route as keyof typeof routes]) {
-            return true;
+          if (normalizedPath.startsWith(route)) {
+            return routes[route as keyof typeof routes] !== false;
           }
         }
 
-        return false;
+        return true;
       };
 
       const routeEnabled = checkRouteEnabled();

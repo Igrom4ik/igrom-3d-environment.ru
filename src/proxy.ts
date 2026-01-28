@@ -39,8 +39,9 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except static files and images
+     * Match only admin and Keystatic paths
      */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/keystatic/:path*",
+    "/api/keystatic/:path*",
   ],
 };

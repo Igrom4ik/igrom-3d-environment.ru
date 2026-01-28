@@ -7,6 +7,7 @@ const withMDX = mdx({
 });
 
 const isProd = process.env.NODE_ENV === 'production';
+const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,13 +16,14 @@ const nextConfig = {
     '127.0.0.1',
     '*.localhost',
   ],
-  output: process.env.GITHUB_ACTIONS === "true" ? "export" : undefined,
-  // basePath: isProd ? "/igrom-3d-environment.ru" : undefined,
+  output: 'export',
+  basePath: isGitHubPages ? '/igrom-3d-environment.ru' : '',
+  trailingSlash: true,
   pageExtensions: isProd 
     ? ["ts", "tsx", "md", "mdx"] 
     : ["ts", "tsx", "md", "mdx", "local.ts"],
   env: {
-    NEXT_PUBLIC_BASE_PATH: "",
+    NEXT_PUBLIC_BASE_PATH: isGitHubPages ? "/igrom-3d-environment.ru" : "",
   },
   transpilePackages: ["next-mdx-remote"],
   images: {
