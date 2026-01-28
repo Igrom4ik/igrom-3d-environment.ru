@@ -1,25 +1,46 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-    const { pathname, searchParams } = request.nextUrl;
-    
-    // We can't use our fs-based logger here because middleware runs in Edge Runtime
-    // But we can use console.log which will show up in Vercel logs and local terminal
-    console.log(`[REQUEST] ${new Date().toISOString()} ${request.method} ${pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`);
-    
+  const { pathname, searchParams } = request.nextUrl;
+  
+  // Log request
+  console.log(`[REQUEST] ${new Date().toISOString()} ${request.method} ${pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`);
+
+  if (pathname === "/@vite/client") {
+    return new NextResponse(null, { status: 200 });
+  }
+
+  // Allow Keystatic API requests to pass through
+  if (pathname.startsWith("/api/keystatic")) {
     return NextResponse.next();
+  }
+
+  // Only protect /keystatic routes
+  if (pathname.startsWith("/keystatic")) {
+    // Check for the secret cookie
+    const adminAccess = request.cookies.get("admin-access");
+
+    // If no cookie or wrong value, rewrite to 404 (hide existence of admin)
+    if (!adminAccess || adminAccess.value !== "true") {
+      // In development, redirect to the login page for convenience
+      if (process.env.NODE_ENV === "development") {
+        return NextResponse.redirect(new URL("/secret-login", request.url));
+      }
+
+      // In production, show 404 to hide the admin panel
+      return NextResponse.rewrite(new URL("/404-not-found", request.url));
+    }
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-    matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - api (API routes)
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         */
-        '/((?!_next/static|_next/image|favicon.ico).*)',
-    ],
+  matcher: [
+    /*
+     * Match all request paths except static files and images
+     */
+    "/((?!_next/static|_next/image|favicon.ico).*)",
+  ],
 };
