@@ -270,7 +270,8 @@ export interface Metadata {
   media?: MediaItem[];
   software?: string[];
   artstation?: string;
-  tag?: string | string[];
+  tag?: string;
+  tags?: string[];
   team?: TeamMember[];
   link?: string;
 }

@@ -5,7 +5,7 @@ import { about, baseURL, blog, person } from "../../../../resources";
 import { formatDate } from "../../../../utils/formatDate";
 import { getTelegramSettings } from "../../../../utils/reader";
 import { getPosts } from "../../../../utils/utils";
-import type { Metadata } from "../../../../utils/utils";
+import type { Metadata } from "@/types";
 import {
   Avatar,
   Column,
@@ -57,7 +57,7 @@ export async function generateMetadata({
 
   return Meta.generate({
     title: `Preview: ${post.metadata.title}`,
-    description: post.metadata.summary,
+    description: post.metadata.summary || "",
     baseURL: baseURL,
     image: post.metadata.image || `/api/og/generate?title=${post.metadata.title}`,
     path: `${blog.path}/${post.slug}`,
@@ -107,7 +107,7 @@ export default async function PostPreview({ params }: { params: Promise<{ slug: 
             baseURL={baseURL}
             path={`${blog.path}/${post.slug}`}
             title={post.metadata.title}
-            description={post.metadata.summary}
+            description={post.metadata.summary || ""}
             datePublished={post.metadata.publishedAt}
             dateModified={post.metadata.publishedAt}
             image={

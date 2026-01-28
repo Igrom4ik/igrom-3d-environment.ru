@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createReader } from '@keystatic/core/reader';
-import keystaticConfig from '../../../../keystatic.config';
+import keystaticConfig from '../../../../../../keystatic.config';
 
 const reader = createReader(process.cwd(), keystaticConfig);
 

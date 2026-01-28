@@ -78,7 +78,7 @@ export async function generateMetadata({
 
   return Meta.generate({
     title: post.metadata.title,
-    description: post.metadata.summary,
+    description: post.metadata.summary || "",
     baseURL: baseURL,
     image: post.metadata.image || `/api/og/generate?title=${post.metadata.title}`,
     path: `${work.path}/${post.slug}`,
@@ -115,7 +115,7 @@ export default async function Project({
         baseURL={baseURL}
         path={`${work.path}/${post.slug}`}
         title={post.metadata.title}
-        description={post.metadata.summary}
+        description={post.metadata.summary || ""}
         datePublished={post.metadata.publishedAt}
         dateModified={post.metadata.publishedAt}
         image={

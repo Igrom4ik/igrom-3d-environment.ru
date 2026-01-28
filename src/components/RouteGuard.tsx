@@ -72,7 +72,7 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
   const handlePasswordSubmit = () => {
     // For static export, password is checked client-side
     // In production, use proper server-side authentication
-    const correctPassword = "password"; // This should match PAGE_ACCESS_PASSWORD from .env
+    const correctPassword = process.env.NEXT_PUBLIC_PAGE_ACCESS_PASSWORD;
 
     if (password === correctPassword) {
       if (typeof window !== "undefined") {

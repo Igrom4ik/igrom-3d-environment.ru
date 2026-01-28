@@ -2,8 +2,6 @@
 
 import { useState, useEffect, use } from 'react';
 import { Column, Button, Text, Heading, Spinner } from '@once-ui-system/core';
-import { createReader } from '@keystatic/core/reader';
-import keystaticConfig from '../../../../keystatic.config';
 
 import MarkdownIt from 'markdown-it';
 import MdEditor from 'react-markdown-editor-lite';
