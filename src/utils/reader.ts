@@ -104,32 +104,39 @@ export async function getAlbums() {
 
 export async function getAlbum(slug: string) {
   try {
+    // 1. Try Keystatic reader first
     const album = await reader.collections.albums.read(slug);
     if (album) {
         return album;
     }
     
-    // Fallback: Read from filesystem
-    const indexPath = path.join(process.cwd(), 'src/content/albums', slug, 'index.mdoc');
-    if (fs.existsSync(indexPath)) {
-        const fileContent = fs.readFileSync(indexPath, 'utf-8');
-        const { data, content } = matter(fileContent);
-        
-        // Mock Keystatic AST for description
-        const descriptionAST = [
-            {
-                type: 'paragraph',
-                children: [{ text: content || '' }]
-            }
-        ];
+    // 2. Fallback: Read from filesystem directly
+    // Try both the exact slug and a lowercase version
+    const slugsToTry = [slug, slug.toLowerCase()];
+    const albumsDir = path.join(process.cwd(), 'src/content/albums');
+    
+    for (const s of slugsToTry) {
+        const indexPath = path.join(albumsDir, s, 'index.mdoc');
+        if (fs.existsSync(indexPath)) {
+            const fileContent = fs.readFileSync(indexPath, 'utf-8');
+            const { data, content } = matter(fileContent);
+            
+            // Mock Keystatic AST for description
+            const descriptionAST = [
+                {
+                    type: 'paragraph',
+                    children: [{ text: content || '' }]
+                }
+            ];
 
-        return {
-            title: data.title || slug,
-            description: () => Promise.resolve(descriptionAST),
-            images: data.images || [],
-            categorization: data.categorization,
-            publishing: data.publishing
-        } as any;
+            return {
+                title: data.title || s,
+                description: () => Promise.resolve(descriptionAST),
+                images: data.images || [],
+                categorization: data.categorization || {},
+                publishing: data.publishing || {}
+            } as any;
+        }
     }
     
     return null;
