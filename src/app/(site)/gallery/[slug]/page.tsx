@@ -10,9 +10,11 @@ import { VideoLoop, YoutubeEmbed, SketchfabEmbed, MarmosetViewer, Pano360 } from
 import { log } from "@/utils/logger";
 import { LikeButton, CommentSection } from "@/components";
 
-// Helper to normalize Marmoset paths
-const normalizeMarmosetFilePath = (file: string) => {
-  if (!file) return "";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+// Helper to normalize media paths with basePath support
+const normalizePath = (file: string) => {
+  if (!file || file.startsWith('http')) return file;
   let normalized = file.replace(/\\/g, "/");
   const publicIndex = normalized.indexOf("/public/");
   if (publicIndex !== -1) {
@@ -20,6 +22,9 @@ const normalizeMarmosetFilePath = (file: string) => {
   }
   if (!normalized.startsWith("/")) {
     normalized = `/${normalized}`;
+  }
+  if (basePath && !normalized.startsWith(basePath)) {
+    normalized = `${basePath}${normalized}`;
   }
   return normalized;
 };
@@ -68,11 +73,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const album = await getAlbum(slug);
   if (!album) return {};
   
+  const coverImage = album.publishing?.cover ? normalizePath(album.publishing.cover) : `/api/og/generate?title=${encodeURIComponent(album.title)}`;
+
   return Meta.generate({
     title: album.title,
     description: `Проект: ${album.title}`,
     baseURL: baseURL,
-    image: album.publishing?.cover || `/api/og/generate?title=${encodeURIComponent(album.title)}`,
+    image: coverImage,
     path: `${gallery.path}/${slug}`,
   });
 }
@@ -133,10 +140,11 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
 
                 if (item.discriminant === 'image') {
                     if (!item.value.src) return null;
+                    const normalizedSrc = normalizePath(item.value.src);
                     return (
                         <Media
                             key={uniqueKey}
-                            src={item.value.src}
+                            src={normalizedSrc}
                             alt={item.value.alt || album.title}
                             style={{ width: '100%', height: 'auto', display: 'block' }}
                             enlarge
@@ -145,10 +153,11 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
                 }
                 if (item.discriminant === 'video') {
                     if (!item.value.src) return null;
+                    const normalizedSrc = normalizePath(item.value.src);
                     return (
                         <VideoLoop 
                             key={uniqueKey}
-                            src={item.value.src}
+                            src={normalizedSrc}
                             autoPlay={item.value.autoPlay}
                             muted={item.value.muted}
                             loop={item.value.loop}
@@ -164,7 +173,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
                     return <SketchfabEmbed key={uniqueKey} url={item.value.url} />;
                 }
                 if (item.discriminant === 'marmoset') {
-                    const mviewPath = normalizeMarmosetFilePath(item.value.src || item.value.manualPath || '');
+                    const mviewPath = normalizePath(item.value.src || item.value.manualPath || '');
                     if (!mviewPath) return null;
                     return (
                         <MarmosetViewer 
@@ -177,7 +186,8 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
                 }
                 if (item.discriminant === 'pano') {
                     if (!item.value.image) return null;
-                    return <Pano360 key={uniqueKey} image={item.value.image} caption={item.value.caption} />;
+                    const normalizedImage = normalizePath(item.value.image);
+                    return <Pano360 key={uniqueKey} image={normalizedImage} caption={item.value.caption} />;
                 }
                 return null;
              })}

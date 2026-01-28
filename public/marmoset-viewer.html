@@ -9,7 +9,14 @@
     </style>
 </head>
 <body>
-    <script src="marmoset/marmoset.js"></script>
+    <script>
+        // Dynamically load marmoset.js relative to this file's location
+        const script = document.createElement('script');
+        const baseUrl = window.location.href.split('?')[0].split('#')[0];
+        const baseDir = baseUrl.substring(0, baseUrl.lastIndexOf('/'));
+        script.src = baseDir + '/marmoset/marmoset.js';
+        document.head.appendChild(script);
+    </script>
     <div id="marmoset-viewer"></div>
     <script>
         const urlParams = new URLSearchParams(window.location.search);

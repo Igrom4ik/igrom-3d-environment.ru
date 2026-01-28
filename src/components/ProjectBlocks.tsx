@@ -3,8 +3,8 @@ import { Media, Text, Column, Grid } from "@once-ui-system/core";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-function normalizeMarmosetFilePath(file: string) {
-  if (!file) return "";
+function normalizePath(file: string) {
+  if (!file || file.startsWith('http')) return file;
   let normalized = file.replace(/\\/g, "/");
   const publicIndex = normalized.indexOf("/public/");
   if (publicIndex !== -1) {
@@ -26,9 +26,10 @@ interface ImageFullProps {
 
 export const ImageFull: FC<ImageFullProps> = ({ src, caption }) => {
   if (!src) return null;
+  const normalizedSrc = normalizePath(src);
   return (
     <Column fillWidth gap="8" marginBottom="4" horizontal="center">
-      <Media src={src} alt={caption || 'Project Image'} style={{ width: '100%' }} />
+      <Media src={normalizedSrc} alt={caption || 'Project Image'} style={{ width: '100%' }} />
       {caption && (
         <Text variant="body-default-s" onBackground="neutral-weak">
           {caption}
@@ -48,10 +49,11 @@ interface VideoLoopProps {
 
 export const VideoLoop: FC<VideoLoopProps> = ({ src, autoPlay, muted, loop, caption }) => {
   if (!src) return null;
+  const normalizedSrc = normalizePath(src);
   return (
     <Column fillWidth gap="8" marginBottom="4" horizontal="center">
       <video
-        src={src}
+        src={normalizedSrc}
         autoPlay={autoPlay}
         muted={muted}
         loop={loop}
@@ -139,7 +141,7 @@ export const MarmosetViewer: FC<MarmosetViewerProps> = ({
 }) => {
   if (!src) return null;
 
-  const fileParam = normalizeMarmosetFilePath(src);
+  const fileParam = normalizePath(src);
   const viewerPath = `${basePath || ""}/marmoset-viewer.html?file=${encodeURIComponent(
     fileParam,
   )}&autoStart=${autoStart}`;
@@ -168,15 +170,18 @@ interface ComparisonSliderProps {
 export const ComparisonSlider: FC<ComparisonSliderProps> = ({ leftImage, rightImage }) => {
     if (!leftImage || !rightImage) return null;
     
+    const normalizedLeft = normalizePath(leftImage);
+    const normalizedRight = normalizePath(rightImage);
+
     return (
         <Column fillWidth gap="8" marginBottom="32">
              <Grid columns="2" gap="16" s={{ columns: 1 }}>
                 <Column gap="4">
-                    <Media src={leftImage} alt="Before" radius="l" aspectRatio="16/9" objectFit="cover" />
+                    <Media src={normalizedLeft} alt="Before" radius="l" aspectRatio="16/9" objectFit="cover" />
                     <Text variant="body-default-xs" align="center" onBackground="neutral-weak">Before</Text>
                 </Column>
                 <Column gap="4">
-                    <Media src={rightImage} alt="After" radius="l" aspectRatio="16/9" objectFit="cover" />
+                    <Media src={normalizedRight} alt="After" radius="l" aspectRatio="16/9" objectFit="cover" />
                     <Text variant="body-default-xs" align="center" onBackground="neutral-weak">After</Text>
                 </Column>
             </Grid>
@@ -191,10 +196,11 @@ interface Pano360Props {
 
 export const Pano360: FC<Pano360Props> = ({ image, caption }) => {
     if (!image) return null;
+    const normalizedImage = normalizePath(image);
     return (
         <Column fillWidth gap="8" marginBottom="32" horizontal="center" position="relative">
-            <Media src={image} alt={caption || '360 Panorama'} radius="l" style={{ width: '100%' }} />
-             <div style={{
+            <Media src={normalizedImage} alt={caption || '360 Panorama'} radius="l" style={{ width: '100%' }} />
+            <div style={{
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
@@ -226,15 +232,18 @@ export const ImageGallery: FC<ImageGalleryProps> = ({ images, columns = '2' }) =
     return (
         <Column fillWidth marginBottom="32">
              <Grid columns={columns} gap="16" s={{ columns: 1 }}>
-                {images.map((img, idx) => (
-                    <Media 
-                        key={img} 
-                        src={img} 
-                        alt={`Gallery Image ${idx + 1}`} 
-                        radius="l" 
-                        style={{ width: '100%', height: 'auto', objectFit: 'cover' }} 
-                    />
-                ))}
+                {images.map((img, idx) => {
+                    const normalizedImg = normalizePath(img);
+                    return (
+                        <Media 
+                            key={img} 
+                            src={normalizedImg} 
+                            alt={`Gallery Image ${idx + 1}`} 
+                            radius="l" 
+                            style={{ width: '100%', height: 'auto', objectFit: 'cover' }} 
+                        />
+                    );
+                })}
             </Grid>
         </Column>
     );
