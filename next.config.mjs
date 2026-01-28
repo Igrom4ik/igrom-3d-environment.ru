@@ -16,7 +16,7 @@ const nextConfig = {
     '127.0.0.1',
     '*.localhost',
   ],
-  output: 'export',
+  output: isGitHubPages ? 'export' : undefined,
   basePath: isGitHubPages ? '/igrom-3d-environment.ru' : '',
   trailingSlash: true,
   pageExtensions: isProd 
