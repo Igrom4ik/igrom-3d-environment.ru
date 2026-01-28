@@ -1,4 +1,4 @@
-import { CustomMDX, ScrollToHash } from "@/components";
+import { CustomMDX, ScrollToHash, LikeButton, CommentSection } from "@/components";
 import { Projects } from "@/components/work/Projects";
 import { about, baseURL, person, work } from "@/resources";
 import { formatDate } from "@/utils/formatDate";
@@ -7,6 +7,7 @@ import {
   AvatarGroup,
   Button,
   Column,
+  Flex,
   Heading,
   Line,
   Media,
@@ -152,13 +153,21 @@ export default async function Project({
                   return null;
               }
             })}
+
+            {/* COMMENTS */}
+            <CommentSection projectSlug={slugPath} />
           </Column>
         </Column>
 
         {/* Right Column: Sidebar */}
         <Column fillWidth flex={1} style={{ height: 'fit-content', position: 'sticky', top: '2rem' }}>
             {/* Header Info */}
-            <Heading variant="display-strong-s">{post.metadata.title}</Heading>
+            <Flex direction="column" gap="16">
+                <Heading variant="display-strong-s">{post.metadata.title}</Heading>
+                
+                {/* LIKE BUTTON */}
+                <LikeButton projectSlug={slugPath} />
+            </Flex>
             
             {/* Author / Profile */}
             <Row gap="s" vertical="center">

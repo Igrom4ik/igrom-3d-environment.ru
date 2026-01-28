@@ -12,3 +12,5 @@ export { LanguageSwitcher } from "@/components/LanguageSwitcher";
 export { GoogleTranslate } from "@/components/GoogleTranslate";
 export { JDoodleEmbed } from "@/components/JDoodleEmbed";
 export { CustomMDX } from "@/components/mdx";
+export { LikeButton } from "@/components/engagement/LikeButton";
+export { CommentSection } from "@/components/engagement/CommentSection";

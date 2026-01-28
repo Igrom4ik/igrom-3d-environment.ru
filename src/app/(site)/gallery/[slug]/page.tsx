@@ -8,6 +8,7 @@ import { baseURL, gallery, person } from "@/resources";
 import { Meta } from "@once-ui-system/core";
 import { VideoLoop, YoutubeEmbed, SketchfabEmbed, MarmosetViewer, Pano360 } from "@/components/ProjectBlocks";
 import { log } from "@/utils/logger";
+import { LikeButton, CommentSection } from "@/components";
 
 // Helper to normalize Marmoset paths
 const normalizeMarmosetFilePath = (file: string) => {
@@ -103,7 +104,6 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
           {/* LEFT COLUMN: MEDIA */}
           <Column fillWidth gap="4">
              {album.images?.map((item: AlbumMediaItem, index: number) => {
-                // ✅ Создаем уникальный ключ
                 const uniqueKey = 
                   (item.discriminant === 'image' ? (item.value.src || '') : '') || 
                   (item.discriminant === 'video' ? item.value.src : '') ||
@@ -163,6 +163,9 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
                 }
                 return null;
              })}
+
+             {/* COMMENTS */}
+             <CommentSection projectSlug={slug} />
           </Column>
 
           {/* RIGHT COLUMN: SIDEBAR */}
@@ -177,6 +180,9 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
                          <Text variant="body-default-xs" onBackground="neutral-weak">{person.role}</Text>
                      </Column>
                  </Flex>
+                 
+                 {/* LIKE BUTTON */}
+                 <LikeButton projectSlug={slug} />
              </Column>
 
              {/* DESCRIPTION */}
