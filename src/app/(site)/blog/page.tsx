@@ -1,14 +1,11 @@
 import { Mailchimp } from "@/components";
 import { Posts } from "@/components/blog/Posts";
 import { baseURL, blog, person } from "@/resources";
-import { getBlogSettings } from "@/utils/reader";
 import { Column, Heading, Meta, Schema } from "@once-ui-system/core";
-import { PageBuilder } from "@/components/PageBuilder";
 
 export async function generateMetadata() {
-  const settings = await getBlogSettings();
-  const title = settings?.title || blog.title;
-  const description = settings?.description || blog.description;
+  const title = blog.title;
+  const description = blog.description;
 
   return Meta.generate({
     title,
@@ -20,11 +17,8 @@ export async function generateMetadata() {
 }
 
 export default async function Blog() {
-  const settings = await getBlogSettings();
-  const title = settings?.title || blog.title;
-  const description = settings?.description || blog.description;
-  const blocks = Array.isArray(settings?.blocks) ? settings.blocks : [];
-  const showFallback = blocks.length === 0;
+  const title = blog.title;
+  const description = blog.description;
 
   return (
     <Column fillWidth maxWidth="l" paddingTop="24">
@@ -45,16 +39,10 @@ export default async function Blog() {
         {title}
       </Heading>
       
-      {showFallback ? (
-        <Column fillWidth flex={1} gap="40" paddingX="l">
-          <Posts columns="3" />
-          <Mailchimp marginBottom="l" />
-        </Column>
-      ) : (
-        <Column fillWidth flex={1} gap="40" paddingX="l">
-           <PageBuilder blocks={blocks} />
-        </Column>
-      )}
+      <Column fillWidth flex={1} gap="40" paddingX="l">
+        <Posts columns="3" />
+        <Mailchimp marginBottom="l" />
+      </Column>
     </Column>
   );
 }

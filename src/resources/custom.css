@@ -265,3 +265,42 @@ body {
   50%  { transform: translate3d(6%, -8%, 0) rotate(3deg); } 
   100% { transform: translate3d(-6%, 10%, 0) rotate(-2deg); } 
 }
+
+/* Album Page Styles */
+.main-sidebar-layout {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+@media (max-width: 1024px) {
+  .main-sidebar-layout {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-sidebar-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  padding: 4px 12px;
+  background: var(--neutral-alpha-weak);
+  border-radius: 16px;
+  font-size: 13px;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}

@@ -1,9 +1,12 @@
 import { PageBuilder } from "../../../components/PageBuilder";
 import type { PageBlock } from "../../../components/PageBuilder";
-import { getBlogSettings, getHomeSettings, getWorkSettings } from "../../../utils/reader";
+import { getHomeSettings, getWorkSettings } from "../../../utils/reader";
 import { Column } from "@once-ui-system/core";
 import About from "../../(site)/about/page";
 import Gallery from "../../(site)/gallery/page";
+
+import Work from "../../(site)/work/page";
+import Blog from "../../(site)/blog/page";
 
 interface PreviewPageProps {
   params: Promise<{
@@ -38,17 +41,9 @@ export default async function PreviewPage({ params }: PreviewPageProps) {
       }
       break;
     case 'work':
-      {
-        const workSettings = await getWorkSettings();
-        blocks = (Array.isArray(workSettings?.blocks) ? workSettings.blocks : []) as PageBlock[];
-      }
-      break;
+      return <Work />;
     case 'blog':
-      {
-        const blogSettings = await getBlogSettings();
-        blocks = (Array.isArray(blogSettings?.blocks) ? blogSettings.blocks : []) as PageBlock[];
-      }
-      break;
+      return <Blog />;
     case 'about':
       return <About />;
     case 'gallery':

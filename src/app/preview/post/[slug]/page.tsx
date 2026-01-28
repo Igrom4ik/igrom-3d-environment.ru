@@ -3,6 +3,7 @@ import { Posts } from "../../../../components/blog/Posts";
 import { ShareSection } from "../../../../components/blog/ShareSection";
 import { about, baseURL, blog, person } from "../../../../resources";
 import { formatDate } from "../../../../utils/formatDate";
+import { getTelegramSettings } from "../../../../utils/reader";
 import { getPosts } from "../../../../utils/utils";
 import type { Metadata } from "../../../../utils/utils";
 import {
@@ -29,7 +30,9 @@ type Post = {
 };
 
 // For preview, we might not need static params if it's purely for dev/preview
-// But if 'export' is used, we need them.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
   return posts.map((post: Post) => ({
@@ -73,6 +76,9 @@ export default async function PostPreview({ params }: { params: Promise<{ slug: 
     (post: Post) => post.slug === slugPath,
   );
 
+  const telegramSettings = await getTelegramSettings();
+  const chatId = telegramSettings?.chatId || "";
+
   if (!post) {
     notFound();
   }
@@ -88,9 +94,13 @@ export default async function PostPreview({ params }: { params: Promise<{ slug: 
                 padding: '8px 16px', 
                 borderRadius: '4px', 
                 fontWeight: 'bold',
-                marginBottom: '16px'
+                marginBottom: '16px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '100%'
             }}>
-                PREVIEW MODE
+                <span>PREVIEW MODE</span>
             </div>
           <Schema
             as="blogPosting"

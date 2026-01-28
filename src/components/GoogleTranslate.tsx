@@ -39,7 +39,7 @@ const languages = [
 
 export const GoogleTranslate = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState('en');
+  const [currentLang, setCurrentLang] = useState('ru');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
 
@@ -51,7 +51,7 @@ export const GoogleTranslate = () => {
         if (!g?.translate?.TranslateElement) return;
         new g.translate.TranslateElement(
           {
-            pageLanguage: "en",
+            pageLanguage: "ru",
             includedLanguages: "en,ru,zh-CN",
             layout: g.translate.TranslateElement.InlineLayout.SIMPLE,
             autoDisplay: false,
@@ -73,6 +73,9 @@ export const GoogleTranslate = () => {
             if (lang && languages.some(l => l.code === lang)) {
                 setCurrentLang(lang);
             }
+        } else {
+             // If no cookie, default to RU
+             setCurrentLang('ru');
         }
     };
     
@@ -100,8 +103,10 @@ export const GoogleTranslate = () => {
 
     // Set new cookie
     // The format Google Translate expects is /sourceLang/targetLang or /auto/targetLang
-    document.cookie = `googtrans=/auto/${langCode}; path=/; domain=${domain}`;
-    document.cookie = `googtrans=/auto/${langCode}; path=/;`; // For localhost fallback
+    // Since pageLanguage is 'ru', we use /ru/targetLang
+    const sourceLang = 'ru';
+    document.cookie = `googtrans=/${sourceLang}/${langCode}; path=/; domain=${domain}`;
+    document.cookie = `googtrans=/${sourceLang}/${langCode}; path=/;`; // For localhost fallback
     
     setCurrentLang(langCode);
     setIsOpen(false);

@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { Column, Text, CodeBlock as OnceCodeBlock, Icon, Row, Grid, Media } from "@once-ui-system/core";
+import { Column, Text, CodeBlock as OnceCodeBlock, Icon, Row, Grid, Media, Heading } from "@once-ui-system/core";
 
 // Re-use or re-implement ImageGallery from ProjectBlocks if needed, 
 // but defining here for clarity and specific blog styling if needed.
@@ -133,4 +133,63 @@ export const BlogCodeBlock: FC<BlogCodeBlockProps> = ({ code, language = 'typesc
             />
         </Column>
     );
+};
+
+export interface BlogVideoProps {
+    title?: string;
+    url: string;
+    autoplay?: boolean;
+}
+
+export const BlogVideoBlock: FC<BlogVideoProps> = ({ title, url, autoplay }) => {
+  const isEmbed = url.includes('youtube') || url.includes('vimeo') || url.includes('youtu.be');
+  
+  return (
+    <Column fillWidth gap="m" paddingY="32">
+      {title && <Heading variant="heading-strong-m">{title}</Heading>}
+      
+      <div style={{ 
+        position: 'relative', 
+        paddingBottom: '56.25%', /* 16:9 */
+        height: 0, 
+        overflow: 'hidden', 
+        borderRadius: 'var(--radius-l)',
+        background: 'var(--neutral-on-background-weak)'
+      }}>
+        {isEmbed ? (
+          <iframe 
+            src={url} 
+            title={title || 'Embedded Video'}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowFullScreen
+          />
+        ) : (
+          <video 
+            src={url} 
+            controls 
+            autoPlay={autoplay}
+            muted={autoplay}
+            loop={autoplay}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        )}
+      </div>
+    </Column>
+  );
+};
+
+export interface BlogSpacerProps {
+    height: 'small' | 'medium' | 'large' | 'xlarge';
+}
+
+export const BlogSpacer: FC<BlogSpacerProps> = ({ height }) => {
+    const heights = {
+        small: '32px',
+        medium: '64px',
+        large: '128px',
+        xlarge: '256px',
+    };
+    
+    return <div style={{ height: heights[height] || '64px', width: '100%' }} />;
 };

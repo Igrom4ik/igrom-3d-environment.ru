@@ -1,15 +1,9 @@
-import React from 'react';
 import { Button, Column, Heading, Row } from "@once-ui-system/core";
 import GalleryView from "@/components/gallery/GalleryView";
-import { getGallerySettings } from "@/utils/reader";
+import { getAlbums } from "@/utils/reader";
 import { gallery as galleryResource } from "@/resources";
 
 type Orientation = 'horizontal' | 'vertical';
-type ImageBlockValue = { src: string; alt?: string | null; orientation: Orientation };
-type MarmosetBlockValue = { src?: string | null; manualPath?: string | null; alt?: string | null; orientation: Orientation };
-type GalleryBlockUnion =
-  | { discriminant: 'image'; value: ImageBlockValue }
-  | { discriminant: 'marmoset'; value: MarmosetBlockValue };
 type GalleryImage = { src: string; alt: string; orientation: Orientation };
 
 interface GalleryBlockProps {
@@ -21,24 +15,18 @@ interface GalleryBlockProps {
 
 export async function GalleryBlock({ data }: GalleryBlockProps) {
   const { title, limit } = data;
-  const settings = await getGallerySettings();
+  const albums = await getAlbums();
   
-  // Use CMS images or fallback to resource images
-  const allImages: GalleryImage[] = settings?.images
-    ? (settings.images as GalleryBlockUnion[]).map((img) => {
-        if (img.discriminant === 'marmoset') {
-          return {
-            src: img.value.manualPath || img.value.src || '',
-            alt: img.value.alt ?? '',
-            orientation: img.value.orientation,
-          };
-        }
-        return {
-          src: img.value.src || '',
-          alt: img.value.alt ?? '',
-          orientation: img.value.orientation,
-        };
-      })
+  // Map albums to GalleryImage format using cover
+  const albumImages: GalleryImage[] = albums.map((album) => ({
+    src: album.entry.publishing.cover || '',
+    alt: album.entry.title || '',
+    orientation: 'horizontal' as Orientation, // Covers are usually horizontal or we default to it
+  })).filter(img => !!img.src);
+
+  // Use CMS albums or fallback to resource images
+  const allImages: GalleryImage[] = albumImages.length > 0 
+    ? albumImages 
     : (galleryResource.images as GalleryImage[]);
 
   // Apply limit

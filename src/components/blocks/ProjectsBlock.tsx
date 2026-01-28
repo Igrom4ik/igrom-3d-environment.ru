@@ -6,21 +6,19 @@ interface ProjectsBlockProps {
   data: {
     title?: string;
     limit?: number;
+    selectedProjects?: string[] | null;
   };
 }
 
 export function ProjectsBlock({ data }: ProjectsBlockProps) {
-  const { title } = data;
-  // Note: Projects component currently doesn't accept a limit prop based on its definition in page.tsx usage
-  // <Projects range={[1, 1]} /> in page.tsx fallback implies it might take a range.
-  // Let's check Projects definition if possible, but for now we'll wrap it simply.
+  const { title, selectedProjects } = data;
   
   return (
     <Column fillWidth gap="m" paddingBottom="40">
       {title && (
         <Heading variant="heading-strong-l" marginBottom="m">{title}</Heading>
       )}
-      <Projects />
+      <Projects slugs={selectedProjects} />
     </Column>
   );
 }

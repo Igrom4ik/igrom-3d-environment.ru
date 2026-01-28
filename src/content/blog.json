@@ -1,4 +1,12 @@
 {
-  "title": "Writing about design and tech...",
-  "description": "Read what Igor Unguryanov has been up to recently"
+  "title": "Процесс создания игрвого окружения",
+  "blocks": [
+    {
+      "discriminant": "posts",
+      "value": {
+        "title": "Процесс создания игровго контента",
+        "columns": "1"
+      }
+    }
+  ]
 }

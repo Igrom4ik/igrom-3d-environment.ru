@@ -15,14 +15,166 @@ export default config({
             }
         },
         navigation: {
-            'Контент': ['home', 'about', 'work', 'blog', 'gallery', 'posts', 'projects'],
-            'Система': ['design', 'settings'],
+            'Контент': ['home', 'about', 'albums', 'posts', 'gallery'],
+            'Система': ['design', 'settings', 'telegramSettings', 'telegramPosts'],
         },
     },
   collections: {
+    telegramPosts: collection({
+        label: 'Telegram Посты',
+        path: 'src/content/telegram-posts/*',
+        slugField: 'title',
+        format: { contentField: 'content' },
+        previewUrl: '/preview/telegram/post/{slug}',
+        entryLayout: 'content',
+        schema: {
+            title: fields.slug({ name: { label: 'Название (для админки)' } }),
+            publishedAt: fields.date({ label: 'Дата (для сортировки)' }),
+            content: fields.markdoc({ 
+                label: 'Markdown Контент',
+                extension: 'md'
+            }),
+        }
+    }),
+    albums: collection({
+        label: 'Портфолио (Проекты)',
+        path: 'src/content/albums/*',
+        slugField: 'title',
+        format: { contentField: 'description' },
+        previewUrl: '/gallery/{slug}',
+        entryLayout: 'content',
+        schema: {
+            title: fields.slug({ name: { label: 'Название проекта' } }),
+            
+            // Artwork Details
+            description: fields.document({
+                label: 'Описание проекта',
+                formatting: true,
+                links: true,
+            }),
+
+            // Categorization Section
+            categorization: fields.object({
+                medium: fields.array(
+                    fields.text({ label: 'Медиум (например, Digital 3D)' }),
+                    { label: 'Medium', itemLabel: props => props.value || 'Medium' }
+                ),
+                software: fields.array(
+                    fields.text({ label: 'Название программы' }),
+                    { label: 'Software Used', itemLabel: props => props.value || 'Software' }
+                ),
+                tags: fields.array(
+                    fields.text({ label: 'Тег' }),
+                    { label: 'Tags', itemLabel: props => props.value || 'Tag' }
+                ),
+            }, { label: 'Категоризация (Categorization)' }),
+
+            // Media Section
+            images: fields.blocks(
+                {
+                    image: {
+                        label: 'HQ Изображение',
+                        itemLabel: (props) => props.fields.alt.value || 'Изображение',
+                        schema: fields.object({
+                            src: fields.image({
+                                label: 'Файл изображения (JPG, PNG, GIF, WEBP)',
+                                directory: 'public/images/gallery/albums',
+                                publicPath: '/images/gallery/albums',
+                            }),
+                            alt: fields.text({ label: 'Альтернативный текст' }),
+                            caption: fields.text({ label: 'Подпись' }),
+                            orientation: fields.select({
+                                label: 'Ориентация',
+                                options: [
+                                    { label: 'Горизонтальная', value: 'horizontal' },
+                                    { label: 'Вертикальная', value: 'vertical' },
+                                ],
+                                defaultValue: 'horizontal',
+                            }),
+                        }),
+                    },
+                    video: {
+                        label: 'Видео клип (MP4)',
+                        itemLabel: (props) => `Видео: ${props.fields.src.value}`,
+                        schema: fields.object({
+                            src: fields.text({ label: 'Путь к видео (например, /images/gallery/albums/video.mp4)' }),
+                            autoPlay: fields.checkbox({ label: 'Автовоспроизведение', defaultValue: true }),
+                            muted: fields.checkbox({ label: 'Без звука', defaultValue: true }),
+                            loop: fields.checkbox({ label: 'Зациклить', defaultValue: true }),
+                            caption: fields.text({ label: 'Подпись' }),
+                        }),
+                    },
+                    youtube: {
+                        label: 'Видео (YouTube/Vimeo)',
+                        itemLabel: (props) => `Вставка: ${props?.fields?.url?.value || ''}`,
+                        schema: fields.object({
+                            url: fields.text({ label: 'Ссылка на видео' }),
+                        }),
+                    },
+                    sketchfab: {
+                        label: 'Sketchfab',
+                        itemLabel: (props) => 'Sketchfab',
+                        schema: fields.object({
+                            url: fields.text({ label: 'Ссылка на модель Sketchfab' }),
+                        }),
+                    },
+                    marmoset: {
+                        label: 'Marmoset Viewer',
+                        itemLabel: (props) => props.fields.manualPath.value || props.fields.src.value?.filename || 'Marmoset Viewer',
+                        schema: fields.object({
+                            src: fields.file({
+                                label: 'Файл MView (Опционально, для небольших файлов)',
+                                directory: 'public/marmoset',
+                                publicPath: '/marmoset',
+                                validation: { isRequired: false },
+                            }),
+                            manualPath: fields.text({
+                                label: 'Путь к большому файлу (> 100MB)',
+                                description: 'Для больших файлов используйте "Large File Uploader" в меню слева, затем вставьте полученный путь сюда (например: /marmoset/model.mview).',
+                            }),
+                            alt: fields.text({ label: 'Альтернативный текст' }),
+                            orientation: fields.select({
+                                label: 'Ориентация',
+                                options: [
+                                    { label: 'Горизонтальная', value: 'horizontal' },
+                                    { label: 'Вертикальная', value: 'vertical' },
+                                ],
+                                defaultValue: 'horizontal',
+                            }),
+                        }),
+                    },
+                    pano: {
+                        label: '360 Панорама',
+                        itemLabel: (props) => '360 Панорама',
+                        schema: fields.object({
+                            image: fields.image({
+                                label: 'Панорамное изображение (JPG)',
+                                directory: 'public/images/gallery/albums',
+                                publicPath: '/images/gallery/albums',
+                            }),
+                            caption: fields.text({ label: 'Подпись' }),
+                        }),
+                    },
+                },
+                { label: 'Медиа файлы (Media Upload)' }
+            ),
+
+            // Publishing Section
+            publishing: fields.object({
+                date: fields.date({ label: 'Дата публикации', defaultValue: { kind: 'today' } }),
+                artstation: fields.url({ label: 'Ссылка на Artstation' }),
+                cover: fields.image({
+                    label: 'Обложка (Thumbnail)',
+                    directory: 'public/images/gallery/albums',
+                    publicPath: '/images/gallery/albums',
+                    validation: { isRequired: true }
+                }),
+            }, { label: 'Публикация (Publishing Options)' }),
+        },
+    }),
     posts: collection({
       label: 'Блог',
-      path: 'src/app/(site)/blog/posts/*',
+      path: 'src/app/(site)/blog/posts/*/',
       slugField: 'title',
       format: { contentField: 'content' },
       previewUrl: '/preview/post/{slug}',
@@ -57,6 +209,20 @@ export default config({
             publicPath: '/images/blog/content',
           },
           componentBlocks: {
+            'gallery-album': component({
+                label: 'Альбом галереи',
+                schema: {
+                    album: fields.relationship({
+                        label: 'Выберите альбом',
+                        collection: 'albums',
+                    }),
+                },
+                preview: (props) => (
+                    <div style={{ padding: '10px', background: '#e0f7fa', borderRadius: '4px', border: '1px solid #00acc1' }}>
+                        <strong>Альбом галереи:</strong> {props.fields.album.value || 'Не выбран'}
+                    </div>
+                )
+            }),
             'image-gallery': component({
                 label: 'Галерея изображений',
                 schema: {
@@ -138,7 +304,7 @@ export default config({
     }),
     projects: collection({
       label: 'Проекты',
-      path: 'src/app/(site)/work/projects/*',
+      path: 'src/app/(site)/work/projects/*/',
       slugField: 'title',
       format: { contentField: 'content' },
       previewUrl: '/work/{slug}',
@@ -230,24 +396,24 @@ export default config({
                     }),
                 },
                 marmoset: {
-                    label: 'Marmoset Viewer',
-                    itemLabel: (props) => 'Marmoset',
-                    schema: fields.object({
-                        src: fields.file({
-                            label: 'Файл MView',
-                            directory: 'public/marmoset',
-                            publicPath: '/marmoset',
-                            validation: { isRequired: false },
+                        label: 'Marmoset Viewer',
+                        itemLabel: (props) => props.fields.manualPath.value || props.fields.src.value?.filename || 'Marmoset Viewer',
+                        schema: fields.object({
+                            src: fields.file({
+                                label: 'Файл MView (Опционально, для небольших файлов)',
+                                directory: 'public/marmoset',
+                                publicPath: '/marmoset',
+                                validation: { isRequired: false },
+                            }),
+                            manualPath: fields.text({
+                                label: 'Путь к большому файлу (> 100MB)',
+                                description: 'Для больших файлов используйте "Large File Uploader" в меню слева, затем вставьте полученный путь сюда (например: /marmoset/model.mview).',
+                            }),
+                            width: fields.text({ label: 'Ширина (px или %)', defaultValue: '100%' }),
+                            height: fields.text({ label: 'Высота (px)', defaultValue: '600px' }),
+                            autoStart: fields.checkbox({ label: 'Автозапуск', defaultValue: false }),
                         }),
-                        manualPath: fields.text({
-                            label: 'Ручной путь (для больших файлов)',
-                            description: 'Для файлов > 100МБ: 1. Нажмите "Open Marmoset Folder". 2. Вставьте файл туда. 3. Введите путь здесь (например, /marmoset/file.mview)',
-                        }),
-                        width: fields.text({ label: 'Ширина (px или %)', defaultValue: '100%' }),
-                        height: fields.text({ label: 'Высота (px)', defaultValue: '600px' }),
-                        autoStart: fields.checkbox({ label: 'Автозапуск', defaultValue: false }),
-                    }),
-                },
+                    },
                 pano: {
                     label: '360 Панорама',
                     itemLabel: (props) => '360 Панорама',
@@ -383,6 +549,22 @@ export default config({
     }),
   },
   singletons: {
+    telegramSettings: singleton({
+        label: 'Настройки Telegram',
+        path: 'src/content/telegram/settings',
+        format: 'json',
+        schema: {
+            chatId: fields.text({ 
+                label: 'ID канала / чата', 
+                description: 'Например @mychannel или -100xxxxxxx. Бот должен быть админом.' 
+            }),
+            defaultFooter: fields.text({
+                label: 'Подпись по умолчанию',
+                multiline: true,
+                description: 'Добавляется в конец каждого поста (Markdown)'
+            })
+        }
+    }),
     settings: singleton({
       label: 'Настройки сайта',
       path: 'src/content/settings',
@@ -535,7 +717,7 @@ export default config({
                     itemLabel: (props) => `Разделитель: ${props.fields.height.value}`,
                 },
             }, { label: 'Блоки страницы' }),
-        }
+        },
     }),
     about: singleton({
         label: 'Страница "О себе"',
@@ -882,83 +1064,18 @@ export default config({
                 label: 'Сетка проектов',
                 schema: fields.object({
                     title: fields.text({ label: 'Заголовок' }),
-                    limit: fields.integer({ label: 'Лимит' }),
+                    selectedProjects: fields.array(
+                        fields.relationship({
+                            label: 'Проект',
+                            collection: 'projects',
+                        }),
+                        {
+                            label: 'Выберите проекты (порядок важен)',
+                            itemLabel: (props) => props.value || 'Проект',
+                        }
+                    ),
                 }),
-                itemLabel: (props) => 'Сетка проектов',
-            },
-            hero: {
-                label: 'Hero секция',
-                schema: fields.object({
-                    headline: fields.text({ label: 'Заголовок' }),
-                    subline: fields.document({
-                        label: 'Подзаголовок',
-                        formatting: { inlineMarks: { bold: true, italic: true } },
-                    }),
-                }),
-                itemLabel: (props) => props.fields.headline.value || 'Hero секция',
-            },
-            cta: {
-                label: 'Призыв к действию (CTA)',
-                schema: fields.object({
-                    title: fields.text({ label: 'Заголовок' }),
-                    text: fields.text({ label: 'Описание', multiline: true }),
-                    buttonLabel: fields.text({ label: 'Текст кнопки' }),
-                    buttonLink: fields.text({ label: 'Ссылка кнопки' }),
-                }),
-                itemLabel: (props) => `CTA: ${props.fields.title.value}`,
-            },
-            spacer: {
-                label: 'Разделитель',
-                schema: fields.object({
-                    height: fields.select({
-                        label: 'Высота',
-                        options: [
-                            { label: 'Маленький (32px)', value: 'small' },
-                            { label: 'Средний (64px)', value: 'medium' },
-                            { label: 'Большой (128px)', value: 'large' },
-                            { label: 'Очень большой (256px)', value: 'xlarge' },
-                        ],
-                        defaultValue: 'medium',
-                    }),
-                }),
-                itemLabel: (props) => `Разделитель: ${props.fields.height.value}`,
-            },
-        }, { label: 'Блоки страницы' }),
-      },
-    }),
-    blog: singleton({
-      label: 'Страница блога',
-      path: 'src/content/blog',
-      format: 'json',
-      previewUrl: '/preview/blog',
-      schema: {
-        title: fields.text({ label: 'Заголовок', description: 'Главный заголовок страницы блога.' }),
-        description: fields.text({ label: 'Описание', multiline: true, description: 'Вступительный текст под заголовком.' }),
-        blocks: fields.blocks({
-            posts: {
-                label: 'Сетка постов',
-                schema: fields.object({
-                    title: fields.text({ label: 'Заголовок' }),
-                    columns: fields.select({
-                        label: 'Колонки',
-                        options: [
-                            { label: '1 Колонка', value: '1' },
-                            { label: '2 Колонки', value: '2' },
-                            { label: '3 Колонки', value: '3' },
-                        ],
-                        defaultValue: '3',
-                    }),
-                    limit: fields.integer({ label: 'Лимит' }),
-                }),
-                itemLabel: (props) => 'Сетка постов',
-            },
-            newsletter: {
-                label: 'Подписка на рассылку',
-                schema: fields.object({
-                    title: fields.text({ label: 'Заголовок' }),
-                    description: fields.text({ label: 'Описание', multiline: true }),
-                }),
-                itemLabel: (props) => 'Форма подписки',
+                itemLabel: (props) => `Сетка проектов (${props.fields.selectedProjects.elements.length || 0})`,
             },
             hero: {
                 label: 'Hero секция',
@@ -1001,61 +1118,19 @@ export default config({
       },
     }),
     gallery: singleton({
-      label: 'Галерея',
+      label: 'Настройки страницы Галереи (SEO)',
       path: 'src/content/gallery',
       format: 'json',
       previewUrl: '/preview/gallery',
       schema: {
+        _notice: fields.text({
+            label: 'Важно!',
+            description: 'Контент (проекты/альбомы) добавляется в разделе "Портфолио (Проекты)". Здесь настраивается только заголовок страницы.',
+            defaultValue: 'Перейдите в раздел "Портфолио (Проекты)" для управления контентом.',
+            validation: { length: { min: 1 } },
+        }),
         title: fields.text({ label: 'Заголовок', description: 'Главный заголовок страницы галереи.' }),
         description: fields.text({ label: 'Описание', multiline: true, description: 'Вступительный текст под заголовком.' }),
-        images: fields.blocks(
-          {
-            image: {
-              label: 'Изображение',
-              schema: fields.object({
-                src: fields.image({
-                  label: 'Файл изображения',
-                  directory: 'public/images/gallery',
-                  publicPath: '/images/gallery',
-                }),
-                alt: fields.text({ label: 'Альтернативный текст' }),
-                orientation: fields.select({
-                  label: 'Ориентация',
-                  options: [
-                    { label: 'Горизонтальная', value: 'horizontal' },
-                    { label: 'Вертикальная', value: 'vertical' },
-                  ],
-                  defaultValue: 'horizontal',
-                }),
-              }),
-            },
-            marmoset: {
-              label: 'Marmoset Viewer',
-              schema: fields.object({
-                src: fields.file({
-                  label: 'Файл MView',
-                  directory: 'public/marmoset',
-                  publicPath: '/marmoset',
-                  validation: { isRequired: false },
-                }),
-                manualPath: fields.text({
-                  label: 'Ручной путь (если файл не загружен)',
-                  description: 'Введите путь, например /marmoset/file.mview',
-                }),
-                alt: fields.text({ label: 'Альтернативный текст' }),
-                orientation: fields.select({
-                  label: 'Ориентация',
-                  options: [
-                    { label: 'Горизонтальная', value: 'horizontal' },
-                    { label: 'Вертикальная', value: 'vertical' },
-                  ],
-                  defaultValue: 'horizontal',
-                }),
-              }),
-            },
-          },
-          { label: 'Изображения галереи' }
-        ),
       },
     }),
   },

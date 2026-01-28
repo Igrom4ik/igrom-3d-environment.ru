@@ -240,3 +240,37 @@ export interface Gallery extends BasePageConfig {
     orientation: string;
   }>;
 }
+
+export interface MediaItem {
+  discriminant: 'image' | 'gallery';
+  value: {
+    image?: string;
+    images?: string[];
+  };
+}
+
+export interface TeamMember {
+  name: string;
+  role: string;
+  avatar: string;
+  linkedIn?: string;
+}
+
+/**
+ * Metadata for posts/projects
+ */
+export interface Metadata {
+  title: string;
+  subtitle?: string;
+  publishedAt: string;
+  summary?: string;
+  image?: string;
+  cover?: string;
+  images?: string[];
+  media?: MediaItem[];
+  software?: string[];
+  artstation?: string;
+  tag?: string | string[];
+  team?: TeamMember[];
+  link?: string;
+}

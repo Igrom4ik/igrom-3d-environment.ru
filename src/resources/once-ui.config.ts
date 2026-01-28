@@ -19,7 +19,7 @@ const baseURL: string = "https://igrom4ik.github.io/igrom-3d-environment.ru";
 const routes: RoutesConfig = {
   "/": true,
   "/about": true,
-  "/work": true,
+  "/work": false,
   "/blog": true,
   "/gallery": true,
   "/coding": true,

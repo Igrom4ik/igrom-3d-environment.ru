@@ -1,50 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import type { Metadata, MediaItem, TeamMember } from "@/types";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-export type Team = {
-  name: string;
-  role: string;
-  avatar: string;
-  linkedIn: string;
-};
-
-export type Metadata = {
-  title: string;
-  subtitle?: string;
-  publishedAt: string;
-  summary: string;
-  image?: string;
-  cover?: string;
-  images: string[];
-  // biome-ignore lint/suspicious/noExplicitAny: metadata media
-  media?: any[];
-  software?: string[];
-  tags?: string[];
-  artstation?: string;
-  tag?: string;
-  team: Team[];
-  link?: string;
+export const getQueryParam = (
+  param: string | string[] | undefined
+): string | undefined => {
+  if (Array.isArray(param)) {
+    return param[0];
+  }
+  return param;
 };
 
 import { notFound } from "next/navigation";
-
-function getMDXFiles(dir: string) {
-  if (!fs.existsSync(dir)) {
-    console.error(`Directory not found: ${dir}`);
-    return [];
-  }
-
-  return fs
-    .readdirSync(dir)
-    .filter((file) => {
-      const ext = path.extname(file);
-      return ext === ".mdx" || ext === ".mdoc";
-    });
-}
 
 function readMDXFile(filePath: string) {
   if (!fs.existsSync(filePath)) {
@@ -62,23 +32,19 @@ function readMDXFile(filePath: string) {
     );
 
     // Handle new media blocks
-    const media = data.media || [];
+    const media: MediaItem[] = data.media || [];
     if (media.length > 0) {
       if (images.length === 0) {
         images = media
-          // biome-ignore lint/suspicious/noExplicitAny: metadata media
-          .filter((m: any) => m.discriminant === "image")
-          // biome-ignore lint/suspicious/noExplicitAny: metadata media
-          .map((m: any) => {
-            const img = m.value.image;
+          .filter((m) => m.discriminant === "image")
+          .map((m) => {
+            const img = m.value.image || "";
             return img.startsWith("/") ? `${basePath}${img}` : img;
           });
 
         const galleryImages = media
-          // biome-ignore lint/suspicious/noExplicitAny: metadata media
-          .filter((m: any) => m.discriminant === "gallery")
-          // biome-ignore lint/suspicious/noExplicitAny: metadata media
-          .flatMap((m: any) => m.value.images || [])
+          .filter((m) => m.discriminant === "gallery")
+          .flatMap((m) => m.value.images || [])
           .map((img: string) =>
             img.startsWith("/") ? `${basePath}${img}` : img,
           );
@@ -99,9 +65,6 @@ function readMDXFile(filePath: string) {
       cover = images[0];
     }
 
-    // Fallback: if no cover and no images, but media has video/other, maybe try to get something?
-    // For now, let's stick to images.
-
     const metadata: Metadata = {
       title: data.title || "",
       subtitle: data.subtitle || "",
@@ -121,8 +84,7 @@ function readMDXFile(filePath: string) {
       software: data.software || [],
       artstation: data.artstation || "",
       tag: data.tag || [],
-      // biome-ignore lint/suspicious/noExplicitAny: metadata team
-      team: (data.team || []).map((member: any) => ({
+      team: (data.team || []).map((member: TeamMember) => ({
         name: member.name,
         role: member.role,
         avatar: member.avatar.startsWith("/")
@@ -155,17 +117,39 @@ function readMDXFile(filePath: string) {
 }
 
 function getMDXData(dir: string) {
-  const mdxFiles = getMDXFiles(dir);
-  return mdxFiles.map((file) => {
-    const { metadata, content } = readMDXFile(path.join(dir, file));
-    const slug = path.basename(file, path.extname(file));
+  if (!fs.existsSync(dir)) {
+    console.error(`Directory not found: ${dir}`);
+    return [];
+  }
 
-    return {
-      metadata,
-      slug,
-      content,
-    };
-  });
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  
+  return entries
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => {
+      const slug = entry.name;
+      const dirPath = path.join(dir, slug);
+      
+      // Check for index.mdx or index.mdoc
+      let filePath = path.join(dirPath, "index.mdx");
+      if (!fs.existsSync(filePath)) {
+        filePath = path.join(dirPath, "index.mdoc");
+      }
+      
+      if (!fs.existsSync(filePath)) {
+        // Fallback for flat files if mixed structure exists (unlikely given current setup but safe)
+        return null;
+      }
+
+      const { metadata, content } = readMDXFile(filePath);
+
+      return {
+        metadata,
+        slug,
+        content,
+      };
+    })
+    .filter((post): post is NonNullable<typeof post> => post !== null);
 }
 
 export function getPosts(customPath = ["", "", "", ""]) {

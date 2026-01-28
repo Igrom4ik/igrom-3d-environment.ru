@@ -41,8 +41,13 @@ import {
   BlogImageGallery,
   BlogCallout,
   BlogCodeBlock,
-  BlogYoutube
+  BlogYoutube,
+  BlogVideoBlock,
+  BlogSpacer
 } from "@/components/blog/BlogBlocks";
+import { BlogGalleryAlbum } from "@/components/blog/BlogGalleryAlbum";
+
+// Force rebuild
 
 type CustomLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
   href: string;
@@ -246,6 +251,9 @@ const components = {
   'callout': BlogCallout,
   'code-block': BlogCodeBlock,
   'youtube': BlogYoutube,
+  'video': BlogVideoBlock,
+  'spacer': BlogSpacer,
+  'gallery-album': BlogGalleryAlbum,
 };
 
 type CustomMDXProps = MDXRemoteProps & {

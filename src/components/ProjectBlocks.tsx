@@ -27,8 +27,8 @@ interface ImageFullProps {
 export const ImageFull: FC<ImageFullProps> = ({ src, caption }) => {
   if (!src) return null;
   return (
-    <Column fillWidth gap="8" marginBottom="32" horizontal="center">
-      <Media src={src} alt={caption || 'Project Image'} radius="l" style={{ width: '100%' }} />
+    <Column fillWidth gap="8" marginBottom="4" horizontal="center">
+      <Media src={src} alt={caption || 'Project Image'} style={{ width: '100%' }} />
       {caption && (
         <Text variant="body-default-s" onBackground="neutral-weak">
           {caption}
@@ -49,7 +49,7 @@ interface VideoLoopProps {
 export const VideoLoop: FC<VideoLoopProps> = ({ src, autoPlay, muted, loop, caption }) => {
   if (!src) return null;
   return (
-    <Column fillWidth gap="8" marginBottom="32" horizontal="center">
+    <Column fillWidth gap="8" marginBottom="4" horizontal="center">
       <video
         src={src}
         autoPlay={autoPlay}
@@ -57,7 +57,7 @@ export const VideoLoop: FC<VideoLoopProps> = ({ src, autoPlay, muted, loop, capt
         loop={loop}
         playsInline
         controls={!autoPlay}
-        style={{ width: '100%', borderRadius: 'var(--radius-l)' }}
+        style={{ width: '100%', display: 'block' }}
       />
        {caption && (
         <Text variant="body-default-s" onBackground="neutral-weak">
@@ -98,10 +98,10 @@ export const YoutubeEmbed: FC<EmbedProps> = ({ url }) => {
   };
 
   return (
-    <Column fillWidth marginBottom="32" style={{ aspectRatio: '16/9' }}>
+    <Column fillWidth marginBottom="4" style={{ aspectRatio: '16/9' }}>
       <iframe
         src={getEmbedUrl(url)}
-        style={{ width: '100%', height: '100%', border: 0, borderRadius: 'var(--radius-l)' }}
+        style={{ width: '100%', height: '100%', border: 0 }}
         allowFullScreen
         title="Video Embed"
       />
@@ -112,10 +112,10 @@ export const YoutubeEmbed: FC<EmbedProps> = ({ url }) => {
 export const SketchfabEmbed: React.FC<EmbedProps> = ({ url }) => {
     if (!url) return null;
     return (
-        <Column fillWidth marginBottom="32" style={{ aspectRatio: '16/9' }}>
+        <Column fillWidth marginBottom="4" style={{ aspectRatio: '16/9' }}>
             <iframe
                 src={`${url}/embed`}
-                style={{ width: '100%', height: '100%', border: 0, borderRadius: 'var(--radius-l)' }}
+                style={{ width: '100%', height: '100%', border: 0 }}
                 allowFullScreen
                 allow="autoplay; fullscreen; vr"
                 title="Sketchfab Embed"
@@ -145,14 +145,14 @@ export const MarmosetViewer: FC<MarmosetViewerProps> = ({
   )}&autoStart=${autoStart}`;
 
   return (
-    <Column fillWidth marginBottom="32" horizontal="center">
+    <Column fillWidth marginBottom="4" horizontal="center">
       <div style={{ width, height, position: "relative" }}>
         <iframe
           src={viewerPath}
           width="100%"
           height="100%"
           allowFullScreen
-          style={{ border: 0, borderRadius: "var(--radius-l)" }}
+          style={{ border: 0, display: 'block' }}
           title="Marmoset Viewer"
         />
       </div>

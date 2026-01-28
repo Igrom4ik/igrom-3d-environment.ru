@@ -1,0 +1,292 @@
+
+.editorContainer {
+    background-color: #101015; /* Darker background */
+    min-height: 100vh;
+    color: #f4f4f6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    height: 60px;
+    background-color: #0b0b10;
+    border-bottom: 1px solid #282a36;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #9a9cab;
+}
+
+.breadcrumbLink {
+    color: #1e90ff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumbLink:hover {
+    text-decoration: underline;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+.mainContent {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.section {
+    background-color: #181920;
+    border: 1px solid #282a36;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.formGroup {
+    margin-bottom: 24px;
+}
+
+.label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f4f4f6;
+    margin-bottom: 8px;
+}
+
+.input {
+    width: 100%;
+    background-color: #0b0b10;
+    border: 1px solid #282a36;
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    border-color: #1e90ff;
+}
+
+.textarea {
+    width: 100%;
+    background-color: #0b0b10;
+    border: 1px solid #282a36;
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Media Uploader */
+.mediaToolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.mediaButton {
+    background-color: #282a36;
+    border: 1px solid #3a3a45;
+    border-radius: 20px;
+    padding: 8px 16px;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.mediaButton:hover {
+    background-color: #3a3a45;
+    border-color: #1e90ff;
+}
+
+.dragDropZone {
+    border: 2px dashed #3a3a45;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    background-color: #1e2028;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dragDropZone:hover {
+    border-color: #1e90ff;
+    background-color: rgba(30, 144, 255, 0.05);
+}
+
+/* Media Grid */
+.mediaGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.mediaCard {
+    background-color: #252525;
+    border: 1px solid #3a3a45;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.mediaPreview {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.mediaPreview img, .mediaPreview video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.cardControls {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.deleteButton {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: rgba(231, 76, 60, 0.9);
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Categorization */
+.checkboxGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #d1d1d6;
+    cursor: pointer;
+    padding: 8px;
+    background: #1e2028;
+    border-radius: 4px;
+    border: 1px solid transparent;
+}
+
+.checkboxLabel:hover {
+    background: #282a36;
+}
+
+.checkboxInput {
+    accent-color: #1e90ff;
+}
+
+/* Buttons */
+.btnPrimary {
+    background-color: #1e90ff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btnPrimary:hover {
+    background-color: #1670cb;
+}
+
+.btnSecondary {
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid #3a3a45;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btnSecondary:hover {
+    background-color: #282a36;
+}
+
+.btnDanger {
+    background-color: transparent;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btnDanger:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+.badge {
+    background-color: #ffd700;
+    color: #000;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 4px;
+    border-radius: 3px;
+    margin-left: 6px;
+}
