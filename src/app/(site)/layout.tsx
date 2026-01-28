@@ -58,6 +58,17 @@ export default async function RootLayout({
       as="html"
       lang="en"
       fillWidth
+      data-neutral={activeStyle.neutral}
+      data-brand={activeStyle.brand}
+      data-accent={activeStyle.accent}
+      data-border={activeStyle.border}
+      data-theme={activeStyle.theme}
+      data-solid={activeStyle.solid}
+      data-solid-style={activeStyle.solidStyle}
+      data-surface={activeStyle.surface}
+      data-transition={activeStyle.transition}
+      data-scaling={activeStyle.scaling}
+      data-preset={settings?.preset}
       className={classNames(
         fonts.heading.variable,
         fonts.body.variable,

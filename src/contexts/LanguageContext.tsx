@@ -31,6 +31,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       }
     };
     loadMessages();
+    document.documentElement.lang = locale;
   }, [locale]);
 
   const setLocale = (newLocale: Locale) => {
