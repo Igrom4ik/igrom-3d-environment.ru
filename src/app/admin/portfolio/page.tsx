@@ -1,25 +1,24 @@
-import React from 'react';
 import Link from 'next/link';
 import { getAlbums, getSettings } from '@/utils/reader';
 import styles from './portfolio.module.css';
 import { 
-    Search, Bell, MessageCircle, MoreVertical, Folder, Trash, 
-    Eye, Link as LinkIcon, Plus, Heart, MessageSquare, ChevronDown
+    Folder, Trash, Eye, Link as LinkIcon, Plus, ChevronDown
 } from 'lucide-react';
+import PortfolioGrid from './PortfolioGrid';
 
 export default async function PortfolioAdminPage() {
-    const albums = await getAlbums();
-    const settings = await getSettings(); // For avatar if needed, though ArtStation has user avatar
+    const rawAlbums = await getAlbums();
+    const settings = await getSettings();
 
-    // Sort albums by date (newest first) or as needed. Keystatic returns them in file order usually.
-    // We can assume they are sorted or just map them.
-    
-    // Default stats (placeholders as we don't have real analytics yet)
-    const getStats = () => ({
-        views: Math.floor(Math.random() * 1000),
-        likes: Math.floor(Math.random() * 50),
-        comments: Math.floor(Math.random() * 10)
-    });
+    // Sanitize albums for Client Component (remove functions)
+    const albums = rawAlbums.map((album: any) => ({
+        slug: album.slug,
+        entry: {
+            title: album.entry.title,
+            publishing: album.entry.publishing || {},
+            categorization: album.entry.categorization || {},
+        }
+    }));
 
     return (
         <div className={styles.pageContainer}>
@@ -99,75 +98,8 @@ export default async function PortfolioAdminPage() {
                         </div>
                     </div>
 
-                    {/* Filters */}
-                    <div className={styles.filtersRow}>
-                        <div className={styles.filterSelect}>
-                            Any Visibility <ChevronDown size={14} />
-                        </div>
-                        <div className={styles.filterSelect}>
-                            Any Status <ChevronDown size={14} />
-                        </div>
-                        <button type="button" style={{ background: 'none', border: 'none', color: '#1e90ff', cursor: 'pointer', fontSize: '13px' }}>
-                            Select All
-                        </button>
-                    </div>
-
-                    {/* 4. Grid */}
-                    <div className={styles.grid}>
-                        {/* New Project Card */}
-                        <Link href="/admin/portfolio/create" className={styles.newCard}>
-                            <Plus className={styles.plusIcon} />
-                            <span className={styles.newText}>Create New Project</span>
-                        </Link>
-
-                        {/* Project Cards */}
-                        {albums.map((album: any, index: number) => {
-                            const stats = getStats();
-                            return (
-                                <Link 
-                                    key={album.slug} 
-                                    href={`/admin/portfolio/${album.slug}`}
-                                    className={styles.projectCard}
-                                    style={{ animationDelay: `${index * 0.05}s` }}
-                                >
-                                    <div className={styles.cardImageContainer}>
-                                        <div className={styles.selectorCircle}></div>
-                                        {album.entry.publishing?.cover ? (
-                                            <img 
-                                                src={album.entry.publishing.cover} 
-                                                alt={album.entry.title} 
-                                                className={styles.cardImage} 
-                                            />
-                                        ) : (
-                                            <div style={{ width: '100%', height: '100%', background: '#282a36' }} />
-                                        )}
-                                    </div>
-                                    
-                                    <div className={styles.cardMeta}>
-                                        <div className={styles.cardTitle}>{album.entry.title}</div>
-                                        
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <span className={`${styles.statusBadge} ${styles.statusPublished}`}>
-                                                Published
-                                            </span>
-                                            
-                                            <div className={styles.cardStats}>
-                                                <span className={styles.statItem}>
-                                                    <Eye size={12} /> {stats.views}
-                                                </span>
-                                                <span className={styles.statItem}>
-                                                    <Heart size={12} /> {stats.likes}
-                                                </span>
-                                                <span className={styles.statItem}>
-                                                    <MessageSquare size={12} /> {stats.comments}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Link>
-                            );
-                        })}
-                    </div>
+                    {/* Grid */}
+                    <PortfolioGrid albums={albums} />
                 </main>
             </div>
         </div>

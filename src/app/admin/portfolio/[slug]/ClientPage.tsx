@@ -31,6 +31,7 @@ interface MediaItem {
 interface ProjectData {
     title?: string;
     content?: string;
+    description?: string; // Keystatic often stores it here
     categorization?: {
         medium?: string[];
         software?: string[];
@@ -65,12 +66,15 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
 
     const loadProject = async (slug: string) => {
         try {
-            const res = await fetch(`/api/portfolio/get?slug=${slug}`);
+            console.log(`Fetching project for slug: ${slug}`);
+            const res = await fetch(`/api/portfolio/get?slug=${encodeURIComponent(slug)}`);
             if (res.ok) {
                 const data: ProjectData = await res.json();
+                console.log('Project data loaded:', data);
                 
                 setTitle(data.title || '');
-                setDescription(data.content || '');
+                // Handle both 'content' (markdown body) and 'description' (frontmatter field)
+                setDescription(data.description || data.content || '');
                 
                 // Categorization
                 if (data.categorization) {
@@ -94,11 +98,13 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                     setCoverImage(data.publishing.cover || '');
                 }
             } else {
-                console.error('Failed to load project');
+                const errorText = await res.text();
+                console.error(`Failed to load project: ${res.status} ${res.statusText}. Response: ${errorText}`);
+                alert(`Failed to load project: ${res.status}. Check console for details.`);
             }
             setLoading(false); 
         } catch (error) {
-            console.error(error);
+            console.error('Error loading project:', error);
             setLoading(false);
         }
     };

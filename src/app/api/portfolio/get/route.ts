@@ -5,11 +5,12 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import { log } from '@/utils/logger';
 
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-  const slug = req.nextUrl.searchParams.get('slug');
-  log(`API GET /api/portfolio/get called with slug: ${slug}`);
+  const url = new URL(req.url);
+  const slug = url.searchParams.get('slug');
+  log(`API GET /api/portfolio/get called. URL: ${req.url}, Extracted slug: ${slug}`);
   
   try {
     if (!slug) {

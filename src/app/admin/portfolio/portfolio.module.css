@@ -350,16 +350,29 @@
     position: absolute;
     top: 12px;
     right: 12px;
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background: transparent;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.2s;
+    z-index: 10;
+}
+
+.selectorCircleActive {
+    background: #1e90ff;
+    border-color: #1e90ff;
+}
+
+.projectCardSelected {
+    border-color: #1e90ff !important;
+    background-color: rgba(30, 144, 255, 0.05);
 }
 
 .projectCard:hover .selectorCircle {
-    border-color: white;
+    background: rgba(0,0,0,0.5);
 }
 
 .cardMeta {
