@@ -108,6 +108,9 @@ export const GoogleTranslate = () => {
     document.cookie = `googtrans=/${sourceLang}/${langCode}; path=/; domain=${domain}`;
     document.cookie = `googtrans=/${sourceLang}/${langCode}; path=/;`; // For localhost fallback
     
+    // Also save to localStorage for LanguageContext
+    localStorage.setItem('locale', langCode);
+
     setCurrentLang(langCode);
     setIsOpen(false);
     

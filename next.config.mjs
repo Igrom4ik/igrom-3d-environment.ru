@@ -16,12 +16,12 @@ const nextConfig = {
     '*.localhost',
   ],
   output: isProd ? "export" : undefined,
-  basePath: isProd ? "/igrom-3d-environment.ru" : undefined,
+  // basePath: isProd ? "/igrom-3d-environment.ru" : undefined,
   pageExtensions: isProd 
     ? ["ts", "tsx", "md", "mdx"] 
     : ["ts", "tsx", "md", "mdx", "local.ts"],
   env: {
-    NEXT_PUBLIC_BASE_PATH: isProd ? "/igrom-3d-environment.ru" : "",
+    NEXT_PUBLIC_BASE_PATH: "",
   },
   transpilePackages: ["next-mdx-remote"],
   images: {

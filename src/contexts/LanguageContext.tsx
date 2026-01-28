@@ -17,8 +17,30 @@ interface NestedMessages {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
+  const [locale, setLocaleState] = useState<Locale>("ru");
   const [messages, setMessages] = useState<NestedMessages>({});
+
+  useEffect(() => {
+    // Check localStorage and cookie for saved preference
+    let activeLang = localStorage.getItem("locale");
+    
+    if (!activeLang) {
+       const cookies = document.cookie.split(';');
+       const googtrans = cookies.find(c => c.trim().startsWith('googtrans='));
+       if (googtrans) {
+           const val = googtrans.split('=')[1];
+           // googtrans cookie format is typically /source/target or /auto/target
+           const lang = val.split('/').pop();
+           if (lang === 'en' || lang === 'ru') {
+               activeLang = lang;
+           }
+       }
+    }
+
+    if (activeLang && (activeLang === "en" || activeLang === "ru")) {
+      setLocaleState(activeLang as Locale);
+    }
+  }, []);
 
   useEffect(() => {
     // Load messages for current locale
@@ -36,6 +58,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
+    localStorage.setItem("locale", newLocale);
   };
 
   const t = (key: string, params?: Record<string, string>): string => {
