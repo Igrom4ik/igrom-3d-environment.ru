@@ -7,6 +7,7 @@ import { DocumentRenderer } from '@keystatic/core/renderer';
 import { baseURL, gallery, person } from "@/resources";
 import { Meta } from "@once-ui-system/core";
 import { VideoLoop, YoutubeEmbed, SketchfabEmbed, MarmosetViewer, Pano360 } from "@/components/ProjectBlocks";
+import { log } from "@/utils/logger";
 
 // Helper to normalize Marmoset paths
 const normalizeMarmosetFilePath = (file: string) => {
@@ -59,13 +60,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function AlbumPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  log(`Rendering AlbumPage for slug: ${slug}`);
 
   const album = await getAlbum(slug);
   
   if (!album) {
+      log(`Album not found for slug: ${slug}, triggering notFound()`);
       notFound();
   }
 
+  log(`Album found: ${album.title}. Images count: ${album.images?.length || 0}`);
   const description = await album.description();
 
   // ✅ Типизация для изображений (объединение всех типов медиа)
