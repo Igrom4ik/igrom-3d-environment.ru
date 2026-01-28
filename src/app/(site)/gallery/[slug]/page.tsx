@@ -1,5 +1,7 @@
 import { getAlbum, getAlbums } from "@/utils/reader";
 import { notFound } from "next/navigation";
+import fs from 'fs';
+import path from 'path';
 import { Flex, Heading, Column, Button, SmartLink, Grid, Text, Tag, Avatar, Media } from "@once-ui-system/core";
 import { DocumentRenderer } from '@keystatic/core/renderer';
 import { baseURL, gallery, person } from "@/resources";
@@ -22,10 +24,24 @@ const normalizeMarmosetFilePath = (file: string) => {
 
 export async function generateStaticParams() {
   const albums = await getAlbums();
-  return albums.map((album) => ({
+  
+  if (albums.length === 0) {
+      // Fallback: Read directories from src/content/albums
+      const albumsDir = path.join(process.cwd(), 'src/content/albums');
+      if (fs.existsSync(albumsDir)) {
+          const dirs = fs.readdirSync(albumsDir).filter(file => {
+              return fs.statSync(path.join(albumsDir, file)).isDirectory();
+          });
+          return dirs.map(slug => ({ slug }));
+      }
+  }
+
+  return albums.map((album: { slug: string }) => ({
     slug: album.slug,
   }));
 }
+
+export const dynamicParams = false;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

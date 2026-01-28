@@ -30,8 +30,7 @@ type Post = {
 };
 
 // For preview, we might not need static params if it's purely for dev/preview
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const dynamic = 'force-static';
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);

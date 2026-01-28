@@ -24,7 +24,7 @@ export default async function Gallery() {
   const description = settings?.description || gallery.description;
 
   // Extract all unique tags
-  const allTags = Array.from(new Set(albums.flatMap(album => album.entry.categorization?.tags || []))).sort();
+  const allTags = Array.from(new Set(albums.flatMap((album: any) => album.entry.categorization?.tags || []))).sort() as string[];
   
   return (
     <Flex maxWidth="l" direction="column" gap="32" fillWidth>
@@ -83,7 +83,7 @@ export default async function Gallery() {
 
               {albums.length > 0 ? (
                   <Grid columns="3" m={{columns: 2}} s={{columns: 1}} gap="16">
-                    {albums.map((album) => (
+                    {albums.map((album: any) => (
                         <SmartLink key={album.slug} href={`/gallery/${album.slug}`} style={{ display: 'block' }}>
                             <Column 
                                 fillWidth 

@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPosts } from '@/utils/utils';
 
+export async function generateStaticParams() {
+  const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
+export const dynamicParams = false;
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }

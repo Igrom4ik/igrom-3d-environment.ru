@@ -7,7 +7,7 @@ export const BlogGalleryAlbum = async ({ album }: { album: string }) => {
     const data = await getAlbum(album);
     if (!data) return null;
 
-    const images = (data.images || []).map((img) => {
+    const images = (data.images || []).map((img: any) => {
          if (img.discriminant === 'image') return img.value.src;
          return null;
     }).filter(Boolean) as string[];

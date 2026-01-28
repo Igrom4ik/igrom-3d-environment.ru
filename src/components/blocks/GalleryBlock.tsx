@@ -18,11 +18,11 @@ export async function GalleryBlock({ data }: GalleryBlockProps) {
   const albums = await getAlbums();
   
   // Map albums to GalleryImage format using cover
-  const albumImages: GalleryImage[] = albums.map((album) => ({
+  const albumImages: GalleryImage[] = albums.map((album: any) => ({
     src: album.entry.publishing.cover || '',
     alt: album.entry.title || '',
     orientation: 'horizontal' as Orientation, // Covers are usually horizontal or we default to it
-  })).filter(img => !!img.src);
+  })).filter((img: GalleryImage) => !!img.src);
 
   // Use CMS albums or fallback to resource images
   const allImages: GalleryImage[] = albumImages.length > 0 

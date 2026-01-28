@@ -121,7 +121,7 @@ export default async function PortfolioAdminPage() {
                         </Link>
 
                         {/* Project Cards */}
-                        {albums.map((album, index) => {
+                        {albums.map((album: any, index: number) => {
                             const stats = getStats();
                             return (
                                 <Link 

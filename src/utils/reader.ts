@@ -1,5 +1,8 @@
 import { createReader } from '@keystatic/core/reader';
 import keystaticConfig from '../../keystatic.config';
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
 
 const reader = createReader(process.cwd(), keystaticConfig);
 
@@ -61,8 +64,38 @@ export async function getTelegramSettings() {
 export async function getAlbums() {
   try {
     const albums = await reader.collections.albums.all();
-    console.log(`[getAlbums] Found ${albums.length} albums:`, albums.map(a => a.slug));
-    return albums;
+    if (albums.length > 0) {
+        return albums;
+    }
+    
+    // Fallback: Read from filesystem
+    const albumsDir = path.join(process.cwd(), 'src/content/albums');
+    if (!fs.existsSync(albumsDir)) return [];
+    
+    const dirs = fs.readdirSync(albumsDir).filter(file => 
+        fs.statSync(path.join(albumsDir, file)).isDirectory()
+    );
+    
+    const fallbackAlbums = dirs.map(slug => {
+        const indexPath = path.join(albumsDir, slug, 'index.mdoc');
+        if (fs.existsSync(indexPath)) {
+            const fileContent = fs.readFileSync(indexPath, 'utf-8');
+            const { data } = matter(fileContent);
+            return {
+                slug,
+                entry: {
+                    title: data.title || slug,
+                    description: () => Promise.resolve([]), // Placeholder for list view
+                    images: data.images || [],
+                    categorization: data.categorization,
+                    publishing: data.publishing
+                }
+            };
+        }
+        return null;
+    }).filter(a => a !== null);
+
+    return fallbackAlbums as any;
   } catch (error) {
     console.error("Failed to read albums:", error);
     return [];
@@ -71,26 +104,45 @@ export async function getAlbums() {
 
 export async function getAlbum(slug: string) {
   try {
-    console.log(`[getAlbum] detailed lookup for slug: '${slug}'`);
     const album = await reader.collections.albums.read(slug);
     if (album) {
-        console.log(`[getAlbum] Found via read(${slug})`);
         return album;
     }
     
-    console.log(`[getAlbum] Not found via read(${slug}), trying all() fallback`);
-    const all = await reader.collections.albums.all();
-    console.log(`[getAlbum] Available slugs:`, all.map(a => a.slug));
-    
-    const found = all.find(a => a.slug === slug)?.entry;
-    if (found) {
-        console.log(`[getAlbum] Found via fallback search`);
-    } else {
-        console.log(`[getAlbum] Not found via fallback search`);
+    // Fallback: Read from filesystem
+    const indexPath = path.join(process.cwd(), 'src/content/albums', slug, 'index.mdoc');
+    if (fs.existsSync(indexPath)) {
+        const fileContent = fs.readFileSync(indexPath, 'utf-8');
+        const { data, content } = matter(fileContent);
+        
+        // Mock Keystatic AST for description
+        const descriptionAST = [
+            {
+                type: 'paragraph',
+                children: [{ text: content || '' }]
+            }
+        ];
+
+        return {
+            title: data.title || slug,
+            description: () => Promise.resolve(descriptionAST),
+            images: data.images || [],
+            categorization: data.categorization,
+            publishing: data.publishing
+        } as any;
     }
-    return found || null;
+    
+    return null;
   } catch (error) {
     console.error(`Failed to read album ${slug}:`, error);
     return null;
   }
+}
+
+export function getPosts(pathArr: string[]) {
+    // Helper to get posts for other collections if needed
+    // The original code used a custom getPosts helper, likely from utils.ts
+    // Wait, getPosts is imported from @/utils/utils in page.tsx
+    // This file is reader.ts, usually for Keystatic reader.
+    return []; 
 }
