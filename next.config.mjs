@@ -15,7 +15,7 @@ const nextConfig = {
     '127.0.0.1',
     '*.localhost',
   ],
-  output: isProd ? "export" : undefined,
+  // output: isProd ? "export" : undefined,
   // basePath: isProd ? "/igrom-3d-environment.ru" : undefined,
   pageExtensions: isProd 
     ? ["ts", "tsx", "md", "mdx"] 
