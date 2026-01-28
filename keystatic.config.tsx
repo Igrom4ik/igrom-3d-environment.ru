@@ -25,26 +25,113 @@ export default config({
       path: 'src/app/(site)/blog/posts/*',
       slugField: 'title',
       format: { contentField: 'content' },
-      previewUrl: '/blog/{slug}',
+      previewUrl: '/preview/post/{slug}',
       entryLayout: 'content',
       schema: {
+        // Metadata
         title: fields.slug({ name: { label: 'Заголовок' } }),
-        summary: fields.text({ label: 'Краткое описание', multiline: true, description: 'Краткое описание для карточки блога.' }),
+        slug: fields.text({ label: 'Slug', description: 'Оставьте пустым для генерации из заголовка', validation: { length: { min: 0 } } }), // Optional manual slug override if needed, but slug() handles it. Wait, fields.slug handles the slug.
         publishedAt: fields.date({ label: 'Дата публикации' }),
         tag: fields.text({ label: 'Тег' }),
+        
+        // Hero
+        summary: fields.text({ label: 'Краткое описание (Summary)', multiline: true, description: 'Для карточки блога.' }),
         image: fields.image({
-          label: 'Обложка',
+          label: 'Обложка (Cover Image)',
           directory: 'public/images/blog',
           publicPath: '/images/blog',
         }),
+
+        // Content
         content: fields.document({
           label: 'Содержание',
           formatting: true,
           dividers: true,
           links: true,
+          layouts: [
+            [1],
+            [1, 1], // 2 columns
+          ],
           images: {
             directory: 'public/images/blog/content',
             publicPath: '/images/blog/content',
+          },
+          componentBlocks: {
+            'image-gallery': component({
+                label: 'Галерея изображений',
+                schema: {
+                    images: fields.array(
+                        fields.image({
+                            label: 'Изображение',
+                            directory: 'public/images/blog/content',
+                            publicPath: '/images/blog/content',
+                        }),
+                        { label: 'Изображения' }
+                    ),
+                    columns: fields.select({
+                        label: 'Колонки',
+                        options: [
+                            { label: '2', value: '2' },
+                            { label: '3', value: '3' },
+                            { label: '4', value: '4' },
+                        ],
+                        defaultValue: '2'
+                    }),
+                },
+                preview: (props) => (
+                    <div style={{ padding: '10px', border: '1px solid #ccc' }}>
+                        <strong>Галерея:</strong> {props.fields.images.elements.length} изображений
+                    </div>
+                )
+            }),
+            'callout': component({
+                label: 'Callout / Заметка',
+                schema: {
+                    type: fields.select({
+                        label: 'Тип',
+                        options: [
+                            { label: 'Info', value: 'info' },
+                            { label: 'Warning', value: 'warning' },
+                            { label: 'Error', value: 'error' },
+                            { label: 'Success', value: 'success' },
+                        ],
+                        defaultValue: 'info'
+                    }),
+                    title: fields.text({ label: 'Заголовок' }),
+                    content: fields.text({ label: 'Текст', multiline: true }),
+                },
+                preview: (props) => (
+                    <div style={{ padding: '10px', background: '#f5f5f5', borderLeft: '4px solid #333' }}>
+                        <strong>{props.fields.title.value || 'Callout'}</strong>
+                        <div>{props.fields.content.value}</div>
+                    </div>
+                )
+            }),
+            'code-block': component({
+                label: 'Код',
+                schema: {
+                    code: fields.text({ label: 'Код', multiline: true }),
+                    language: fields.text({ label: 'Язык', defaultValue: 'typescript' }),
+                    label: fields.text({ label: 'Заголовок (файл)' }),
+                },
+                preview: (props) => (
+                    <div style={{ background: '#222', color: '#fff', padding: '10px', borderRadius: '4px' }}>
+                        <div style={{ fontSize: '12px', opacity: 0.7 }}>{props.fields.language.value}</div>
+                        <pre style={{ margin: 0 }}>{props.fields.code.value?.slice(0, 50)}...</pre>
+                    </div>
+                )
+            }),
+            'youtube': component({
+                label: 'YouTube',
+                schema: {
+                    url: fields.text({ label: 'Ссылка' }),
+                },
+                preview: (props) => (
+                    <div style={{ padding: '10px', background: '#ffebeb', borderRadius: '4px' }}>
+                        <strong>YouTube:</strong> {props.fields.url.value}
+                    </div>
+                )
+            })
           },
         }),
       },

@@ -1,6 +1,6 @@
-import { PageBuilder } from "@/components/PageBuilder";
-import type { PageBlock } from "@/components/PageBuilder";
-import { getBlogSettings, getHomeSettings, getWorkSettings } from "@/utils/reader";
+import { PageBuilder } from "../../../components/PageBuilder";
+import type { PageBlock } from "../../../components/PageBuilder";
+import { getBlogSettings, getHomeSettings, getWorkSettings } from "../../../utils/reader";
 import { Column } from "@once-ui-system/core";
 import About from "../../(site)/about/page";
 import Gallery from "../../(site)/gallery/page";

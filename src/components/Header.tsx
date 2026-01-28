@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Fade, Flex, Line, Row, ToggleButton } from "@once-ui-system/core";
+import { Fade, Flex, Line, Row, ToggleButton, Text } from "@once-ui-system/core";
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { display, person, routes } from "@/resources";
@@ -16,14 +16,13 @@ type TimeDisplayProps = {
   locale?: string; // Optionally allow locale, defaulting to 'en-GB'
 };
 
-const TimeDisplay: React.FC<TimeDisplayProps> = ({ timeZone, locale = "en-GB" }) => {
+const TimeDisplay: React.FC<TimeDisplayProps> = ({ timeZone, locale = "ru-RU" }) => {
   const [currentTime, setCurrentTime] = useState("");
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
       const options: Intl.DateTimeFormatOptions = {
-        timeZone,
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
@@ -37,9 +36,28 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ timeZone, locale = "en-GB" })
     const intervalId = setInterval(updateTime, 1000);
 
     return () => clearInterval(intervalId);
-  }, [timeZone, locale]);
+  }, [locale]);
 
   return <>{currentTime}</>;
+};
+
+const LocationDisplay: React.FC = () => {
+  const [location, setLocation] = useState("");
+
+  useEffect(() => {
+    try {
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (timeZone) {
+        const city = timeZone.split("/").pop()?.replace(/_/g, " ") || "";
+        setLocation(city);
+      }
+    } catch (e) {
+      console.error("Failed to detect location", e);
+    }
+  }, []);
+
+  if (!location) return null;
+  return <>{location}</>;
 };
 
 export default TimeDisplay;
@@ -48,6 +66,11 @@ export const Header = ({ preset }: { preset?: string }) => {
   const pathname = usePathname() ?? "";
   const { t } = useLanguage();
   const isLiquid = preset === 'ios-liquid-glass';
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
 
   return (
     <>
@@ -80,7 +103,7 @@ export const Header = ({ preset }: { preset?: string }) => {
         }}
       >
         <Row paddingLeft="12" fillWidth vertical="center" textVariant="body-default-s">
-          {display.location && <Row s={{ hide: true }}>{person.location}</Row>}
+          {display.location && <Row s={{ hide: true }}><LocationDisplay /></Row>}
         </Row>
         <Row fillWidth horizontal="center">
           <Row
@@ -94,110 +117,68 @@ export const Header = ({ preset }: { preset?: string }) => {
             zIndex={1}
           >
             <Row gap="4" vertical="center" textVariant="body-default-s" suppressHydrationWarning>
-              {routes["/"] && (
-                <ToggleButton prefixIcon="home" href="/" selected={pathname === "/"} />
-              )}
-              <Line background="neutral-alpha-medium" vert maxHeight="24" />
-              {routes["/about"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                  className={styles.navItem}
-                  prefixIcon="person"
-                  href="/about"
-                  label={t("nav.about")}
-                  selected={pathname === "/about"}
+              {/* Desktop Navigation */}
+              <Row s={{ hide: true }} vertical="center" gap="4">
+                {routes["/"] && (
+                  <ToggleButton prefixIcon="home" href="/" selected={pathname === "/"} />
+                )}
+                <Line background="neutral-alpha-medium" vert maxHeight="24" />
+                {routes["/about"] && (
+                  <ToggleButton
+                    className={styles.navItem}
+                    prefixIcon="person"
+                    href="/about"
+                    label={t("nav.about")}
+                    selected={pathname === "/about"}
+                  />
+                )}
+                {routes["/work"] && (
+                  <ToggleButton
+                    className={styles.navItem}
+                    prefixIcon="grid"
+                    href="/work"
+                    label={t("nav.work")}
+                    selected={pathname.startsWith("/work")}
+                  />
+                )}
+                {routes["/blog"] && (
+                  <ToggleButton
+                    className={styles.navItem}
+                    prefixIcon="book"
+                    href="/blog"
+                    label={t("nav.blog")}
+                    selected={pathname.startsWith("/blog")}
+                  />
+                )}
+                {routes["/gallery"] && (
+                  <ToggleButton
+                    className={styles.navItem}
+                    prefixIcon="gallery"
+                    href="/gallery"
+                    label={t("nav.gallery")}
+                    selected={pathname.startsWith("/gallery")}
+                  />
+                )}
+                {routes["/coding"] && (
+                  <ToggleButton
+                    className={styles.navItem}
+                    prefixIcon="terminal"
+                    href="/coding"
+                    label={t("nav.coding")}
+                    selected={pathname.startsWith("/coding")}
+                  />
+                )}
+              </Row>
+
+              {/* Mobile Navigation Trigger */}
+              <Row hide s={{ hide: false }}>
+                <ToggleButton 
+                  prefixIcon="menu" 
+                  onClick={() => setIsMobileMenuOpen(true)} 
+                  selected={isMobileMenuOpen}
                 />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="person"
-                      href="/about"
-                      selected={pathname === "/about"}
-                    />
-                  </Row>
-                </>
-              )}
-              {routes["/work"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                  className={styles.navItem}
-                  prefixIcon="grid"
-                  href="/work"
-                  label={t("nav.work")}
-                  selected={pathname.startsWith("/work")}
-                />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="grid"
-                      href="/work"
-                      selected={pathname.startsWith("/work")}
-                    />
-                  </Row>
-                </>
-              )}
-              {routes["/blog"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                  className={styles.navItem}
-                  prefixIcon="book"
-                  href="/blog"
-                  label={t("nav.blog")}
-                  selected={pathname.startsWith("/blog")}
-                />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="book"
-                      href="/blog"
-                      selected={pathname.startsWith("/blog")}
-                    />
-                  </Row>
-                </>
-              )}
-              {routes["/gallery"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                  className={styles.navItem}
-                  prefixIcon="gallery"
-                  href="/gallery"
-                  label={t("nav.gallery")}
-                  selected={pathname.startsWith("/gallery")}
-                />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="gallery"
-                      href="/gallery"
-                      selected={pathname.startsWith("/gallery")}
-                    />
-                  </Row>
-                </>
-              )}
-              {routes["/coding"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                  className={styles.navItem}
-                  prefixIcon="terminal"
-                  href="/coding"
-                  label={t("nav.coding")}
-                  selected={pathname.startsWith("/coding")}
-                />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="terminal"
-                      href="/coding"
-                      selected={pathname.startsWith("/coding")}
-                    />
-                  </Row>
-                </>
-              )}
+              </Row>
+
               {display.themeSwitcher && (
                 <>
                   <Line background="neutral-alpha-medium" vert maxHeight="24" />
@@ -223,6 +204,96 @@ export const Header = ({ preset }: { preset?: string }) => {
           </Flex>
         </Flex>
       </Row>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <Flex
+          position="fixed"
+          zIndex={9}
+            fillWidth
+          fillHeight
+          background="page"
+          padding="24"
+          direction="column"
+          gap="32"
+          style={{ top: 0, left: 0, bottom: 0, right: 0 }}
+        >
+          <Row fillWidth horizontal="end">
+            <ToggleButton 
+              prefixIcon="close" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+            />
+          </Row>
+          <Flex direction="column" gap="16" fillWidth vertical="center">
+            {routes["/"] && (
+              <ToggleButton 
+                prefixIcon="home" 
+                href="/" 
+                label={t("nav.home") || "Home"} 
+                selected={pathname === "/"} 
+                fillWidth
+              />
+            )}
+            {routes["/about"] && (
+              <ToggleButton
+                prefixIcon="person"
+                href="/about"
+                label={t("nav.about")}
+                selected={pathname === "/about"}
+                fillWidth
+              />
+            )}
+            {routes["/work"] && (
+              <ToggleButton
+                prefixIcon="grid"
+                href="/work"
+                label={t("nav.work")}
+                selected={pathname.startsWith("/work")}
+                fillWidth
+              />
+            )}
+            {routes["/blog"] && (
+              <ToggleButton
+                prefixIcon="book"
+                href="/blog"
+                label={t("nav.blog")}
+                selected={pathname.startsWith("/blog")}
+                fillWidth
+              />
+            )}
+            {routes["/gallery"] && (
+              <ToggleButton
+                prefixIcon="gallery"
+                href="/gallery"
+                label={t("nav.gallery")}
+                selected={pathname.startsWith("/gallery")}
+                fillWidth
+              />
+            )}
+            {routes["/coding"] && (
+              <ToggleButton
+                prefixIcon="terminal"
+                href="/coding"
+                label={t("nav.coding")}
+                selected={pathname.startsWith("/coding")}
+                fillWidth
+              />
+            )}
+          </Flex>
+          <Flex direction="column" gap="16" fillWidth vertical="center" marginTop="m">
+            {display.time && (
+               <Text variant="body-default-s" onBackground="neutral-weak">
+                 <TimeDisplay timeZone={person.timeZone} />
+               </Text>
+            )}
+            {display.location && (
+               <Text variant="body-default-s" onBackground="neutral-weak">
+                 <LocationDisplay />
+               </Text>
+            )}
+          </Flex>
+        </Flex>
+      )}
     </>
   );
 };

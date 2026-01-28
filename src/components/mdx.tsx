@@ -37,6 +37,13 @@ import {
   ComparisonSlider 
 } from "./ProjectBlocks";
 
+import {
+  BlogImageGallery,
+  BlogCallout,
+  BlogCodeBlock,
+  BlogYoutube
+} from "@/components/blog/BlogBlocks";
+
 type CustomLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
   href: string;
   children: ReactNode;
@@ -234,6 +241,11 @@ const components = {
   'youtube-embed': YoutubeEmbed,
   'sketchfab-embed': SketchfabEmbed,
   'comparison-slider': ComparisonSlider,
+  // Blog Blocks
+  'image-gallery': BlogImageGallery,
+  'callout': BlogCallout,
+  'code-block': BlogCodeBlock,
+  'youtube': BlogYoutube,
 };
 
 type CustomMDXProps = MDXRemoteProps & {
