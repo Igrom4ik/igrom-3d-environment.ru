@@ -19,6 +19,7 @@ const nextConfig = {
   output: isProd ? 'export' : undefined,
   basePath: isGitHubPages ? '/igrom-3d-environment.ru' : '',
   trailingSlash: true,
+  skipTrailingSlashRedirect: true,
   pageExtensions: isProd 
     ? ["ts", "tsx", "md", "mdx"] 
     : ["ts", "tsx", "md", "mdx", "local.ts"],

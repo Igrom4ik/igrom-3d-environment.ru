@@ -86,6 +86,7 @@ function MarmosetViewerContent() {
     <>
       <Script 
         src={`${basePath}/marmoset/marmoset.js`} 
+        strategy="beforeInteractive"
         onLoad={() => setScriptLoaded(true)}
       />
       <div id="marmoset-viewer" ref={containerRef} style={{ width: '100vw', height: '100vh' }} />
