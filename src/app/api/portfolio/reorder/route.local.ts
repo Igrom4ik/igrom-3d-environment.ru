@@ -20,32 +20,41 @@ export async function POST(req: Request) {
             
             // Find the file (support potential casing issues, though usually lowercase)
             let dirPath = path.join(albumsDir, slug);
-            if (!fs.existsSync(dirPath)) {
-                // Try to find case-insensitive
+            let targetFile = null;
+
+            // Check for folder with index.mdoc
+            if (fs.existsSync(dirPath) && fs.existsSync(path.join(dirPath, 'index.mdoc'))) {
+                targetFile = path.join(dirPath, 'index.mdoc');
+            } 
+            // Check for flat .mdoc file
+            else if (fs.existsSync(path.join(albumsDir, `${slug}.mdoc`))) {
+                targetFile = path.join(albumsDir, `${slug}.mdoc`);
+            }
+            // Check for case-insensitive folder match
+            else if (!fs.existsSync(dirPath)) {
                 const dirs = fs.readdirSync(albumsDir);
                 const match = dirs.find(d => d.toLowerCase() === slug.toLowerCase());
                 if (match) {
-                    dirPath = path.join(albumsDir, match);
-                } else {
-                    console.warn(`Album not found for reordering: ${slug}`);
-                    continue;
+                    const matchPath = path.join(albumsDir, match);
+                    if (fs.existsSync(path.join(matchPath, 'index.mdoc'))) {
+                        targetFile = path.join(matchPath, 'index.mdoc');
+                    }
                 }
             }
 
-            const filePath = path.join(dirPath, 'index.mdoc');
-            if (fs.existsSync(filePath)) {
-                const fileContent = fs.readFileSync(filePath, 'utf-8');
+            if (targetFile) {
+                const fileContent = fs.readFileSync(targetFile, 'utf-8');
                 const { data, content } = matter(fileContent);
 
                 // Update priority
                 data.priority = priority;
 
                 // Stringify back
-                // Note: gray-matter stringify might change formatting slightly, but it's usually fine.
-                // We need to ensure we don't lose other fields.
                 const newFileContent = matter.stringify(content, data);
                 
-                fs.writeFileSync(filePath, newFileContent);
+                fs.writeFileSync(targetFile, newFileContent);
+            } else {
+                console.warn(`Album not found for reordering: ${slug}`);
             }
         }
 

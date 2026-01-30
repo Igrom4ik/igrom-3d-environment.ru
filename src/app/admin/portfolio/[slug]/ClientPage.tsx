@@ -420,12 +420,19 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                 </div>
                 <div className={styles.actions}>
                     <button 
+                        type="button"
                         className={styles.btnSecondary}
-                        onClick={() => window.open(`/gallery/${slug}`, '_blank')}
+                        onClick={() => {
+                            if (slug && slug !== 'create') {
+                                window.open(`/gallery/${slug}`, '_blank');
+                            } else {
+                                alert('Please save the project first to preview.');
+                            }
+                        }}
                     >
                         Preview
                     </button>
-                    <button className={styles.btnPrimary} onClick={handleSave} disabled={saving}>
+                    <button type="button" className={styles.btnPrimary} onClick={handleSave} disabled={saving}>
                         {saving ? 'Saving...' : 'Publish'}
                     </button>
                 </div>
