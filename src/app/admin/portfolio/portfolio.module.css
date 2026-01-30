@@ -321,10 +321,10 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    /* Restored transition for smooth hover, dnd-kit overrides this inline during drag */
     transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     text-decoration: none;
-    animation: fadeInUp 0.3s ease-out;
-    animation-fill-mode: both;
+    /* Removed animation to prevent jerky behavior during drag */
 }
 
 .projectCard:hover {
