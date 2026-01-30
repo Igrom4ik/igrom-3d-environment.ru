@@ -17,19 +17,24 @@ function MarmosetViewerContent() {
 
   // Check if marmoset is already on window
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).marmoset) {
-      setScriptLoaded(true);
-    }
+    const checkMarmoset = setInterval(() => {
+        if (typeof window !== 'undefined' && (window as any).marmoset) {
+            setScriptLoaded(true);
+            clearInterval(checkMarmoset);
+        }
+    }, 100);
+    return () => clearInterval(checkMarmoset);
   }, []);
 
   useEffect(() => {
     // Add a small delay to ensure DOM is ready and script is fully processed
     const timer = setTimeout(() => {
-        if (!scriptLoaded || !file || !containerRef.current || viewerRef.current) return;
+        if (!file || !containerRef.current || viewerRef.current) return;
 
         const marmoset = (window as any).marmoset;
         if (!marmoset) {
-            console.error("Marmoset object not found on window");
+            console.warn("Marmoset object not found on window, waiting...");
+            // If scriptLoaded is true but marmoset is missing, we might need to retry
             return;
         }
         
@@ -86,7 +91,7 @@ function MarmosetViewerContent() {
     <>
       <Script 
         src={`${basePath}/marmoset/marmoset.js`} 
-        strategy="beforeInteractive"
+        strategy="afterInteractive"
         onLoad={() => setScriptLoaded(true)}
       />
       <div id="marmoset-viewer" ref={containerRef} style={{ width: '100vw', height: '100vh' }} />
