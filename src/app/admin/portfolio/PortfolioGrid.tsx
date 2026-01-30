@@ -4,22 +4,89 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './portfolio.module.css';
 import { 
-    Eye, Heart, MessageSquare, Plus, Trash2, CheckCircle2, Circle
+    Eye, Heart, MessageSquare, Plus, Trash2, CheckCircle2, Circle, GripVertical
 } from 'lucide-react';
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { supabase } from '@/utils/supabase';
 
 interface PortfolioGridProps {
     albums: any[];
 }
 
-export default function PortfolioGrid({ albums }: PortfolioGridProps) {
-    const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
-
-    // Default stats (placeholders)
-    const getStats = () => ({
-        views: Math.floor(Math.random() * 1000),
-        likes: Math.floor(Math.random() * 50),
-        comments: Math.floor(Math.random() * 10)
+export default function PortfolioGrid({ albums: initialAlbums }: PortfolioGridProps) {
+    // Initialize sorted albums
+    const [albums, setAlbums] = useState<any[]>(() => {
+        return [...initialAlbums].sort((a, b) => (a.entry.priority || 0) - (b.entry.priority || 0));
     });
+
+    const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
+    
+    // Stats cache
+    const [stats, setStats] = useState<Record<string, { views: number, likes: number, comments: number }>>({});
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8, // Require movement of 8px to start drag (prevents accidental drags on click)
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    // Fetch stats on mount
+    useEffect(() => {
+        const fetchStats = async () => {
+            const newStats: Record<string, any> = {};
+            
+            // We'll fetch one by one for now as it's an admin panel with limited items
+            // Optimally, we would use a Supabase RPC or view for grouped counts
+            for (const album of initialAlbums) {
+                const slug = album.slug;
+                
+                // Likes
+                const { count: likesCount } = await supabase
+                    .from('likes')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('project_slug', slug);
+
+                // Comments
+                const { count: commentsCount } = await supabase
+                    .from('comments')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('project_slug', slug);
+
+                // Views - currently not tracked in DB, using 0
+                // If you have a 'views' table, add similar logic here
+                
+                newStats[slug] = {
+                    views: 0, 
+                    likes: likesCount || 0,
+                    comments: commentsCount || 0
+                };
+            }
+            setStats(newStats);
+        };
+        
+        fetchStats();
+    }, [initialAlbums]);
 
     const toggleSelection = (e: React.MouseEvent, slug: string) => {
         e.preventDefault();
@@ -53,7 +120,6 @@ export default function PortfolioGrid({ albums }: PortfolioGridProps) {
             if (res.ok) {
                 const data = await res.json();
                 alert(`Successfully deleted ${data.deleted.length} project(s).`);
-                // Refresh page or update state
                 window.location.reload();
             } else {
                 const error = await res.json();
@@ -62,6 +128,35 @@ export default function PortfolioGrid({ albums }: PortfolioGridProps) {
         } catch (error) {
             console.error('Delete error:', error);
             alert('Error deleting projects.');
+        }
+    };
+
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            setAlbums((items) => {
+                const oldIndex = items.findIndex((item) => item.slug === active.id);
+                const newIndex = items.findIndex((item) => item.slug === over.id);
+                
+                const newOrder = arrayMove(items, oldIndex, newIndex);
+                
+                // Update priorities in background
+                // We assign priority based on index * 10 to allow future insertions
+                const updates = newOrder.map((item, index) => ({
+                    slug: item.slug,
+                    priority: index * 10
+                }));
+
+                // Call API to save order
+                fetch('/api/portfolio/reorder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: updates })
+                }).catch(err => console.error("Failed to save order:", err));
+
+                return newOrder;
+            });
         }
     };
 
@@ -109,104 +204,132 @@ export default function PortfolioGrid({ albums }: PortfolioGridProps) {
                 </div>
             </div>
 
-            <div className={styles.grid}>
-                {/* New Project Card */}
-                <Link href="/admin/portfolio/create" className={styles.newCard}>
-                    <Plus className={styles.plusIcon} />
-                    <span className={styles.newText}>Create New Project</span>
-                </Link>
+            <DndContext 
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+            >
+                <div className={styles.grid}>
+                    {/* New Project Card */}
+                    <Link href="/admin/portfolio/create" className={styles.newCard}>
+                        <Plus className={styles.plusIcon} />
+                        <span className={styles.newText}>Create New Project</span>
+                    </Link>
 
-                {/* Project Cards */}
-                {albums.map((album: any, index: number) => {
-                    const isSelected = selectedSlugs.includes(album.slug);
-                    
-                    return (
-                        <div 
-                            key={album.slug} 
-                            className={`${styles.projectCard} ${isSelected ? styles.projectCardSelected : ''}`}
-                            style={{ animationDelay: `${index * 0.05}s` }}
-                        >
-                            <div className={styles.cardImageContainer}>
-                                <div 
-                                    className={`${styles.selectorCircle} ${isSelected ? styles.selectorCircleActive : ''}`}
-                                    onClick={(e) => toggleSelection(e, album.slug)}
-                                >
-                                    {isSelected ? <CheckCircle2 size={16} color="#fff" fill="#1e90ff" /> : <Circle size={16} color="rgba(255,255,255,0.5)" />}
-                                </div>
-                                <Link href={`/admin/portfolio/${album.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
-                                    {album.entry.publishing?.cover ? (
-                                        <img 
-                                            src={album.entry.publishing.cover} 
-                                            alt={album.entry.title} 
-                                            className={styles.cardImage} 
-                                        />
-                                    ) : (
-                                        <div style={{ width: '100%', height: '100%', background: '#282a36', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Circle size={40} color="#3a3a45" />
-                                        </div>
-                                    )}
-                                </Link>
-                            </div>
-                            
-                            <Link href={`/admin/portfolio/${album.slug}`} className={styles.cardMeta} style={{ textDecoration: 'none' }}>
-                                <div className={styles.cardTitle}>{album.entry.title}</div>
-                                
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span className={`${styles.statusBadge} ${styles.statusPublished}`}>
-                                        Published
-                                    </span>
-                                    
-                                    <ProjectStats />
-                                </div>
-                            </Link>
-                        </div>
-                    );
-                })}
-            </div>
+                    <SortableContext 
+                        items={albums.map(a => a.slug)}
+                        strategy={rectSortingStrategy}
+                    >
+                        {albums.map((album) => (
+                            <SortableAlbumCard
+                                key={album.slug}
+                                album={album}
+                                isSelected={selectedSlugs.includes(album.slug)}
+                                toggleSelection={toggleSelection}
+                                stats={stats[album.slug]}
+                            />
+                        ))}
+                    </SortableContext>
+                </div>
+            </DndContext>
         </>
     );
 }
 
-function ProjectStats() {
-    const [stats, setStats] = useState({ views: 0, likes: 0, comments: 0 });
-    const [mounted, setMounted] = useState(false);
+// Separate component for Sortable Item
+function SortableAlbumCard({ album, isSelected, toggleSelection, stats }: any) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: album.slug });
 
-    useEffect(() => {
-        setMounted(true);
-        setStats({
-            views: Math.floor(Math.random() * 1000),
-            likes: Math.floor(Math.random() * 50),
-            comments: Math.floor(Math.random() * 10)
-        });
-    }, []);
-
-    if (!mounted) {
-        return (
-             <div className={styles.cardStats}>
-                <span className={styles.statItem}>
-                    <Eye size={12} /> 0
-                </span>
-                <span className={styles.statItem}>
-                    <Heart size={12} /> 0
-                </span>
-                <span className={styles.statItem}>
-                    <MessageSquare size={12} /> 0
-                </span>
-            </div>
-        );
-    }
+    const style = {
+        transform: CSS.Translate.toString(transform),
+        // If dragging, kill transition to prevent CSS interference (no lag).
+        // If swapping (transition exists), use it.
+        // Otherwise (idle), let CSS hover effects apply.
+        transition: isDragging ? 'none' : transition,
+        zIndex: isDragging ? 999 : 'auto',
+        opacity: isDragging ? 0.5 : 1,
+        touchAction: 'none'
+    };
 
     return (
-        <div className={styles.cardStats}>
-            <span className={styles.statItem}>
-                <Eye size={12} /> {stats.views}
-            </span>
-            <span className={styles.statItem}>
-                <Heart size={12} /> {stats.likes}
-            </span>
-            <span className={styles.statItem}>
-                <MessageSquare size={12} /> {stats.comments}
-            </span>
+        <div 
+            ref={setNodeRef} 
+            style={style}
+            className={`${styles.projectCard} ${isSelected ? styles.projectCardSelected : ''}`}
+        >
+            <div className={styles.cardImageContainer}>
+                {/* Drag Handle */}
+                <div 
+                    {...attributes} 
+                    {...listeners}
+                    className={styles.dragHandle}
+                    style={{
+                        position: 'absolute',
+                        top: '8px',
+                        left: '8px',
+                        zIndex: 20,
+                        cursor: 'grab',
+                        padding: '4px',
+                        background: 'rgba(0,0,0,0.5)',
+                        borderRadius: '4px',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                >
+                    <GripVertical size={16} />
+                </div>
+
+                <div 
+                    className={`${styles.selectorCircle} ${isSelected ? styles.selectorCircleActive : ''}`}
+                    onClick={(e) => toggleSelection(e, album.slug)}
+                >
+                    {isSelected ? <CheckCircle2 size={16} color="#fff" fill="#1e90ff" /> : <Circle size={16} color="rgba(255,255,255,0.5)" />}
+                </div>
+                <Link href={`/admin/portfolio/${album.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
+                    {album.entry.publishing?.cover ? (
+                        <img 
+                            src={album.entry.publishing.cover} 
+                            alt={album.entry.title} 
+                            className={styles.cardImage} 
+                        />
+                    ) : (
+                        <div style={{ width: '100%', height: '100%', background: '#282a36', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Circle size={40} color="#3a3a45" />
+                        </div>
+                    )}
+                </Link>
+            </div>
+            
+            <Link href={`/admin/portfolio/${album.slug}`} className={styles.cardMeta} style={{ textDecoration: 'none' }}>
+                <div className={styles.cardTitle}>{album.entry.title}</div>
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className={`${styles.statusBadge} ${styles.statusPublished}`}>
+                        Published
+                    </span>
+                    
+                    <div className={styles.cardStats}>
+                        <span className={styles.statItem}>
+                            <Eye size={12} /> {stats?.views || 0}
+                        </span>
+                        <span className={styles.statItem}>
+                            <Heart size={12} /> {stats?.likes || 0}
+                        </span>
+                        <span className={styles.statItem}>
+                            <MessageSquare size={12} /> {stats?.comments || 0}
+                        </span>
+                    </div>
+                </div>
+            </Link>
         </div>
     );
 }

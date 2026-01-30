@@ -107,7 +107,7 @@ export default function GalleryView({ images = gallery.images }: GalleryViewProp
                     );
                 case 'marmoset':
                     const mviewPath = normalizeMarmosetFilePath(image.value.src || image.value.manualPath);
-                    const viewerUrl = `${basePath}/marmoset-viewer.html?file=${encodeURIComponent(mviewPath)}&autoStart=false`;
+                    const viewerUrl = `${basePath}/marmoset-viewer/?file=${encodeURIComponent(mviewPath)}&autoStart=false`;
                     const aspectRatio = image.value.orientation === "horizontal" ? "16 / 9" : "3 / 4";
                     
                     return (
@@ -168,7 +168,7 @@ export default function GalleryView({ images = gallery.images }: GalleryViewProp
                 }}
              >
                <iframe
-                 src={`${basePath}/marmoset-viewer.html?file=${image.src}&autoStart=false`}
+                 src={`${basePath}/marmoset-viewer/?file=${image.src}&autoStart=false`}
                  width="100%"
                  height="100%"
                  allowFullScreen

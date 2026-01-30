@@ -66,6 +66,14 @@ export async function getAlbums() {
   log("getAlbums called");
   try {
     const albums = await reader.collections.albums.all();
+    
+    // Sort by priority (ascending: 0, 10, 20...)
+    albums.sort((a, b) => {
+        const priorityA = a.entry.priority || 0;
+        const priorityB = b.entry.priority || 0;
+        return priorityA - priorityB;
+    });
+
     log("Keystatic albums count:", albums.length);
     if (albums.length > 0) {
         return albums;

@@ -45,15 +45,29 @@ const LocationDisplay: React.FC = () => {
   const [location, setLocation] = useState("");
 
   useEffect(() => {
-    try {
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (timeZone) {
-        const city = timeZone.split("/").pop()?.replace(/_/g, " ") || "";
-        setLocation(city);
-      }
-    } catch (e) {
-      console.error("Failed to detect location", e);
-    }
+    // 1. Try IP-based geolocation for accuracy
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => {
+         if (data.city) {
+             setLocation(data.city); // e.g. "Saint Petersburg"
+         } else if (data.region) {
+             setLocation(data.region);
+         }
+      })
+      .catch(e => {
+        console.warn("IP Geolocation failed, falling back to timezone", e);
+        // 2. Fallback to Timezone-based
+        try {
+          const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          if (timeZone) {
+            const city = timeZone.split("/").pop()?.replace(/_/g, " ") || "";
+            setLocation(city);
+          }
+        } catch (err) {
+            console.error("Timezone fallback failed", err);
+        }
+      });
   }, []);
 
   if (!location) return null;

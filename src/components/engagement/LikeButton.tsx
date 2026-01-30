@@ -74,12 +74,15 @@ export const LikeButton: React.FC<LikeButtonProps> = ({ projectSlug }) => {
         if (error) {
             // Postgres unique violation code
             if (error.code === '23505') {
+                console.log('User already liked this project (23505)');
                 setIsLiked(true);
                 updateLocalLikes();
             } else {
                 console.error('Error liking:', error);
+                // Optional: Show error to user?
             }
         } else {
+            console.log('Like submitted successfully');
             setLikes(prev => prev + 1);
             setIsLiked(true);
             updateLocalLikes();

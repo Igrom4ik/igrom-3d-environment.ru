@@ -44,6 +44,7 @@ export default config({
         entryLayout: 'content',
         schema: {
             title: fields.slug({ name: { label: 'Название проекта' } }),
+            priority: fields.integer({ label: 'Приоритет (сортировка)', defaultValue: 0 }),
             
             // Artwork Details
             description: fields.document({

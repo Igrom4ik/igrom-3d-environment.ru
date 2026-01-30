@@ -269,7 +269,12 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                     <span style={{ color: '#fff' }}>{slug === 'create' ? 'New Project' : 'Editing Artwork'}</span>
                 </div>
                 <div className={styles.actions}>
-                    <button className={styles.btnSecondary}>Preview</button>
+                    <button 
+                        className={styles.btnSecondary}
+                        onClick={() => window.open(`/gallery/${slug}`, '_blank')}
+                    >
+                        Preview
+                    </button>
                     <button className={styles.btnPrimary} onClick={handleSave} disabled={saving}>
                         {saving ? 'Saving...' : 'Publish'}
                     </button>
