@@ -142,7 +142,7 @@ export const MarmosetViewer: FC<MarmosetViewerProps> = ({
   if (!src) return null;
 
   const fileParam = normalizePath(src);
-  const viewerPath = `${basePath || ""}/marmoset-viewer.html?file=${encodeURIComponent(
+  const viewerPath = `${basePath || ""}/marmoset-viewer/?file=${encodeURIComponent(
     fileParam,
   )}&autoStart=${autoStart}`;
 
