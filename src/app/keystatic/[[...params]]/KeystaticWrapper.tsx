@@ -13,6 +13,7 @@ export default function KeystaticWrapper() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [currentPostSlug, setCurrentPostSlug] = useState<string | null>(null);
   const [telegramChatId, setTelegramChatId] = useState<string>('');
+  const [currentCollection, setCurrentCollection] = useState<'posts' | 'telegramPosts'>('posts');
   const [isCollectionList, setIsCollectionList] = useState(false);
 
   useEffect(() => {
@@ -49,6 +50,17 @@ export default function KeystaticWrapper() {
       if (match && match[1]) {
         setPreviewUrl(`/preview/post/${match[1]}`);
         setCurrentPostSlug(match[1]);
+        setCurrentCollection('posts');
+      } else {
+        setPreviewUrl(null);
+        setCurrentPostSlug(null);
+      }
+    } else if (pathname?.includes('/collection/telegramPosts/item/')) {
+      const match = pathname.match(/\/collection\/telegramPosts\/item\/([^/]+)/);
+      if (match && match[1]) {
+        setPreviewUrl(`/preview/telegram/post/${match[1]}`);
+        setCurrentPostSlug(match[1]);
+        setCurrentCollection('telegramPosts');
       } else {
         setPreviewUrl(null);
         setCurrentPostSlug(null);
@@ -71,6 +83,7 @@ export default function KeystaticWrapper() {
                     chatId={telegramChatId} 
                     slug={currentPostSlug} 
                     compact={true}
+                    collection={currentCollection}
                 />
              </div>
            )}

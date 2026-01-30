@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './portfolio.module.css';
 import { 
@@ -118,7 +118,6 @@ export default function PortfolioGrid({ albums }: PortfolioGridProps) {
 
                 {/* Project Cards */}
                 {albums.map((album: any, index: number) => {
-                    const stats = getStats();
                     const isSelected = selectedSlugs.includes(album.slug);
                     
                     return (
@@ -157,17 +156,7 @@ export default function PortfolioGrid({ albums }: PortfolioGridProps) {
                                         Published
                                     </span>
                                     
-                                    <div className={styles.cardStats}>
-                                        <span className={styles.statItem}>
-                                            <Eye size={12} /> {stats.views}
-                                        </span>
-                                        <span className={styles.statItem}>
-                                            <Heart size={12} /> {stats.likes}
-                                        </span>
-                                        <span className={styles.statItem}>
-                                            <MessageSquare size={12} /> {stats.comments}
-                                        </span>
-                                    </div>
+                                    <ProjectStats />
                                 </div>
                             </Link>
                         </div>
@@ -175,5 +164,49 @@ export default function PortfolioGrid({ albums }: PortfolioGridProps) {
                 })}
             </div>
         </>
+    );
+}
+
+function ProjectStats() {
+    const [stats, setStats] = useState({ views: 0, likes: 0, comments: 0 });
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        setStats({
+            views: Math.floor(Math.random() * 1000),
+            likes: Math.floor(Math.random() * 50),
+            comments: Math.floor(Math.random() * 10)
+        });
+    }, []);
+
+    if (!mounted) {
+        return (
+             <div className={styles.cardStats}>
+                <span className={styles.statItem}>
+                    <Eye size={12} /> 0
+                </span>
+                <span className={styles.statItem}>
+                    <Heart size={12} /> 0
+                </span>
+                <span className={styles.statItem}>
+                    <MessageSquare size={12} /> 0
+                </span>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.cardStats}>
+            <span className={styles.statItem}>
+                <Eye size={12} /> {stats.views}
+            </span>
+            <span className={styles.statItem}>
+                <Heart size={12} /> {stats.likes}
+            </span>
+            <span className={styles.statItem}>
+                <MessageSquare size={12} /> {stats.comments}
+            </span>
+        </div>
     );
 }

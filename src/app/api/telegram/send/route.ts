@@ -40,7 +40,7 @@ async function sendToTelegram(token: string, method: string, formData: FormData)
 
 export async function POST(req: NextRequest) {
   try {
-    const { content, chatId, image, title, summary, slug } = await req.json();
+    const { content, chatId, image, title, summary, slug, collection } = await req.json();
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'https://igrom-3d-environment.ru';
 
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
     }
     
     // Link to original
-    if (slug) {
+    if (slug && collection !== 'telegramPosts') {
          const link = `${baseURL}/blog/${slug}`;
          headerCaption += `[Читать оригинал](${link})`;
     }

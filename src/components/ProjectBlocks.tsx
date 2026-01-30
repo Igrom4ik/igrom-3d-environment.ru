@@ -141,7 +141,12 @@ export const MarmosetViewer: FC<MarmosetViewerProps> = ({
 }) => {
   if (!src) return null;
 
-  const fileParam = normalizePath(src);
+  // Если путь начинается с /public, убираем его, так как Next.js обслуживает public как корень
+  let fileParam = normalizePath(src);
+  if (fileParam.startsWith('/public/')) {
+    fileParam = fileParam.replace('/public/', '/');
+  }
+
   const viewerPath = `${basePath || ""}/marmoset-viewer/?file=${encodeURIComponent(
     fileParam,
   )}&autoStart=${autoStart}`;

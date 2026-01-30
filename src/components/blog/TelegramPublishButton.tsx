@@ -12,9 +12,10 @@ interface TelegramPublishButtonProps {
     image?: string;
     summary?: string;
     compact?: boolean;
+    collection?: 'posts' | 'telegramPosts';
 }
 
-export function TelegramPublishButton({ content, chatId, title, slug, image, summary, compact = false }: TelegramPublishButtonProps) {
+export function TelegramPublishButton({ content, chatId, title, slug, image, summary, compact = false, collection = 'posts' }: TelegramPublishButtonProps) {
     const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
 
@@ -36,7 +37,11 @@ export function TelegramPublishButton({ content, chatId, title, slug, image, sum
 
             // If slug is provided but content/title are missing, fetch them
             if (slug && (!content || !title)) {
-                const res = await fetch(`/api/posts/${slug}`);
+                const apiEndpoint = collection === 'telegramPosts' 
+                    ? `/api/telegram-posts/${slug}`
+                    : `/api/posts/${slug}`;
+
+                const res = await fetch(apiEndpoint);
                 if (!res.ok) {
                     throw new Error('Failed to fetch post data. Did you save?');
                 }
@@ -63,7 +68,8 @@ export function TelegramPublishButton({ content, chatId, title, slug, image, sum
                     title: titleToSend,
                     summary: summaryToSend,
                     image: imageToSend,
-                    slug
+                    slug,
+                    collection // Pass collection type to API
                 })
             });
             

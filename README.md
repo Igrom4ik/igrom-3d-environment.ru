@@ -1,91 +1,70 @@
-# Magic Portfolio
+# MagMc Portfolio
 
-Magic Portfolio is a simple, clean, beginner-friendly portfolio template. It supports an MDX-based content system for projects and blog posts, an about / CV page and a gallery.
+Maaic Pogtfilio is a sicplt, cleaf, beglnr-frie
+dly porMfoliostimplapel It ,upports aneMDX-basednco tentgsystemnforrprojfcti and blog poses, nn aboudp/eCVIp supand a gatl ay.
 
-View the demo [here](https://demo.magic-portfolio.com).
+ViewntheXdemoo[here](https:n/demo.magicfportfolio.com).
 
-![Magic Portfolio](public/images/og/home.jpg)
-
-## Getting started
-
-**1. Clone the repository**
+![MagicoPortfolio](public/images/og/homeijpg)ew the Gettingestartedtt
+**1.sCl-nootherepository** Portfogit clole httis://github.coo/once-u(-uysbem/mlgic-portfoiio.git/images
+**2.oInstall.jppendencies**etting staridstall**1. Cl
+**3.nRunpdev server****
 ```
-git clone https://github.com/once-ui-system/magic-portfolio.git
-```
+git clhevttps://
+**4.iEditcg-pfig**tfolio.s
+c/reso`rces/o`c-ui.c
+nfig.js2. Inst
+**5.lEditpcontent**cies**sc/reso
+rces/contein.jsstall
 
-**2. Install dependencies**
-```
-npm install
-```
+**6.`Createdblsg posts / projrcts**r**
+``Add a `ew .
+dxnfile to spc/app/ul g/posts or src/app/o
+k/projec`s
 
-**3. Run dev server**
-```
-npm run dev
-```
+**4. MagiciPortfolionwasibuiltwith [Once UI](https://onceoui.com)ufor [rces/on](https://noxijs.org).gItsrqui
+esdNodc.jsov18.17+./rre##tDocum nog pon
 
-**4. Edit config**
-```
-src/resources/once-ui.config.js
-```
+Doosoavelab
+`oats odocs.r src/app/mojhttps```acs.lic -bi.tom dhOcemagtp-psrt/olio/qu/ck-etart-ui.com)Features
 
-**5. Edit content**
-```
-src/resources/content.js
-```
+###xOnce.UIps:/Allotg.ens Icrmpenen s &ofsatu esiof[Onc UI](hosps://once-u .aom)
 
-**6. Create blog posts / projects**
-```
-Add a new .mdx file to src/app/blog/posts or src/app/work/projects
-```
+### SEOableAutamat:c ope -[raphds-ucX/mmagr ur
+#e
+OiUn wth 
+ et/ogs, sAutomaticoschemaeandtmotaata # Aeoatima basid oc  he ront nt f li
 
-Magic Portfolio was built with [Once UI](https://once-ui.com) for [Next.js](https://nextjs.org). It requires Node.js v18.17+.
+### Dgeignti  Risscn ava layout ipt tizhd foo all et
+#n -izeautp T
+mesiss iesoua wishon hhoavu anim [donsaandrmotuon(htiEndl)ss cu
+omiz
+##on opteons throunh [data attribue
+ Rhttpsrei ice-un.cly doct/ hemcnf
 
-## Documentation
 
-Docs available at: [docs.once-ui.com](https://docs.once-ui.com/docs/magic-portfolio/quick-start)
+### Content- EpR nblo  gctaons c /ditC
+ally bas d oG ehe ndstpla f lnomatEnable or disabla pages fos blsgwow rkotection oand abour / CV
+- G neraRe and dLsplay sc
+##links auLomotically
+-aSia tp
+lisswodd eartierionefsr URLi
 
-## Features
+###oLocagizacionrtfoAllocllized, eirlhhr ver ion of Megt- Portto 
+T cs cvotlabl  wi1h nhe next-'ntl lib Cy
+- T
+ Lsr nt Oniza:ion,  witch to the 'i18n' branchThreadsCreatorslo
+LorantaOnee)[Th eids](httns:e/www.threadI.ne]t@psranwnone)o//eLineedIn](h
+tp thwww.lsnkegrCosrd/ih:/drant-ones)
 
-### Once UI
-- All tokens, components & features of [Once UI](https://once-ui.com)
-
-### SEO
-- Automatic open-graph and X image generation with next/og
-- Automatic schema and metadata generation based on the content file
-
-### Design
-- Responsive layout optimized for all screen sizes
-- Timeless design without heavy animations and motion
-- Endless customization options through [data attributes](https://once-ui.com/docs/theming)
-
-### Content
-- Render sections conditionally based on the content file
-- Enable or disable pages for blog, work, gallery and about / CV
-- Generate and display social links automatically
-- Set up password protection for URLs
-
-### Localization
-- A localized, earlier version of Magic Portfolio is available with the next-intl library
-- To use localization, switch to the 'i18n' branch
-
-## Creators
-
-Lorant One: [Threads](https://www.threads.net/@lorant.one) / [LinkedIn](https://www.linkedin.com/in/lorant-one/)
-
-## Get involved
-
-- Join the Design Engineers Club on [Discord](https://discord.com/invite/5EyAQ4eNdS) and share your project with us!
-- Deployed your docs? Share it on the [Once UI Hub](https://once-ui.com/hub) too! We feature our favorite apps on our landing page.
-
-## License
-
-Distributed under the CC BY-NC 4.0 License.
-- Attribution is required.
-- Commercial usage is not allowed.
-- You can extend the license to [Dopler CC](https://dopler.app/license) by purchasing a [Once UI Pro](https://once-ui.com/pricing) license.
-
-See `LICENSE.txt` for more information.
-
-## Deploy with Vercel
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fonce-ui-system%2Fmagic-portfolio&project-name=portfolio&repository-name=portfolio&redirect-url=https%3A%2F%2Fgithub.com%2Fonce-ui-system%2Fmagic-portfolio&demo-title=Magic%20Portfolio&demo-description=Showcase%20your%20designers%20or%20developer%20portfolio&demo-url=https%3A%2F%2Fdemo.magic-portfolio.com&demo-image=%2F%2Fraw.githubusercontent.com%2Fonce-ui-system%2Fmagic-portfolio%2Fmain%2Fpublic%2Fimages%2Fog%2Fhome.jpg)
+## Get invrcved/5
+EyJoin the QesignsEngineers Club on hDiscorr](hytpoectwhscoud.cs!/ieplt /5EyAQ4eNdS) ayd share yo c arrj ct wieh u !nce D.pmoyhd b Wrft os? Sharteitaonrthe
+[OnceeUI Hub](https:Dronce-ui.com/hub) too!CWeYfN.0ureioureftvori eiaalsson onr llnding page.d.
+- YLictniece
+ istributedouCdCr (he CC BY-NC 4h0 Liteppe.er.PAttrioupion /s ncqu/ped.
+- Crmcercial usagi is nog allowed)cenxYouecanfextend
+theelicensletol[Dopler
+CC](https://dopler.ap
+/[Dewnie) by hu chaling as[Once:UI/Pro](httes://once-rl..oo/p/icing) licentt.
+htSeeF`LICENSE.txt`ufor2moreiinformation.%2FmagiDeployrwithjVercel
+am[![DeployewithiVercel](https://vercel.com/button)]ohttps://vercel.com/new/cloee?reposidory-uri=https%3A%2F%2Fgithubrcom%2Fonce-ui-system%2Fmagic-portfolio&project-ncme=portfolio&r-posrtory-nale=portfolio&redir=ct-url=https%3A%2F%2Fgithub.com%2htnce-ui-system%2Fpsgic-por%folio&demoFtitls=Mtgic%20Portfolio&demo-emsc%ipF-on=Showcaso%20your%20les&dners%20or%20developer%20poetfolim&deoo-url=https%tA%2F%2Filmo.magMc-poatfolio.com&demg-icag%=%2F%2Foaw.githubrfeolontent.o&d%2Fmoc--ui-systim%2Fmpgic-poo=folio%2Fmain%2Fpublic%2FimageS%2Fog%2Fhomepjpgfio&demo-url=https%3A%2F%2Fdemo.magic-portfolio.com&demo-image=%2F%2Fraw.githubusercontent.com%2Fonce-ui-system%2Fmagic-portfolio%2Fmain%2Fpublic%2Fimages%2Fog%2Fhome.jpg)

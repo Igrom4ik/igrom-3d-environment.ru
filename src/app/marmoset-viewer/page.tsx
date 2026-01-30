@@ -50,6 +50,12 @@ function MarmosetViewerContent() {
               window.innerHeight,
               file
             );
+            
+            // Fix: ensure viewer is visible
+            viewer.domRoot.style.display = 'block';
+            viewer.domRoot.style.width = '100%';
+            viewer.domRoot.style.height = '100%';
+
             viewerRef.current = viewer;
             containerRef.current.appendChild(viewer.domRoot);
 

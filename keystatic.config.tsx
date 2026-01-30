@@ -32,7 +32,6 @@ export default config({
             publishedAt: fields.date({ label: 'Дата (для сортировки)' }),
             content: fields.markdoc({ 
                 label: 'Markdown Контент',
-                extension: 'md'
             }),
         }
     }),
@@ -78,8 +77,8 @@ export default config({
                         schema: fields.object({
                             src: fields.image({
                                 label: 'Файл изображения (JPG, PNG, GIF, WEBP)',
-                                directory: 'public/images/gallery/albums',
-                                publicPath: '/images/gallery/albums',
+                                directory: 'public/images',
+                                publicPath: '/images',
                             }),
                             alt: fields.text({ label: 'Альтернативный текст' }),
                             caption: fields.text({ label: 'Подпись' }),
@@ -149,8 +148,8 @@ export default config({
                         schema: fields.object({
                             image: fields.image({
                                 label: 'Панорамное изображение (JPG)',
-                                directory: 'public/images/gallery/albums',
-                                publicPath: '/images/gallery/albums',
+                                directory: 'public/images',
+                                publicPath: '/images',
                             }),
                             caption: fields.text({ label: 'Подпись' }),
                         }),
@@ -304,7 +303,7 @@ export default config({
     }),
     projects: collection({
       label: 'Проекты',
-      path: 'src/app/(site)/work/projects/*/',
+      path: 'src/content/projects/*/',
       slugField: 'title',
       format: { contentField: 'content' },
       previewUrl: '/work/{slug}',
