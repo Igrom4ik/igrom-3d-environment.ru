@@ -88,34 +88,36 @@ function SortableMediaItem({ item, index, onDelete, onChange, onExpand }: {
             style={style} 
             className={styles.mediaCard}
         >
+            {/* Card Header (Drag Handle + Actions) */}
             <div 
-                className={styles.mediaPreview} 
-                style={{ position: 'relative' }}
-                onClick={() => onExpand(item)}
+                className={styles.cardHeader}
+                {...attributes} 
+                {...listeners}
             >
-                {/* Drag Handle */}
-                <div 
-                    {...attributes} 
-                    {...listeners}
-                    onClick={(e) => e.stopPropagation()}
-                    style={{
-                        position: 'absolute',
-                        top: '8px',
-                        left: '8px',
-                        zIndex: 20,
-                        cursor: 'grab',
-                        padding: '4px',
-                        background: 'rgba(0,0,0,0.5)',
-                        borderRadius: '4px',
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
+                <div className={styles.cardHeaderLeft}>
+                    <GripVertical size={16} />
+                    <span>
+                        {item.type === 'image' ? 'Image' : 
+                         item.type === 'video' ? 'Video' : 
+                         item.type === 'marmoset' ? 'Marmoset' : 'Embed'}
+                    </span>
+                </div>
+                <button 
+                    className={styles.headerDeleteBtn} 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete();
                     }}
                 >
-                    <GripVertical size={16} />
-                </div>
+                    <Trash2 size={14} />
+                </button>
+            </div>
 
+            {/* Preview */}
+            <div 
+                className={styles.mediaPreview} 
+                onClick={() => onExpand(item)}
+            >
                 {item.type === 'marmoset' ? (
                     <div style={{width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', background:'#1a1a1a'}}>
                         <Box size={48} color="#555" />
@@ -131,20 +133,12 @@ function SortableMediaItem({ item, index, onDelete, onChange, onExpand }: {
                         <span>{item.type} Embed</span>
                     </div>
                 )}
-                <button 
-                    className={styles.deleteButton} 
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete();
-                    }}
-                >
-                    <Trash2 size={14} />
-                </button>
             </div>
+
+            {/* Controls */}
             <div className={styles.cardControls}>
-                <input 
-                    type="text" 
-                    className={styles.input} 
+                <textarea 
+                    className={styles.captionInput} 
                     placeholder="Caption" 
                     value={item.value.caption || ''}
                     onChange={(e) => {
@@ -161,6 +155,7 @@ function SortableMediaItem({ item, index, onDelete, onChange, onExpand }: {
                         placeholder="MView Path" 
                         value={item.value.src || ''}
                         readOnly
+                        style={{ marginTop: 8 }}
                     />
                 )}
                 {(item.type === 'youtube' || item.type === 'sketchfab') && (
@@ -175,6 +170,7 @@ function SortableMediaItem({ item, index, onDelete, onChange, onExpand }: {
                                 value: { ...item.value, url: e.target.value, src: e.target.value }
                             });
                         }}
+                        style={{ marginTop: 8 }}
                     />
                 )}
             </div>
