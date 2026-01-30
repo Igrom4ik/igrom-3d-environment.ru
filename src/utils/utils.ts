@@ -16,7 +16,7 @@ export const getQueryParam = (
 
 import { notFound } from "next/navigation";
 
-function readMDXFile(filePath: string) {
+export function readMDXFile(filePath: string) {
   if (!fs.existsSync(filePath)) {
     console.error(`File not found: ${filePath}`);
     return { metadata: {} as Metadata, content: "" };
@@ -84,6 +84,7 @@ function readMDXFile(filePath: string) {
       software: data.software || [],
       artstation: data.artstation || "",
       tag: data.tag || [],
+      tags: data.tags || [],
       team: (data.team || []).map((member: TeamMember) => ({
         name: member.name,
         role: member.role,
@@ -92,67 +93,52 @@ function readMDXFile(filePath: string) {
           : member.avatar,
         linkedIn: member.linkedIn,
       })),
+      priority: data.priority ?? 999,
       link: data.link || "",
     };
 
     return { metadata, content };
   } catch (error) {
     console.error(`Error reading MDX file: ${filePath}`, error);
-    // Return safe default metadata to prevent crashes
-    const safeMetadata: Metadata = {
-      title: "Error loading post",
-      subtitle: "",
-      publishedAt: new Date().toISOString(),
-      summary: "There was an error loading this post.",
-      image: "",
-      cover: "",
-      images: [],
-      media: [],
-      tag: "",
-      team: [],
-      link: "",
-    };
-    return { metadata: safeMetadata, content: "" };
+    return { metadata: {} as Metadata, content: "" };
   }
 }
 
-function getMDXData(dir: string) {
-  if (!fs.existsSync(dir)) {
-    console.error(`Directory not found: ${dir}`);
+export function getPosts(dirParts: string[]) {
+  const dirPath = path.join(process.cwd(), ...dirParts);
+  if (!fs.existsSync(dirPath)) {
     return [];
   }
 
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+
   return entries
     .filter((entry) => entry.isDirectory())
     .map((entry) => {
       const slug = entry.name;
-      const dirPath = path.join(dir, slug);
+      const dirPathSlug = path.join(dirPath, slug);
       
       // Check for index.mdx or index.mdoc
-      let filePath = path.join(dirPath, "index.mdx");
+      let filePath = path.join(dirPathSlug, "index.mdx");
       if (!fs.existsSync(filePath)) {
-        filePath = path.join(dirPath, "index.mdoc");
+        filePath = path.join(dirPathSlug, "index.mdoc");
       }
       
       if (!fs.existsSync(filePath)) {
-        // Fallback for flat files if mixed structure exists (unlikely given current setup but safe)
         return null;
       }
-
+      
       const { metadata, content } = readMDXFile(filePath);
+      
+      // If title is missing, it's likely an invalid or empty read
+      if (!metadata.title) return null;
 
       return {
-        metadata,
         slug,
+        metadata,
         content,
       };
     })
-    .filter((post): post is NonNullable<typeof post> => post !== null);
-}
-
-export function getPosts(customPath = ["", "", "", ""]) {
-  const postsDir = path.join(process.cwd(), ...customPath);
-  return getMDXData(postsDir);
+    .filter((post): post is { slug: string; metadata: Metadata; content: string } => post !== null)
+    .sort((a, b) => (a.metadata.priority ?? 999) - (b.metadata.priority ?? 999));
 }

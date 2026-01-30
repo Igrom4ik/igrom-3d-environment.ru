@@ -6,8 +6,25 @@ import { useRouter } from 'next/navigation';
 import styles from '../editor.module.css';
 import { 
     Image as ImageIcon, Video, Box, Globe, Upload, Trash2, 
-    ChevronLeft, Save, Eye, Check 
+    ChevronLeft, Save, Eye, Check, GripVertical 
 } from 'lucide-react';
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface ProjectEditorProps {
     slug: string;
@@ -41,6 +58,115 @@ interface ProjectData {
     publishing?: { cover?: string };
 }
 
+function SortableMediaItem({ item, index, onDelete, onChange }: { item: MediaItem, index: number, onDelete: () => void, onChange: (item: MediaItem) => void }) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: item.id });
+
+    const style = {
+        transform: CSS.Translate.toString(transform),
+        transition: isDragging ? 'none' : transition,
+        zIndex: isDragging ? 999 : 'auto',
+        opacity: isDragging ? 0.5 : 1,
+        touchAction: 'none'
+    };
+
+    return (
+        <div 
+            ref={setNodeRef} 
+            style={style} 
+            className={styles.mediaCard}
+        >
+            <div className={styles.mediaPreview} style={{ position: 'relative' }}>
+                {/* Drag Handle */}
+                <div 
+                    {...attributes} 
+                    {...listeners}
+                    style={{
+                        position: 'absolute',
+                        top: '8px',
+                        left: '8px',
+                        zIndex: 20,
+                        cursor: 'grab',
+                        padding: '4px',
+                        background: 'rgba(0,0,0,0.5)',
+                        borderRadius: '4px',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                >
+                    <GripVertical size={16} />
+                </div>
+
+                {item.type === 'marmoset' ? (
+                    <div style={{width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', background:'#1a1a1a'}}>
+                        <Box size={48} color="#555" />
+                        <span style={{marginLeft:8, color:'#777'}}>Marmoset Viewer</span>
+                    </div>
+                ) : item.type === 'video' ? (
+                    <video src={item.value.src} style={{width:'100%', height:'100%', objectFit:'contain'}} controls>
+                        <track kind="captions" />
+                    </video>
+                ) : item.type === 'image' ? (
+                    <img src={item.value.src} alt={item.value.caption} style={{width:'100%', height:'100%', objectFit:'contain'}} />
+                ) : (
+                    <div style={{ color: '#555', display:'flex', flexDirection:'column', alignItems:'center' }}>
+                        <Globe size={32} />
+                        <span>{item.type} Embed</span>
+                    </div>
+                )}
+                <button className={styles.deleteButton} onClick={onDelete}>
+                    <Trash2 size={14} />
+                </button>
+            </div>
+            <div className={styles.cardControls}>
+                <input 
+                    type="text" 
+                    className={styles.input} 
+                    placeholder="Caption" 
+                    value={item.value.caption || ''}
+                    onChange={(e) => {
+                        onChange({
+                            ...item,
+                            value: { ...item.value, caption: e.target.value }
+                        });
+                    }}
+                />
+                {item.type === 'marmoset' && (
+                    <input 
+                        type="text" 
+                        className={styles.input} 
+                        placeholder="MView Path" 
+                        value={item.value.src || ''}
+                        readOnly
+                    />
+                )}
+                {(item.type === 'youtube' || item.type === 'sketchfab') && (
+                    <input 
+                        type="text" 
+                        className={styles.input} 
+                        placeholder={`${item.type === 'youtube' ? 'YouTube' : 'Sketchfab'} URL`} 
+                        value={item.value.url || item.value.src || ''}
+                        onChange={(e) => {
+                             onChange({
+                                ...item,
+                                value: { ...item.value, url: e.target.value, src: e.target.value }
+                            });
+                        }}
+                    />
+                )}
+            </div>
+        </div>
+    );
+}
+
 export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps) {
     const router = useRouter();
     const [slug, setSlug] = useState<string>(initialSlug);
@@ -55,7 +181,19 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
     const [software, setSoftware] = useState<string[]>([]);
     const [tags, setTags] = useState<string[]>([]);
     const [coverImage, setCoverImage] = useState('');
-    
+
+    // DnD Sensors
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
     useEffect(() => {
         if (slug !== 'create') {
             loadProject(slug);
@@ -257,6 +395,18 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
         }
     };
 
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            setMediaItems((items) => {
+                const oldIndex = items.findIndex((item) => item.id === active.id);
+                const newIndex = items.findIndex((item) => item.id === over.id);
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
+    };
+
     if (loading) return <div className={styles.editorContainer} style={{justifyContent:'center', alignItems:'center'}}>Loading...</div>;
 
     return (
@@ -344,74 +494,35 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                         </p>
                     </div>
 
-                    <div className={styles.mediaGrid} style={{ marginTop: '24px' }}>
-                        {mediaItems.map((item, index) => (
-                            <div key={item.id} className={styles.mediaCard}>
-                                <div className={styles.mediaPreview}>
-                                    {item.type === 'marmoset' ? (
-                                        <div style={{width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', background:'#1a1a1a'}}>
-                                            <Box size={48} color="#555" />
-                                            <span style={{marginLeft:8, color:'#777'}}>Marmoset Viewer</span>
-                                        </div>
-                                    ) : item.type === 'video' ? (
-                                        <video src={item.value.src} style={{width:'100%', height:'100%', objectFit:'contain'}} controls>
-                                            <track kind="captions" />
-                                        </video>
-                                    ) : item.type === 'image' ? (
-                                        <img src={item.value.src} alt={item.value.caption} style={{width:'100%', height:'100%', objectFit:'contain'}} />
-                                    ) : (
-                                        <div style={{ color: '#555', display:'flex', flexDirection:'column', alignItems:'center' }}>
-                                            <Globe size={32} />
-                                            <span>{item.type} Embed</span>
-                                        </div>
-                                    )}
-                                    <button className={styles.deleteButton} onClick={() => {
-                                        const newItems = [...mediaItems];
-                                        newItems.splice(index, 1);
-                                        setMediaItems(newItems);
-                                    }}>
-                                        <Trash2 size={14} />
-                                    </button>
-                                </div>
-                                <div className={styles.cardControls}>
-                                    <input 
-                                        type="text" 
-                                        className={styles.input} 
-                                        placeholder="Caption" 
-                                        value={item.value.caption || ''}
-                                        onChange={(e) => {
+                    <div className={styles.mediaGrid} style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <DndContext 
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext 
+                                items={mediaItems.map(item => item.id)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                {mediaItems.map((item, index) => (
+                                    <SortableMediaItem 
+                                        key={item.id} 
+                                        item={item} 
+                                        index={index}
+                                        onDelete={() => {
                                             const newItems = [...mediaItems];
-                                            newItems[index].value.caption = e.target.value;
+                                            newItems.splice(index, 1);
+                                            setMediaItems(newItems);
+                                        }}
+                                        onChange={(updatedItem: MediaItem) => {
+                                            const newItems = [...mediaItems];
+                                            newItems[index] = updatedItem;
                                             setMediaItems(newItems);
                                         }}
                                     />
-                                    {item.type === 'marmoset' && (
-                                        <input 
-                                            type="text" 
-                                            className={styles.input} 
-                                            placeholder="MView Path" 
-                                            value={item.value.src || ''}
-                                            readOnly
-                                        />
-                                    )}
-                                    {(item.type === 'youtube' || item.type === 'sketchfab') && (
-                                        <input 
-                                            type="text" 
-                                            className={styles.input} 
-                                            placeholder={`${item.type === 'youtube' ? 'YouTube' : 'Sketchfab'} URL`} 
-                                            value={item.value.url || item.value.src || ''}
-                                            onChange={(e) => {
-                                                const newItems = [...mediaItems];
-                                                newItems[index].value.url = e.target.value;
-                                                // Sync src for consistency if needed, but url is primary for embeds
-                                                newItems[index].value.src = e.target.value; 
-                                                setMediaItems(newItems);
-                                            }}
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                        ))}
+                                ))}
+                            </SortableContext>
+                        </DndContext>
                     </div>
                 </div>
 

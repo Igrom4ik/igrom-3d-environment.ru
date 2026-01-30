@@ -106,13 +106,21 @@ export async function getAlbums() {
                     description: () => Promise.resolve([]), // Placeholder for list view
                     images: data.images || [],
                     categorization: data.categorization,
-                    publishing: data.publishing
+                    publishing: data.publishing,
+                    priority: data.priority
                 }
             };
         }
         log(`No index.mdoc found for: ${slug}`);
         return null;
     }).filter(a => a !== null);
+
+    // Sort fallback albums by priority
+    fallbackAlbums.sort((a, b) => {
+        const priorityA = (a as any).entry.priority || 0;
+        const priorityB = (b as any).entry.priority || 0;
+        return priorityA - priorityB;
+    });
 
     log("Total fallback albums found:", fallbackAlbums.length);
     return fallbackAlbums as any;

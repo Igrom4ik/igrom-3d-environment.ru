@@ -273,5 +273,6 @@ export interface Metadata {
   tag?: string;
   tags?: string[];
   team?: TeamMember[];
+  priority?: number;
   link?: string;
 }
