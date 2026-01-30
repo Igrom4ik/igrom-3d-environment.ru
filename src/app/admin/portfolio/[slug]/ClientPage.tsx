@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import styles from '../editor.module.css';
 import { 
     Image as ImageIcon, Video, Box, Globe, Upload, Trash2, 
-    ChevronLeft, Save, Eye, Check, GripVertical 
+    ChevronLeft, Save, Eye, Check, GripVertical, X 
 } from 'lucide-react';
 import {
   DndContext, 
@@ -21,7 +21,7 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -58,7 +58,13 @@ interface ProjectData {
     publishing?: { cover?: string };
 }
 
-function SortableMediaItem({ item, index, onDelete, onChange }: { item: MediaItem, index: number, onDelete: () => void, onChange: (item: MediaItem) => void }) {
+function SortableMediaItem({ item, index, onDelete, onChange, onExpand }: { 
+    item: MediaItem, 
+    index: number, 
+    onDelete: () => void, 
+    onChange: (item: MediaItem) => void,
+    onExpand: (item: MediaItem) => void 
+}) {
     const {
         attributes,
         listeners,
@@ -82,11 +88,16 @@ function SortableMediaItem({ item, index, onDelete, onChange }: { item: MediaIte
             style={style} 
             className={styles.mediaCard}
         >
-            <div className={styles.mediaPreview} style={{ position: 'relative' }}>
+            <div 
+                className={styles.mediaPreview} 
+                style={{ position: 'relative' }}
+                onClick={() => onExpand(item)}
+            >
                 {/* Drag Handle */}
                 <div 
                     {...attributes} 
                     {...listeners}
+                    onClick={(e) => e.stopPropagation()}
                     style={{
                         position: 'absolute',
                         top: '8px',
@@ -111,18 +122,22 @@ function SortableMediaItem({ item, index, onDelete, onChange }: { item: MediaIte
                         <span style={{marginLeft:8, color:'#777'}}>Marmoset Viewer</span>
                     </div>
                 ) : item.type === 'video' ? (
-                    <video src={item.value.src} style={{width:'100%', height:'100%', objectFit:'contain'}} controls>
-                        <track kind="captions" />
-                    </video>
+                    <video src={item.value.src} style={{width:'100%', height:'100%'}} muted />
                 ) : item.type === 'image' ? (
-                    <img src={item.value.src} alt={item.value.caption} style={{width:'100%', height:'100%', objectFit:'contain'}} />
+                    <img src={item.value.src} alt={item.value.caption} style={{width:'100%', height:'100%'}} />
                 ) : (
                     <div style={{ color: '#555', display:'flex', flexDirection:'column', alignItems:'center' }}>
                         <Globe size={32} />
                         <span>{item.type} Embed</span>
                     </div>
                 )}
-                <button className={styles.deleteButton} onClick={onDelete}>
+                <button 
+                    className={styles.deleteButton} 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete();
+                    }}
+                >
                     <Trash2 size={14} />
                 </button>
             </div>
@@ -181,6 +196,7 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
     const [software, setSoftware] = useState<string[]>([]);
     const [tags, setTags] = useState<string[]>([]);
     const [coverImage, setCoverImage] = useState('');
+    const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
 
     // DnD Sensors
     const sensors = useSensors(
@@ -501,7 +517,7 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                         </p>
                     </div>
 
-                    <div className={styles.mediaGrid} style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div className={styles.mediaGrid} style={{ marginTop: '24px' }}>
                         <DndContext 
                             sensors={sensors}
                             collisionDetection={closestCenter}
@@ -509,7 +525,7 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                         >
                             <SortableContext 
                                 items={mediaItems.map(item => item.id)}
-                                strategy={verticalListSortingStrategy}
+                                strategy={rectSortingStrategy}
                             >
                                 {mediaItems.map((item, index) => (
                                     <SortableMediaItem 
@@ -526,6 +542,7 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                                             newItems[index] = updatedItem;
                                             setMediaItems(newItems);
                                         }}
+                                        onExpand={(item) => setSelectedMedia(item)}
                                     />
                                 ))}
                             </SortableContext>
@@ -597,6 +614,30 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                     />
                 </div>
             </main>
+
+            {selectedMedia && (
+                <div className={styles.lightboxOverlay} onClick={() => setSelectedMedia(null)}>
+                    <div className={styles.lightboxContent} onClick={(e) => e.stopPropagation()}>
+                        <button className={styles.lightboxClose} onClick={() => setSelectedMedia(null)}>
+                            <X size={32} />
+                        </button>
+                        {selectedMedia.type === 'video' ? (
+                            <video src={selectedMedia.value.src} controls autoPlay style={{maxWidth:'100%', maxHeight:'90vh'}} />
+                        ) : selectedMedia.type === 'marmoset' ? (
+                             <div style={{width:'80vw', height:'80vh', background:'#000', display:'flex', alignItems:'center', justifyContent:'center', color:'white'}}>
+                                Marmoset Viewer Preview Not Available in Lightbox
+                             </div>
+                        ) : (
+                            <img src={selectedMedia.value.src} alt={selectedMedia.value.caption} />
+                        )}
+                        {selectedMedia.value.caption && (
+                            <div style={{position:'absolute', bottom:0, left:0, right:0, background:'rgba(0,0,0,0.7)', color:'white', padding:20, textAlign:'center'}}>
+                                {selectedMedia.value.caption}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

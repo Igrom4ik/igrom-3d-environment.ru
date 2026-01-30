@@ -60,7 +60,10 @@ export const LikeButton: React.FC<LikeButtonProps> = ({ projectSlug }) => {
 
     const submitLike = async (emailToUse: string) => {
         if (!emailToUse || !emailToUse.includes('@')) {
-            alert('Please enter a valid email');
+            addToast({
+                variant: 'danger',
+                message: 'Please enter a valid email address.'
+            });
             return;
         }
 
@@ -77,9 +80,16 @@ export const LikeButton: React.FC<LikeButtonProps> = ({ projectSlug }) => {
                 console.log('User already liked this project (23505)');
                 setIsLiked(true);
                 updateLocalLikes();
+                addToast({
+                    variant: 'neutral',
+                    message: 'You have already liked this project.'
+                });
             } else {
                 console.error('Error liking:', error);
-                // Optional: Show error to user?
+                addToast({
+                    variant: 'danger',
+                    message: 'Failed to submit like. Please try again.'
+                });
             }
         } else {
             console.log('Like submitted successfully');
@@ -87,6 +97,10 @@ export const LikeButton: React.FC<LikeButtonProps> = ({ projectSlug }) => {
             setIsLiked(true);
             updateLocalLikes();
             localStorage.setItem('user_email', emailToUse);
+            addToast({
+                variant: 'success',
+                message: 'Thanks for your like!'
+            });
         }
         
         setLoading(false);
