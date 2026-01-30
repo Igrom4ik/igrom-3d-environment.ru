@@ -23,42 +23,63 @@ function MarmosetViewerContent() {
   }, []);
 
   useEffect(() => {
-    if (!scriptLoaded || !file || !containerRef.current || viewerRef.current) return;
+    // Add a small delay to ensure DOM is ready and script is fully processed
+    const timer = setTimeout(() => {
+        if (!scriptLoaded || !file || !containerRef.current || viewerRef.current) return;
 
-    const marmoset = (window as any).marmoset;
-    if (!marmoset) return;
-
-    try {
-        const viewer = new marmoset.WebViewer(
-          window.innerWidth,
-          window.innerHeight,
-          file
-        );
-        viewerRef.current = viewer;
-        containerRef.current.appendChild(viewer.domRoot);
-
-        viewer.onLoad = () => {
-          if (autoStart) {
-            viewer.loadScene();
-          }
-        };
-
-        const handleResize = () => {
-          viewer.resize(window.innerWidth, window.innerHeight);
-        };
-
-        window.addEventListener('resize', handleResize);
+        const marmoset = (window as any).marmoset;
+        if (!marmoset) {
+            console.error("Marmoset object not found on window");
+            return;
+        }
         
-        return () => {
-          window.removeEventListener('resize', handleResize);
-          if (viewerRef.current && viewerRef.current.domRoot && containerRef.current) {
-            containerRef.current.removeChild(viewerRef.current.domRoot);
-          }
-          viewerRef.current = null;
-        };
-    } catch (e) {
-        console.error("Marmoset initialization failed:", e);
-    }
+        // Ensure noExisting viewer
+        if (containerRef.current.innerHTML !== '') {
+            containerRef.current.innerHTML = '';
+        }
+
+        try {
+            console.log("Initializing Marmoset Viewer with file:", file);
+            const viewer = new marmoset.WebViewer(
+              window.innerWidth,
+              window.innerHeight,
+              file
+            );
+            viewerRef.current = viewer;
+            containerRef.current.appendChild(viewer.domRoot);
+
+            viewer.onLoad = () => {
+              console.log("Marmoset scene loaded");
+              if (autoStart) {
+                viewer.loadScene();
+              }
+            };
+
+            const handleResize = () => {
+              if (viewerRef.current) {
+                  viewerRef.current.resize(window.innerWidth, window.innerHeight);
+              }
+            };
+
+            window.addEventListener('resize', handleResize);
+            
+            // Clean up function is handled by useEffect return
+        } catch (e) {
+            console.error("Marmoset initialization failed:", e);
+        }
+    }, 100);
+
+    return () => {
+        clearTimeout(timer);
+        window.removeEventListener('resize', () => {}); // Placeholder cleanup
+        if (viewerRef.current && viewerRef.current.domRoot && containerRef.current) {
+             // Check if node is still a child before removing
+             if (containerRef.current.contains(viewerRef.current.domRoot)) {
+                containerRef.current.removeChild(viewerRef.current.domRoot);
+             }
+        }
+        viewerRef.current = null;
+    };
   }, [scriptLoaded, file, autoStart]);
 
   return (
