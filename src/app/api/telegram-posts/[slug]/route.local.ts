@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ContentService } from '@/core/content/ContentService';
+import { ContentService } from '../../../../core/content/ContentService';
 
 export const dynamicParams = true;
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

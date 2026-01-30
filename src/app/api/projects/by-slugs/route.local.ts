@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getPosts } from '@/utils/utils';
-import type { Metadata } from '@/types';
+import { ContentService } from '@/core/content/ContentService';
 
 export async function POST(request: Request) {
     try {
@@ -10,18 +9,25 @@ export async function POST(request: Request) {
             return NextResponse.json({ projects: [] });
         }
 
-        const allProjects = getPosts(["src", "app", "(site)", "work", "projects"]);
-        const projectMap = new Map(allProjects.map((p) => [p.slug, p]));
+        const allProjectsData = await ContentService.getAllProjects();
+        const projectMap = new Map(allProjectsData.map((p) => [p.slug, p.entry]));
         
         const projects = slugs
-            .map(slug => projectMap.get(slug))
-            .filter(Boolean)
-            .map((p) => {
-                if (!p) return null;
+            .map(slug => {
+                const project = projectMap.get(slug);
+                if (!project) return null;
+                
+                let image = '';
+                if (typeof project.cover === 'string') {
+                    image = project.cover;
+                } else if (project.cover && typeof project.cover === 'object') {
+                    image = project.cover.src || '';
+                }
+
                 return {
-                    title: p.metadata.title,
-                    image: p.metadata.cover || p.metadata.image || (p.metadata.images?.[0] || ''),
-                    slug: p.slug
+                    title: project.title,
+                    image,
+                    slug: slug
                 };
             })
             .filter(Boolean);

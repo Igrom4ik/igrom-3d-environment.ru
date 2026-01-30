@@ -4,12 +4,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, X, Check } from 'lucide-react';
 import { supabase } from '@/utils/supabase';
+import { useToast } from "@once-ui-system/core";
 
 interface LikeButtonProps {
     projectSlug: string;
 }
 
 export const LikeButton: React.FC<LikeButtonProps> = ({ projectSlug }) => {
+    const { addToast } = useToast();
     const [likes, setLikes] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -81,7 +83,7 @@ export const LikeButton: React.FC<LikeButtonProps> = ({ projectSlug }) => {
                 setIsLiked(true);
                 updateLocalLikes();
                 addToast({
-                    variant: 'neutral',
+                    variant: 'success',
                     message: 'You have already liked this project.'
                 });
             } else {
