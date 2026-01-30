@@ -27,7 +27,7 @@ function isRateLimited(ip: string): boolean {
   return record.count > MAX_REQUESTS;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip Rate Limiting for Admin/Keystatic API to prevent blocking the dashboard

@@ -24,6 +24,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+debug_logs.txt
+AUDIT_REPORT.md
 
 # local env files
 .env*.local
@@ -35,3 +37,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs
+*.njsproj
+*.sln
+*.sw?
+
+# AI / Agent files
+.trae
+.continue
