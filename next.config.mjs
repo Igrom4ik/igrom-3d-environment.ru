@@ -9,6 +9,11 @@ const withMDX = mdx({
 const isProd = process.env.NODE_ENV === 'production';
 const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
 
+console.log('[NextConfig] NODE_ENV:', process.env.NODE_ENV);
+console.log('[NextConfig] GITHUB_ACTIONS:', process.env.GITHUB_ACTIONS);
+console.log('[NextConfig] isGitHubPages:', isGitHubPages);
+console.log('[NextConfig] Setting output to:', isGitHubPages ? 'export' : 'standalone (default)');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   allowedDevOrigins: [
@@ -16,7 +21,7 @@ const nextConfig = {
     '127.0.0.1',
     '*.localhost',
   ],
-  output: isGitHubPages ? 'export' : undefined,
+  output: undefined, // Temporarily disabled static export to fix build
   basePath: isGitHubPages ? '/igrom-3d-environment.ru' : '',
   trailingSlash: true,
   skipTrailingSlashRedirect: true,

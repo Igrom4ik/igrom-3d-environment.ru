@@ -1,5 +1,0 @@
-
-name: git-mcp
-command: uvx
-args:
-  - mcp-server-git
