@@ -35,9 +35,6 @@ export default async function BlogIndexPage() {
           >
             Dev‑blog
           </h1>
-          <span style={{ fontSize: 13, color: "#8c92b0" }}>
-            {sorted.length} записей
-          </span>
         </header>
 
         <div
