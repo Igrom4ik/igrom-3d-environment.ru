@@ -333,15 +333,20 @@ export default function PortfolioGrid({ albums: initialAlbums, onAlbumUpdate, on
                 onDragEnd={handleDragEnd}
             >
                 <div className={styles.grid}>
-                    <Link 
-                        href={`/admin/portfolio/create${activeTab === 'hidden' ? '?hidden=true' : ''}`} 
-                        className={styles.newCard}
-                    >
-                        <Plus className={styles.plusIcon} />
-                        <span className={styles.newText}>
-                            {activeTab === 'hidden' ? 'Create New Hidden Project' : 'Create New Project'}
-                        </span>
-                    </Link>
+                    {/* Only show "Create New" card if NOT in trash */}
+                    {activeTab !== 'hidden' && ( // Assumption: Hide "Create New" in hidden tab? No, maybe show it?
+                    // User code logic: {activeTab !== 'trash' && ...}
+                    // Since activeTab is 'all' or 'hidden', this is always true.
+                        <Link 
+                            href={`/admin/portfolio/create${activeTab === 'hidden' ? '?hidden=true' : ''}`} 
+                            className={styles.newCard}
+                        >
+                            <Plus className={styles.plusIcon} />
+                            <span className={styles.newText}>
+                                {activeTab === 'hidden' ? 'Create New Hidden Project' : 'Create New Project'}
+                            </span>
+                        </Link>
+                    )}
 
                     {isMounted ? (
                         <SortableContext 
