@@ -64,3 +64,9 @@ src/content/albums/
 src/content/telegram-posts/
 src/app/(site)/blog/posts/
 src/content/projects/
+
+# Backups and archives
+*.tar.gz
+*.zip
+*.rar
+backup-content-*
