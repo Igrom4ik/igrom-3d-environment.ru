@@ -4,25 +4,36 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from '../portfolio/portfolio.module.css'; // Reusing portfolio styles
 import { 
-    Eye, EyeOff, Plus, Trash2, Check, Circle, GripVertical, FileText
+    Eye, EyeOff, Plus, Trash2, Check, Circle, GripVertical, FileText, RefreshCw
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
 interface BlogGridProps {
     posts: any[];
-    onBatchAction?: (slugs: string[]) => void;
+    isTrash?: boolean;
+    onMoveToTrash?: (slugs: string[]) => void;
+    onRestore?: (slugs: string[]) => void;
+    onPermanentDelete?: (slugs: string[]) => void;
 }
 
-export default function BlogGrid({ posts: initialPosts, onBatchAction }: BlogGridProps) {
+export default function BlogGrid({ 
+    posts: initialPosts, 
+    isTrash = false,
+    onMoveToTrash,
+    onRestore,
+    onPermanentDelete
+}: BlogGridProps) {
     const router = useRouter();
     const [posts, setPosts] = useState<any[]>(initialPosts);
     const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
-    const [deletingIds, setDeletingIds] = useState<string[]>([]);
+    const [processingIds, setProcessingIds] = useState<string[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setPosts(initialPosts);
+        // Clear selection when posts change (e.g. switching tabs)
+        setSelectedSlugs([]);
     }, [initialPosts]);
 
     useEffect(() => {
@@ -47,7 +58,7 @@ export default function BlogGrid({ posts: initialPosts, onBatchAction }: BlogGri
         }
     };
 
-    const handleDeleteSelected = async (e?: React.MouseEvent) => {
+    const handleBatchAction = async (e: React.MouseEvent, action: 'trash' | 'restore' | 'delete') => {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -55,40 +66,52 @@ export default function BlogGrid({ posts: initialPosts, onBatchAction }: BlogGri
         
         if (selectedSlugs.length === 0) return;
         
-        const message = `Are you sure you want to PERMANENTLY delete ${selectedSlugs.length} post(s)? This action cannot be undone.`;
+        let confirmMsg = '';
+        if (action === 'trash') confirmMsg = `Move ${selectedSlugs.length} post(s) to Trash?`;
+        if (action === 'restore') confirmMsg = `Restore ${selectedSlugs.length} post(s)?`;
+        if (action === 'delete') confirmMsg = `PERMANENTLY delete ${selectedSlugs.length} post(s)? This cannot be undone.`;
 
-        if (!window.confirm(message)) return;
+        if (!window.confirm(confirmMsg)) return;
         
-        setDeletingIds(selectedSlugs);
+        setProcessingIds(selectedSlugs);
 
         try {
-            const res = await fetch('/api/blog/delete', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ slugs: selectedSlugs })
-            });
+            let res;
+            if (action === 'delete') {
+                // Permanent Delete
+                res = await fetch('/api/blog/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ slugs: selectedSlugs })
+                });
+            } else {
+                // Trash / Restore
+                res = await fetch('/api/blog/trash', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ slugs: selectedSlugs, action })
+                });
+            }
             
             const data = await res.json();
             
             if (res.ok && data.success) {
-                setPosts(prev => prev.filter(p => !selectedSlugs.includes(p.slug)));
+                // Update parent state
+                if (action === 'trash' && onMoveToTrash) onMoveToTrash(selectedSlugs);
+                if (action === 'restore' && onRestore) onRestore(selectedSlugs);
+                if (action === 'delete' && onPermanentDelete) onPermanentDelete(selectedSlugs);
+                
+                // Local cleanup handled by parent passing new props, but clear selection here
                 setSelectedSlugs([]);
-                setDeletingIds([]);
-                
-                if (data.errors && data.errors.length > 0) {
-                    alert(`Some posts had errors: ${data.errors.join(', ')}`);
-                }
-                
-                if (onBatchAction) onBatchAction(selectedSlugs);
+                setProcessingIds([]);
             } else {
-                console.error('Delete failed:', data);
-                alert(`Failed to delete posts: ${data.error || 'Unknown error'}`);
-                setDeletingIds([]);
+                alert(`Failed: ${data.error || 'Unknown error'}`);
+                setProcessingIds([]);
             }
         } catch (error) {
-            console.error('Delete error:', error);
-            alert('Error deleting posts.');
-            setDeletingIds([]);
+            console.error('Action error:', error);
+            alert('Error processing request.');
+            setProcessingIds([]);
         }
     };
 
@@ -98,25 +121,52 @@ export default function BlogGrid({ posts: initialPosts, onBatchAction }: BlogGri
             <div className={styles.filtersRow} style={{ justifyContent: 'flex-end' }}>
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     {selectedSlugs.length > 0 && (
-                        <button 
-                            type="button"
-                            onClick={handleDeleteSelected}
-                            className={styles.deleteBatchButton}
-                            style={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                gap: '6px', 
-                                color: '#ff4d4d', 
-                                background: 'rgba(255, 77, 77, 0.1)',
-                                border: '1px solid rgba(255, 77, 77, 0.2)',
-                                padding: '4px 12px',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '13px'
-                            }}
-                        >
-                            <Trash2 size={14} /> Delete Forever ({selectedSlugs.length})
-                        </button>
+                        <>
+                            {isTrash ? (
+                                <>
+                                    <button 
+                                        type="button"
+                                        onClick={(e) => handleBatchAction(e, 'restore')}
+                                        className={styles.actionButton}
+                                        style={{ 
+                                            display: 'flex', alignItems: 'center', gap: '6px', 
+                                            color: '#1e90ff', background: 'rgba(30, 144, 255, 0.1)',
+                                            border: '1px solid rgba(30, 144, 255, 0.2)',
+                                            padding: '4px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px'
+                                        }}
+                                    >
+                                        <RefreshCw size={14} /> Restore ({selectedSlugs.length})
+                                    </button>
+                                    <button 
+                                        type="button"
+                                        onClick={(e) => handleBatchAction(e, 'delete')}
+                                        className={styles.actionButton}
+                                        style={{ 
+                                            display: 'flex', alignItems: 'center', gap: '6px', 
+                                            color: '#ff4d4d', background: 'rgba(255, 77, 77, 0.1)',
+                                            border: '1px solid rgba(255, 77, 77, 0.2)',
+                                            padding: '4px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px'
+                                        }}
+                                    >
+                                        <Trash2 size={14} /> Delete Forever ({selectedSlugs.length})
+                                    </button>
+                                </>
+                            ) : (
+                                <button 
+                                    type="button"
+                                    onClick={(e) => handleBatchAction(e, 'trash')}
+                                    className={styles.actionButton}
+                                    style={{ 
+                                        display: 'flex', alignItems: 'center', gap: '6px', 
+                                        color: '#ff4d4d', background: 'rgba(255, 77, 77, 0.1)',
+                                        border: '1px solid rgba(255, 77, 77, 0.2)',
+                                        padding: '4px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px'
+                                    }}
+                                >
+                                    <Trash2 size={14} /> Move to Trash ({selectedSlugs.length})
+                                </button>
+                            )}
+                        </>
                     )}
                     <button 
                         type="button" 
@@ -129,14 +179,15 @@ export default function BlogGrid({ posts: initialPosts, onBatchAction }: BlogGri
             </div>
 
             <div className={styles.grid}>
-                {/* Create New Card - Link to Custom Create */}
-                <Link 
-                    href="/admin/blog/create" 
-                    className={styles.newCard}
-                >
-                    <Plus className={styles.plusIcon} />
-                    <span className={styles.newText}>Create New Post</span>
-                </Link>
+                {!isTrash && (
+                    <Link 
+                        href="/admin/blog/create" 
+                        className={styles.newCard}
+                    >
+                        <Plus className={styles.plusIcon} />
+                        <span className={styles.newText}>Create New Post</span>
+                    </Link>
+                )}
 
                 {posts.map((post) => (
                     <BlogPostCard
@@ -144,8 +195,8 @@ export default function BlogGrid({ posts: initialPosts, onBatchAction }: BlogGri
                         post={post}
                         isSelected={selectedSlugs.includes(post.slug)}
                         toggleSelection={toggleSelection}
-                        isBeingDeleted={deletingIds.includes(post.slug)}
-                        isMounted={isMounted}
+                        isProcessing={processingIds.includes(post.slug)}
+                        isTrash={isTrash}
                     />
                 ))}
             </div>
@@ -157,7 +208,8 @@ function BlogPostCard({
     post, 
     isSelected, 
     toggleSelection, 
-    isBeingDeleted,
+    isProcessing,
+    isTrash
 }: any) {
     const getExitAnimation = () => {
         return {
@@ -171,12 +223,13 @@ function BlogPostCard({
         <motion.article
             initial={false}
             animate={
-                isBeingDeleted
+                isProcessing
                     ? getExitAnimation()
                     : { opacity: 1, scale: 1 }
             }
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
             className={`${styles.projectCard} ${isSelected ? styles.projectCardSelected : ''}`}
+            style={isTrash ? { opacity: 0.7 } : {}}
         >
             <div className={styles.cardImageContainer}>
                 <div style={{ position: 'absolute', top: '8px', right: '8px', display: 'flex', gap: '8px', zIndex: 20 }}>
@@ -188,12 +241,14 @@ function BlogPostCard({
                     </div>
                 </div>
 
-                <Link href={`/admin/blog/edit/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
+                {/* Disable link if in trash, or link to preview? */}
+                <Link href={isTrash ? '#' : `/admin/blog/edit/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%', pointerEvents: isTrash ? 'none' : 'auto' }}>
                     {post.entry.image ? (
                         <img 
                             src={post.entry.image} 
                             alt={post.entry.title} 
                             className={styles.cardImage} 
+                            style={isTrash ? { filter: 'grayscale(100%)' } : {}}
                         />
                     ) : (
                         <div style={{ width: '100%', height: '100%', background: '#282a36', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -203,11 +258,7 @@ function BlogPostCard({
                 </Link>
             </div>
             
-            <Link 
-                href={`/admin/blog/edit/${post.slug}`} 
-                className={styles.cardMeta} 
-                style={{ textDecoration: 'none', display: 'block' }}
-            >
+            <div className={styles.cardMeta}>
                 <div className={styles.cardTitle}>{post.entry.title}</div>
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -221,11 +272,11 @@ function BlogPostCard({
                             fontSize: '12px'
                         }}
                     >
-                        {post.entry.publishedAt ? new Date(post.entry.publishedAt).toLocaleDateString() : 'Draft'}
+                        {isTrash ? 'Deleted' : (post.entry.publishedAt ? new Date(post.entry.publishedAt).toLocaleDateString() : 'Draft')}
                     </span>
                     
                     {post.entry.tag && (
-                        <span style={{ fontSize: '12px', color: '#1e90ff' }}>#{post.entry.tag}</span>
+                        <span style={{ fontSize: '12px', color: '#1e90ff' }}>#{post.entry.tag.split(',')[0]}</span>
                     )}
                 </div>
                 
@@ -234,7 +285,7 @@ function BlogPostCard({
                         {post.entry.summary}
                     </div>
                 )}
-            </Link>
+            </div>
         </motion.article>
     );
 }

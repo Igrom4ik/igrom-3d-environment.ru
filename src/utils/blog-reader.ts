@@ -2,27 +2,23 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
-export async function getBlogPosts() {
-    console.log('getBlogPosts: Starting...');
-    const postsDir = path.join(process.cwd(), 'src/app/(site)/blog/posts');
-    
-    if (!fs.existsSync(postsDir)) {
-        console.log('getBlogPosts: Directory not found:', postsDir);
+// Helper function to read posts from a specific directory
+async function readPostsFromDir(dirPath: string) {
+    if (!fs.existsSync(dirPath)) {
         return [];
     }
 
     let entries;
     try {
-        entries = fs.readdirSync(postsDir);
-        console.log('getBlogPosts: Found entries:', entries);
+        entries = fs.readdirSync(dirPath);
     } catch (e) {
-        console.error('getBlogPosts: Error reading directory:', e);
+        console.error(`Error reading directory ${dirPath}:`, e);
         return [];
     }
     
     const posts = entries.map(entryName => {
         try {
-            const entryPath = path.join(postsDir, entryName);
+            const entryPath = path.join(dirPath, entryName);
             const stats = fs.statSync(entryPath);
             let slug = entryName;
             let fileContent = '';
@@ -33,7 +29,6 @@ export async function getBlogPosts() {
                 if (fs.existsSync(indexPath)) {
                     fileContent = fs.readFileSync(indexPath, 'utf-8');
                 } else {
-                    console.warn(`getBlogPosts: No index.mdoc in ${entryName}`);
                     return null;
                 }
             } else if (stats.isFile() && entryName.endsWith('.mdoc')) {
@@ -46,7 +41,7 @@ export async function getBlogPosts() {
             const { data, content } = matter(fileContent);
             return {
                 slug,
-                content, // Include content for editing
+                content,
                 entry: {
                     title: data.title || slug,
                     publishedAt: data.publishedAt || null,
@@ -56,11 +51,18 @@ export async function getBlogPosts() {
                 }
             };
         } catch (e) {
-            console.error(`getBlogPosts: Error processing ${entryName}:`, e);
+            console.error(`Error processing ${entryName}:`, e);
             return null;
         }
     }).filter(post => post !== null);
 
+    return posts;
+}
+
+export async function getBlogPosts() {
+    const postsDir = path.join(process.cwd(), 'src/app/(site)/blog/posts');
+    const posts = await readPostsFromDir(postsDir);
+    
     // Sort by date descending
     posts.sort((a, b) => {
         const dateA = new Date(a!.entry.publishedAt || 0).getTime();
@@ -68,6 +70,19 @@ export async function getBlogPosts() {
         return dateB - dateA;
     });
 
-    console.log(`getBlogPosts: Returning ${posts.length} posts`);
+    return posts;
+}
+
+export async function getTrashPosts() {
+    const trashDir = path.join(process.cwd(), 'src/app/(site)/blog/_trash');
+    const posts = await readPostsFromDir(trashDir);
+    
+    // Sort by date descending
+    posts.sort((a, b) => {
+        const dateA = new Date(a!.entry.publishedAt || 0).getTime();
+        const dateB = new Date(b!.entry.publishedAt || 0).getTime();
+        return dateB - dateA;
+    });
+
     return posts;
 }
