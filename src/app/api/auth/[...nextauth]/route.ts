@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 
-const handler = NextAuth({
+const { handlers } = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -38,4 +38,4 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
 });
 
-export { handler as GET, handler as POST };
+export const { GET, POST } = handlers;

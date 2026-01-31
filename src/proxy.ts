@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 // Simple in-memory rate limiter
-// Note: In a serverless environment (Vercel), this map might be reset frequently.
-// For robust rate limiting, use Redis (e.g., @upstash/ratelimit).
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
 const WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_REQUESTS = 200; // 200 requests per minute (generous for assets)
+const MAX_REQUESTS = 200; // 200 requests per minute
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
@@ -27,50 +26,43 @@ function isRateLimited(ip: string): boolean {
   return record.count > MAX_REQUESTS;
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip Rate Limiting for Admin/Keystatic API to prevent blocking the dashboard
-  if (pathname.startsWith("/api/keystatic") || pathname.startsWith("/keystatic")) {
-    // Pass through to the Auth check below
-  } else {
-    // 1. Rate Limiting
-    const ip = request.headers.get("x-forwarded-for") || "unknown";
-    
-    // Stricter limit for API
-    const isApi = pathname.startsWith('/api');
-    // const limit = isApi ? 60 : 200; // Unused in current isRateLimited implementation which uses global MAX_REQUESTS
-
-    if (isRateLimited(ip)) {
-       return new NextResponse("Too Many Requests", { status: 429 });
+  // 1. NextAuth Protection for /admin
+  if (pathname.startsWith("/admin")) {
+    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+    if (!token) {
+      return NextResponse.redirect(new URL("/auth/signin", request.url));
     }
   }
 
-  // 2. Admin / Keystatic Protection
+  // 2. Rate Limiting (Skip for Keystatic/Admin to prevent blocking)
+  if (!pathname.startsWith("/api/keystatic") && !pathname.startsWith("/keystatic") && !pathname.startsWith("/admin")) {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    if (isRateLimited(ip)) {
+      return new NextResponse("Too Many Requests", { status: 429 });
+    }
+  }
+
+  // 3. Vite Client (Dev mode)
   if (pathname === "/@vite/client") {
     return new NextResponse(null, { status: 200 });
   }
 
-  // Allow Keystatic API requests to pass through
+  // 4. Keystatic API
   if (pathname.startsWith("/api/keystatic")) {
     return NextResponse.next();
   }
 
-  // Only protect /keystatic routes
-  // Exclude explicit file extensions to avoid blocking JS/CSS assets
+  // 5. Keystatic Admin Protection
   if (pathname.startsWith("/keystatic") && !pathname.match(/\.[a-zA-Z0-9]+$/)) {
-    // TEMPORARY: Disable auth check for debugging
-    // const adminAccess = request.cookies.get("admin-access");
-    // if (!adminAccess || adminAccess.value !== "true") { ... }
-    
-    // Check if we are in dev mode
     const adminAccess = request.cookies.get("admin-access");
     if (!adminAccess || adminAccess.value !== "true") {
       if (process.env.NODE_ENV === "development") {
-         // In development, we can be more lenient or just redirect to secret-login
-         return NextResponse.redirect(new URL("/secret-login", request.url));
+        return NextResponse.redirect(new URL("/secret-login", request.url));
       } else {
-         return NextResponse.rewrite(new URL("/404-not-found", request.url));
+        return NextResponse.rewrite(new URL("/404-not-found", request.url));
       }
     }
   }
@@ -85,7 +77,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public files (images, etc) - hard to detect without regex on extension
+     * - public files (images, etc)
      */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
