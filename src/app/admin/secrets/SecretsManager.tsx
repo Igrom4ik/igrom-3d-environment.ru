@@ -17,8 +17,8 @@ interface Secrets {
   [key: string]: string | undefined;
 }
 
-export default function SecretsManager() {
-  const [secrets, setSecrets] = useState<Secrets>({});
+export default function SecretsManager({ initialSecrets }: { initialSecrets?: Secrets }) {
+  const [secrets, setSecrets] = useState<Secrets>(initialSecrets || {});
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});

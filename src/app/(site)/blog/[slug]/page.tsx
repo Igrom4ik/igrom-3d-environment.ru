@@ -8,7 +8,7 @@ import styles from "./blog-post.module.css";
 
 type Params = { slug: string };
 
-export async function generateStaticParams() {
+export async function generateStaticParams(): Promise<Params[]> {
   const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
   return posts.map((p) => ({ slug: p.slug }));
 }
