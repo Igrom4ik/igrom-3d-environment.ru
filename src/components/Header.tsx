@@ -187,8 +187,8 @@ export const Header = ({ preset }: { preset?: string }) => {
               {/* Mobile Navigation Trigger */}
               <Row hide s={{ hide: false }}>
                 <ToggleButton 
-                  prefixIcon="menu" 
-                  onClick={() => setIsMobileMenuOpen(true)} 
+                  prefixIcon={isMobileMenuOpen ? "close" : "menu"}
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
                   selected={isMobileMenuOpen}
                 />
               </Row>
@@ -223,7 +223,7 @@ export const Header = ({ preset }: { preset?: string }) => {
       {isMobileMenuOpen && (
         <Flex
           position="fixed"
-          zIndex={9}
+          zIndex={8}
             fillWidth
           fillHeight
           background="page"
@@ -232,66 +232,72 @@ export const Header = ({ preset }: { preset?: string }) => {
           gap="32"
           style={{ top: 0, left: 0, bottom: 0, right: 0 }}
         >
-          <Row fillWidth horizontal="end">
-            <ToggleButton 
-              prefixIcon="close" 
-              onClick={() => setIsMobileMenuOpen(false)} 
-            />
-          </Row>
           <Flex direction="column" gap="16" fillWidth vertical="center">
             {routes["/"] && (
-              <ToggleButton 
-                prefixIcon="home" 
-                href="/" 
-                label={t("nav.home") || "Home"} 
-                selected={pathname === "/"} 
-                fillWidth
-              />
+              <div style={{ width: '100%' }} onClick={() => setIsMobileMenuOpen(false)}>
+                <ToggleButton 
+                  prefixIcon="home" 
+                  href="/" 
+                  label={t("nav.home") || "Home"} 
+                  selected={pathname === "/"} 
+                  fillWidth
+                />
+              </div>
             )}
             {routes["/about"] && (
-              <ToggleButton
-                prefixIcon="person"
-                href="/about"
-                label={t("nav.about")}
-                selected={pathname === "/about"}
-                fillWidth
-              />
+              <div style={{ width: '100%' }} onClick={() => setIsMobileMenuOpen(false)}>
+                <ToggleButton
+                  prefixIcon="person"
+                  href="/about"
+                  label={t("nav.about")}
+                  selected={pathname === "/about"}
+                  fillWidth
+                />
+              </div>
             )}
             {routes["/work"] && (
-              <ToggleButton
-                prefixIcon="grid"
-                href="/work"
-                label={t("nav.work")}
-                selected={pathname.startsWith("/work")}
-                fillWidth
-              />
+              <div style={{ width: '100%' }} onClick={() => setIsMobileMenuOpen(false)}>
+                <ToggleButton
+                  prefixIcon="grid"
+                  href="/work"
+                  label={t("nav.work")}
+                  selected={pathname.startsWith("/work")}
+                  fillWidth
+                />
+              </div>
             )}
             {routes["/blog"] && (
-              <ToggleButton
-                prefixIcon="book"
-                href="/blog"
-                label={t("nav.blog")}
-                selected={pathname.startsWith("/blog")}
-                fillWidth
-              />
+              <div style={{ width: '100%' }} onClick={() => setIsMobileMenuOpen(false)}>
+                <ToggleButton
+                  prefixIcon="book"
+                  href="/blog"
+                  label={t("nav.blog")}
+                  selected={pathname.startsWith("/blog")}
+                  fillWidth
+                />
+              </div>
             )}
             {routes["/gallery"] && (
-              <ToggleButton
-                prefixIcon="gallery"
-                href="/gallery"
-                label={t("nav.gallery")}
-                selected={pathname.startsWith("/gallery")}
-                fillWidth
-              />
+              <div style={{ width: '100%' }} onClick={() => setIsMobileMenuOpen(false)}>
+                <ToggleButton
+                  prefixIcon="gallery"
+                  href="/gallery"
+                  label={t("nav.gallery")}
+                  selected={pathname.startsWith("/gallery")}
+                  fillWidth
+                />
+              </div>
             )}
             {routes["/coding"] && (
-              <ToggleButton
-                prefixIcon="terminal"
-                href="/coding"
-                label={t("nav.coding")}
-                selected={pathname.startsWith("/coding")}
-                fillWidth
-              />
+              <div style={{ width: '100%' }} onClick={() => setIsMobileMenuOpen(false)}>
+                <ToggleButton
+                  prefixIcon="terminal"
+                  href="/coding"
+                  label={t("nav.coding")}
+                  selected={pathname.startsWith("/coding")}
+                  fillWidth
+                />
+              </div>
             )}
           </Flex>
           <Flex direction="column" gap="16" fillWidth vertical="center" marginTop="m">
