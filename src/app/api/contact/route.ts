@@ -11,6 +11,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
+    // Debug logging for SMTP config (careful not to log full password)
+    console.log('Initializing SMTP transport with:', {
+      host: process.env.SMTP_HOST || 'smtp.beget.com',
+      port: Number(process.env.SMTP_PORT) || 465,
+      user: process.env.SMTP_USER,
+      passLength: process.env.SMTP_PASS ? process.env.SMTP_PASS.length : 0
+    });
+
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error('SMTP credentials missing in environment variables');
+      return NextResponse.json({ error: 'Server configuration error (missing credentials)' }, { status: 500 });
+    }
+
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.beget.com',
       port: Number(process.env.SMTP_PORT) || 465,
