@@ -78,6 +78,13 @@ export default async function RootLayout({
       )}
     >
       <head>
+        <meta property="og:title" content="Mikitar — личный сайт 3D‑художника" />
+        <meta property="og:site_name" content="igrom-3d-environment.ru" />
+        <meta property="og:description" content="Мой личный сайт и портфолио 3D‑окружения и моделей." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://igrom-3d-environment.ru/" />
+        <meta property="og:image" content="https://igrom-3d-environment.ru/images/og/avatar.jpg" />
+        
         <Script id="theme-init" strategy="beforeInteractive">
           {`(function() {
             try {
