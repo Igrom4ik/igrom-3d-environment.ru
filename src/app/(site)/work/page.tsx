@@ -4,8 +4,6 @@ import { getWorkSettings } from "@/utils/reader";
 import { Column, Heading, Meta, Schema } from "@once-ui-system/core";
 import { PageBuilder } from "@/components/PageBuilder";
 
-export const dynamic = 'force-dynamic';
-
 export async function generateMetadata() {
   const settings = await getWorkSettings();
   const title = settings?.title || work.title;

@@ -3,8 +3,6 @@ import { getGallerySettings, getAlbums } from "@/utils/reader";
 import { Flex, Meta, Schema } from "@once-ui-system/core";
 import GalleryPage from "@/components/gallery/GalleryPage";
 
-export const dynamic = 'force-dynamic';
-
 export async function generateMetadata() {
   const settings = await getGallerySettings();
   const title = settings?.title || gallery.title;
@@ -22,7 +20,15 @@ export async function generateMetadata() {
 export default async function Gallery() {
   const settings = await getGallerySettings();
   const allAlbums = await getAlbums();
-  const albums = allAlbums.filter((album: any) => !album.entry.hidden);
+  const albums = allAlbums
+    .filter((album: any) => !album.entry.hidden)
+    .map((album: any) => ({
+      ...album,
+      entry: {
+        ...album.entry,
+        description: undefined // Remove function to avoid serialization error
+      }
+    }));
   
   const title = settings?.title || gallery.title;
   const description = settings?.description || gallery.description;

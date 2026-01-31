@@ -1,8 +1,6 @@
 import { getAlbums } from '@/utils/reader';
 import PortfolioManager from './PortfolioManager';
 
-export const dynamic = 'force-dynamic';
-
 export default async function PortfolioAdminPage() {
     const rawAlbums = await getAlbums();
     

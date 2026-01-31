@@ -26,10 +26,18 @@ export function readMDXFile(filePath: string) {
     const rawContent = fs.readFileSync(filePath, "utf-8");
     const { data, content } = matter(rawContent);
 
-    // Handle legacy images array
-    let images = (data.images || []).map((img: string) =>
-      img.startsWith("/") ? `${basePath}${img}` : img,
-    );
+    // Handle legacy images array and Keystatic object format
+    let images = (data.images || []).map((img: any) => {
+      if (typeof img === 'string') {
+        return img.startsWith("/") ? `${basePath}${img}` : img;
+      }
+      // Handle Keystatic image object
+      if (img?.value?.src && typeof img.value.src === 'string') {
+         const src = img.value.src;
+         return src.startsWith("/") ? `${basePath}${src}` : src;
+      }
+      return "";
+    }).filter((img: string) => img !== "");
 
     // Handle new media blocks
     const media: MediaItem[] = data.media || [];
