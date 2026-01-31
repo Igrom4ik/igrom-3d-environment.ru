@@ -29,10 +29,10 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
     >
       <article
         style={{
-          maxWidth: 840,
+          maxWidth: 720,
           width: "100%",
           borderRadius: 24,
-          padding: "32px 28px 40px",
+          padding: "clamp(24px, 5vw, 40px) clamp(16px, 4vw, 28px) 40px",
           background:
             "linear-gradient(145deg, rgba(9,12,28,0.98), rgba(4,6,16,0.98))",
           boxShadow:
@@ -54,8 +54,8 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
           </div>
           <h1
             style={{
-              fontSize: 28,
-              lineHeight: 1.15,
+              fontSize: "clamp(22px, 5vw, 28px)",
+              lineHeight: 1.2,
               margin: 0,
               color: "#f4f5ff",
             }}
@@ -66,8 +66,9 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
             <p
               style={{
                 marginTop: 12,
-                fontSize: 15,
+                fontSize: "clamp(14px, 4vw, 15px)",
                 color: "#a7adc7",
+                lineHeight: 1.6,
               }}
             >
               {metadata.summary}
@@ -77,8 +78,8 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
 
         <section
           style={{
-            fontSize: 15,
-            lineHeight: 1.6,
+            fontSize: "clamp(15px, 4vw, 16px)",
+            lineHeight: 1.7,
             color: "#cdd2eb",
           }}
         >

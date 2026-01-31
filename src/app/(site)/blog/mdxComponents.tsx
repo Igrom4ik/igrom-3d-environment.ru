@@ -14,6 +14,11 @@ export function CodeBlock({
   const match = /language-(\w+)/.exec(className || "");
   const language = match?.[1] ?? "tsx";
 
+  // Simple copy function
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(children);
+  };
+
   return (
     <div
       style={{
@@ -22,6 +27,7 @@ export function CodeBlock({
         border: "1px solid rgba(255,255,255,0.07)",
         background: "rgba(5,8,20,0.9)",
         overflow: "hidden",
+        position: "relative", // For positioning copy button
       }}
     >
       <div
@@ -34,22 +40,40 @@ export function CodeBlock({
           borderBottom: "1px solid rgba(255,255,255,0.04)",
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
         <span>{language}</span>
+        <button
+          onClick={copyToClipboard}
+          style={{
+            background: "transparent",
+            border: "1px solid rgba(255,255,255,0.1)",
+            color: "#9da4c0",
+            borderRadius: "4px",
+            padding: "2px 6px",
+            fontSize: "10px",
+            cursor: "pointer",
+          }}
+        >
+          COPY
+        </button>
       </div>
-      <SyntaxHighlighter
-        language={language}
-        style={atomDark}
-        customStyle={{
-          margin: 0,
-          padding: "12px 16px",
-          background: "transparent",
-          fontSize: 13,
-        }}
-      >
-        {String(children).replace(/\n$/, "")}
-      </SyntaxHighlighter>
+      <div style={{ overflowX: "auto" }}>
+        <SyntaxHighlighter
+          language={language}
+          style={atomDark}
+          customStyle={{
+            margin: 0,
+            padding: "12px 16px",
+            background: "transparent",
+            fontSize: 13,
+            minWidth: "100%", // Ensure content doesn't shrink
+          }}
+        >
+          {String(children).replace(/\n$/, "")}
+        </SyntaxHighlighter>
+      </div>
     </div>
   );
 }

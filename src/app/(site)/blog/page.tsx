@@ -24,11 +24,12 @@ export default async function BlogIndexPage() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "baseline",
+            padding: "0 4px",
           }}
         >
           <h1
             style={{
-              fontSize: 26,
+              fontSize: "clamp(22px, 4vw, 26px)",
               color: "#f4f5ff",
             }}
           >
@@ -42,7 +43,7 @@ export default async function BlogIndexPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
             gap: 20,
           }}
         >
