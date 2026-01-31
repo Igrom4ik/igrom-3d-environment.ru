@@ -11,6 +11,7 @@ export const dynamicParams = false;
 type Params = { slug: string };
 
 export async function generateStaticParams(): Promise<Params[]> {
+  // Generate params for static export
   const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
   return posts.map((p) => ({ slug: p.slug }));
 }
