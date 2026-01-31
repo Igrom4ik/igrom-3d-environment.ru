@@ -1,0 +1,13 @@
+.adminBody {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    padding-top: 112px;
+}
+
+@media (max-width: 1024px) {
+    .adminBody {
+        padding-top: 80px;
+    }
+}

@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import styles from '../portfolio/portfolio.module.css'; // Reusing styles
-import { Search, Trash2, FileText, Filter, ArrowUp, ArrowDown, RefreshCw } from 'lucide-react';
+import { Search, Trash2, FileText, Filter, ArrowUp, ArrowDown, RefreshCw, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import BlogGrid from './BlogGrid';
+import Link from 'next/link';
 
 interface BlogManagerProps {
     initialPosts: any[];
@@ -16,6 +17,7 @@ type TabOption = 'active' | 'trash';
 export default function BlogManager({ initialPosts, initialTrashPosts = [] }: BlogManagerProps) {
     const [posts, setPosts] = useState(initialPosts);
     const [trashPosts, setTrashPosts] = useState(initialTrashPosts);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     
     // UI State
     const [activeTab, setActiveTab] = useState<TabOption>('active');
@@ -118,69 +120,90 @@ export default function BlogManager({ initialPosts, initialTrashPosts = [] }: Bl
     };
 
     return (
-        <div className={styles.mainLayout}>
-            <div className={styles.sidebar}>
-                <div className={styles.sidebarSection}>
-                    <div className={styles.sidebarHeader}>Управление Блогом</div>
-                    
-                    {/* Tabs */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
-                        <button 
-                            className={activeTab === 'active' ? styles.tabActive : styles.tab}
-                            style={{ 
-                                background: activeTab === 'active' ? 'rgba(30, 144, 255, 0.1)' : 'transparent',
-                                color: activeTab === 'active' ? '#1e90ff' : '#9a9cab',
-                                border: activeTab === 'active' ? '1px solid rgba(30, 144, 255, 0.2)' : '1px solid transparent',
-                                padding: '10px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px'
-                            }}
-                            onClick={() => setActiveTab('active')}
+        <div className={styles.pageContainer}>
+            <div className={styles.mainLayout}>
+                <div className={`${styles.sidebar} ${isSidebarCollapsed ? styles.sidebarCollapsed : ''}`}>
+                    <button 
+                        className={styles.toggleButton} 
+                        onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                        title={isSidebarCollapsed ? "Развернуть" : "Свернуть"}
+                        type="button"
+                    >
+                        {isSidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+                    </button>
+
+                    <div className={styles.sidebarSection}>
+                        <div className={styles.sidebarHeader}>
+                            <span className={styles.sidebarText}>Управление</span>
+                        </div>
+                        
+                        {/* Tabs */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
+                            <button 
+                                className={activeTab === 'active' ? styles.tabActive : styles.tab}
+                                style={{ 
+                                    background: activeTab === 'active' ? 'rgba(30, 144, 255, 0.1)' : 'transparent',
+                                    color: activeTab === 'active' ? '#1e90ff' : '#9a9cab',
+                                    border: activeTab === 'active' ? '1px solid rgba(30, 144, 255, 0.2)' : '1px solid transparent',
+                                    padding: '10px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px'
+                                }}
+                                onClick={() => setActiveTab('active')}
+                                title="Все Статьи"
+                            >
+                                <FileText size={16} /> <span className={styles.sidebarText}>Все Статьи ({posts.length})</span>
+                            </button>
+                            <button 
+                                className={activeTab === 'trash' ? styles.tabActive : styles.tab}
+                                style={{ 
+                                    background: activeTab === 'trash' ? 'rgba(255, 77, 77, 0.1)' : 'transparent',
+                                    color: activeTab === 'trash' ? '#ff4d4d' : '#9a9cab',
+                                    border: activeTab === 'trash' ? '1px solid rgba(255, 77, 77, 0.2)' : '1px solid transparent',
+                                    padding: '10px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px'
+                                }}
+                                onClick={() => setActiveTab('trash')}
+                                title="Корзина"
+                            >
+                                <Trash2 size={16} /> <span className={styles.sidebarText}>Корзина ({trashPosts.length})</span>
+                            </button>
+                        </div>
+
+                        <div className={`${styles.sidebarHeader} ${styles.sidebarText}`} style={{ marginTop: '24px' }}>Фильтры</div>
+                        
+                        {/* Tag Filter */}
+                        <select 
+                            className={styles.sidebarText}
+                            style={{ width: '100%', background: '#1e2028', color: '#fff', border: '1px solid #282a36', padding: '8px', borderRadius: '4px', outline: 'none', marginTop: '8px', display: isSidebarCollapsed ? 'none' : 'block' }}
+                            value={selectedTag}
+                            onChange={(e) => setSelectedTag(e.target.value)}
                         >
-                            <FileText size={16} /> Все Статьи ({posts.length})
-                        </button>
-                        <button 
-                            className={activeTab === 'trash' ? styles.tabActive : styles.tab}
-                            style={{ 
-                                background: activeTab === 'trash' ? 'rgba(255, 77, 77, 0.1)' : 'transparent',
-                                color: activeTab === 'trash' ? '#ff4d4d' : '#9a9cab',
-                                border: activeTab === 'trash' ? '1px solid rgba(255, 77, 77, 0.2)' : '1px solid transparent',
-                                padding: '10px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px'
-                            }}
-                            onClick={() => setActiveTab('trash')}
+                            <option value="all">Все Категории</option>
+                            {allTags.map(tag => (
+                                <option key={tag} value={tag}>{tag}</option>
+                            ))}
+                        </select>
+
+                        <div className={`${styles.sidebarHeader} ${styles.sidebarText}`} style={{ marginTop: '24px' }}>Сортировка</div>
+                        <select 
+                            className={styles.sidebarText}
+                            style={{ width: '100%', background: '#1e2028', color: '#fff', border: '1px solid #282a36', padding: '8px', borderRadius: '4px', outline: 'none', marginTop: '8px', display: isSidebarCollapsed ? 'none' : 'block' }}
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value as SortOption)}
                         >
-                            <Trash2 size={16} /> Корзина ({trashPosts.length})
-                        </button>
+                            <option value="date-desc">По дате (Новые)</option>
+                            <option value="date-asc">По дате (Старые)</option>
+                            <option value="title-asc">По названию (А-Я)</option>
+                            <option value="title-desc">По названию (Я-А)</option>
+                        </select>
                     </div>
 
-                    <div className={styles.sidebarHeader} style={{ marginTop: '24px' }}>Фильтры</div>
-                    
-                    {/* Tag Filter */}
-                    <select 
-                        style={{ width: '100%', background: '#1e2028', color: '#fff', border: '1px solid #282a36', padding: '8px', borderRadius: '4px', outline: 'none', marginTop: '8px' }}
-                        value={selectedTag}
-                        onChange={(e) => setSelectedTag(e.target.value)}
-                    >
-                        <option value="all">Все Категории</option>
-                        {allTags.map(tag => (
-                            <option key={tag} value={tag}>{tag}</option>
-                        ))}
-                    </select>
-
-                    <div className={styles.sidebarHeader} style={{ marginTop: '24px' }}>Сортировка</div>
-                    <select 
-                        style={{ width: '100%', background: '#1e2028', color: '#fff', border: '1px solid #282a36', padding: '8px', borderRadius: '4px', outline: 'none', marginTop: '8px' }}
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    >
-                        <option value="date-desc">По дате (Новые)</option>
-                        <option value="date-asc">По дате (Старые)</option>
-                        <option value="title-asc">По названию (А-Я)</option>
-                        <option value="title-desc">По названию (Я-А)</option>
-                    </select>
+                    <Link href="/admin/blog/create" className={styles.createButton}>
+                        <Plus size={16} />
+                        <span className={styles.sidebarText}>Создать статью</span>
+                    </Link>
                 </div>
-            </div>
 
-            {/* Main Content */}
-            <div className={styles.contentArea}>
+                {/* Main Content */}
+                <div className={styles.contentArea}>
                 <div className={styles.portfolioHeader}>
                     <div>
                         <h1 className={styles.pageTitle}>
@@ -212,5 +235,6 @@ export default function BlogManager({ initialPosts, initialTrashPosts = [] }: Bl
                 />
             </div>
         </div>
+    </div>
     );
 }

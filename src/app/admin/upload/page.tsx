@@ -77,7 +77,7 @@ export default function LargeFileUploader() {
 
     return (
         <div className={styles.pageContainer}>
-            <header className={styles.header}>
+            <header className={styles.utilityPageHeader}>
                 <div className={styles.headerLeft}>
                     <Link href="/admin/portfolio" className={styles.navLink} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <ChevronLeft size={16} /> Back to Portfolio
@@ -88,7 +88,7 @@ export default function LargeFileUploader() {
                 </div>
             </header>
 
-            <div className={styles.mainLayout} style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80vh' }}>
+            <div className={styles.mainLayout} style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
                 <div style={{ 
                     background: '#181920', 
                     border: '1px solid #282a36', 

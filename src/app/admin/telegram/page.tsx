@@ -54,7 +54,7 @@ export default function TelegramAdminPage() {
     if (!authorized) return <Column fillWidth horizontal="center" vertical="center" style={{height: '100vh'}}><Spinner size="l" /></Column>;
 
     return (
-        <Column fillWidth padding="l" gap="l" maxWidth="m" horizontal="center" style={{ minHeight: '100vh', paddingTop: '80px' }}>
+        <Column fillWidth padding="l" gap="l" maxWidth="m" horizontal="center" style={{ minHeight: '100vh' }}>
             <Heading variant="display-strong-s">Telegram Publisher</Heading>
             
             <Column fillWidth gap="s">

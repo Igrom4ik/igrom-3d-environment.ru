@@ -1,6 +1,7 @@
 import "@once-ui-system/core/css/styles.css";
 import "@once-ui-system/core/css/tokens.css";
 import "@/resources/custom.css";
+import styles from "@/components/admin/admin-layout.module.css";
 
 import { Providers } from "@/components";
 import AdminNav from "@/components/admin/AdminNav";
@@ -21,7 +22,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Column
           as="body"
           fillWidth
-          style={{ minHeight: "100vh", margin: 0, padding: 0, backgroundColor: "#000000", paddingTop: "112px" }}
+          className={styles.adminBody}
           background="page"
         >
           <AdminNav />

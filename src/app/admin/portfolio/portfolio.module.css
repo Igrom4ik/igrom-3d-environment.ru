@@ -1,16 +1,22 @@
 .pageContainer {
     background-color: #101015;
-    height: 100vh;
+    height: calc(100vh - 112px); /* Fit remaining space below header */
     overflow: hidden;
     color: #f4f4f6;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    padding-top: 110px; /* Space for fixed AdminNav */
+    padding-top: 0; /* Handled by AdminLayout */
+}
+
+@media (max-width: 1024px) {
+    .pageContainer {
+        height: calc(100vh - 80px);
+    }
 }
 
 /* Header */
-.header {
+.utilityPageHeader {
     height: 56px;
     background-color: #0b0b10;
     border-bottom: 1px solid #282a36;
@@ -18,7 +24,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    display: none; /* Hide old internal header */
 }
 
 .headerLeft {
@@ -326,9 +331,9 @@
 @media (max-width: 768px) {
     .pageContainer {
         height: auto;
-        min-height: 100vh; /* Allow page to grow */
+        min-height: calc(100vh - 80px); /* Allow page to grow */
         overflow-y: auto; /* Enable page scroll */
-        padding-top: 80px; 
+        padding-top: 0; 
     }
 
     .grid {
