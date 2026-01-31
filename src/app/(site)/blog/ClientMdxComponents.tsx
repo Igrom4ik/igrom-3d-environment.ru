@@ -1,8 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+
+// Portal Component
+const Portal = ({ children }: { children: React.ReactNode }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  return mounted ? createPortal(children, document.body) : null;
+};
 
 export function CodeBlock({
   className,
@@ -117,34 +130,36 @@ export function BlogImage({
       </figure>
 
       {open && (
-        <div
-          onClick={() => setOpen(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.85)",
-            backdropFilter: "blur(10px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-            cursor: "zoom-out",
-            padding: "24px",
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={src}
-            alt={alt ?? ""}
+        <Portal>
+          <div
+            onClick={() => setOpen(false)}
             style={{
-              maxWidth: "90vw",
-              maxHeight: "90vh",
-              borderRadius: 20,
-              boxShadow: "0 24px 80px rgba(0,0,0,0.85)",
-              objectFit: "contain",
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.85)",
+              backdropFilter: "blur(10px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 9999,
+              cursor: "zoom-out",
+              padding: "24px",
             }}
-          />
-        </div>
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src}
+              alt={alt ?? ""}
+              style={{
+                maxWidth: "90vw",
+                maxHeight: "90vh",
+                borderRadius: 20,
+                boxShadow: "0 24px 80px rgba(0,0,0,0.85)",
+                objectFit: "contain",
+              }}
+            />
+          </div>
+        </Portal>
       )}
     </>
   );
@@ -157,7 +172,7 @@ export function ZoomImage(props: any) {
 
   return (
     <>
-      <div 
+      <span 
         style={{ 
           display: 'flex', 
           justifyContent: 'center', 
@@ -185,38 +200,40 @@ export function ZoomImage(props: any) {
           onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
           onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
         />
-      </div>
+      </span>
 
       {isZoomed && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'zoom-out',
-            padding: '20px'
-          }}
-          onClick={() => setIsZoomed(false)}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            {...rest}
+        <Portal>
+          <div
             style={{
-              maxWidth: '95vw',
-              maxHeight: '95vh',
-              objectFit: 'contain',
-              borderRadius: 4,
-              boxShadow: '0 0 40px rgba(0,0,0,0.5)'
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'zoom-out',
+              padding: '20px'
             }}
-          />
-        </div>
+            onClick={() => setIsZoomed(false)}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              {...rest}
+              style={{
+                maxWidth: '95vw',
+                maxHeight: '95vh',
+                objectFit: 'contain',
+                borderRadius: 4,
+                boxShadow: '0 0 40px rgba(0,0,0,0.5)'
+              }}
+            />
+          </div>
+        </Portal>
       )}
     </>
   );
