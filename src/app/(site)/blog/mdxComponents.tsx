@@ -200,29 +200,75 @@ export function AudioPlayer({ src }: { src: string }) {
 export const mdxComponents = {
   code: CodeBlock,
   pre: (props: any) => <div {...props} />, // Prevent double <pre>
-  img: (props: any) => (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      margin: '24px 0',
-      width: '100%' 
-    }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        {...props}
-        style={{
-          maxWidth: "100%",
-          maxHeight: "300px",
-          width: "auto", 
-          height: "auto",
-          borderRadius: 8,
-          display: "block",
-          border: "1px solid rgba(255,255,255,0.1)",
-          objectFit: "contain",
-        }}
-      />
-    </div>
-  ),
+  img: function ImageWithZoom(props: any) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [isZoomed, setIsZoomed] = React.useState(false);
+
+    return (
+      <>
+        <div 
+          style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            margin: '24px 0',
+            width: '100%',
+            cursor: 'zoom-in'
+          }}
+          onClick={() => setIsZoomed(true)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            {...props}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "300px",
+              width: "auto", 
+              height: "auto",
+              borderRadius: 8,
+              display: "block",
+              border: "1px solid rgba(255,255,255,0.1)",
+              objectFit: "contain",
+              transition: "transform 0.2s ease-in-out",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
+            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+          />
+        </div>
+
+        {isZoomed && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'zoom-out',
+              padding: '20px'
+            }}
+            onClick={() => setIsZoomed(false)}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              {...props}
+              style={{
+                maxWidth: '95vw',
+                maxHeight: '95vh',
+                objectFit: 'contain',
+                borderRadius: 4,
+                boxShadow: '0 0 40px rgba(0,0,0,0.5)'
+              }}
+            />
+          </div>
+        )}
+      </>
+    );
+  },
   HeroImage,
   Note,
   VideoPlayer,
