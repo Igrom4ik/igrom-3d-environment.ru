@@ -32,6 +32,7 @@ import { motion } from 'framer-motion';
 
 interface ProjectEditorProps {
     slug: string;
+    initialData?: ProjectData | null;
 }
 
 interface MediaItemValue {
@@ -266,11 +267,11 @@ function SortableMediaItem({
     );
 }
 
-export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps) {
+export default function ProjectEditor({ slug: initialSlug, initialData }: ProjectEditorProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [slug, setSlug] = useState<string>(initialSlug);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(!initialData && initialSlug !== 'create');
     const [saving, setSaving] = useState(false);
     
     // Deletion animation state
@@ -279,14 +280,23 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
     const [activeId, setActiveId] = useState<number | null>(null);
 
     // Form State
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [hidden, setHidden] = useState(false);
-    const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
-    const [mediums, setMediums] = useState<string[]>([]);
-    const [software, setSoftware] = useState<string[]>([]);
-    const [tags, setTags] = useState<string[]>([]);
-    const [coverImage, setCoverImage] = useState('');
+    const [title, setTitle] = useState(initialData?.title || '');
+    const [description, setDescription] = useState(initialData?.description || initialData?.content || '');
+    const [hidden, setHidden] = useState(initialData?.hidden || false);
+    const [mediaItems, setMediaItems] = useState<MediaItem[]>(() => {
+        if (initialData?.images && Array.isArray(initialData.images)) {
+             return initialData.images.map((img) => ({
+                id: Math.random(),
+                type: img.discriminant,
+                value: img.value
+            }));
+        }
+        return [];
+    });
+    const [mediums, setMediums] = useState<string[]>(initialData?.categorization?.medium || []);
+    const [software, setSoftware] = useState<string[]>(initialData?.categorization?.software || []);
+    const [tags, setTags] = useState<string[]>(initialData?.categorization?.tags || []);
+    const [coverImage, setCoverImage] = useState(initialData?.publishing?.cover || '');
     const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
     const [isMounted, setIsMounted] = useState(false);
 
@@ -307,65 +317,12 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
     );
 
     useEffect(() => {
-        if (slug !== 'create') {
-            loadProject(slug);
-        } else {
+        if (slug === 'create') {
             const isHidden = searchParams.get('hidden') === 'true';
             if (isHidden) setHidden(true);
             setLoading(false);
         }
     }, [slug, searchParams]);
-
-    const loadProject = async (slug: string) => {
-        try {
-            console.log(`Fetching project for slug: ${slug}`);
-            const res = await fetch(`/api/portfolio/get?slug=${encodeURIComponent(slug)}`);
-            if (res.ok) {
-                const data: ProjectData = await res.json();
-                console.log('Project data loaded:', data);
-                
-                setTitle(data.title || '');
-                // Handle both 'content' (markdown body) and 'description' (frontmatter field)
-                setDescription(data.description || data.content || '');
-                setHidden(data.hidden || false);
-                
-                // Categorization
-                if (data.categorization) {
-                    setMediums(data.categorization.medium || []);
-                    setSoftware(data.categorization.software || []);
-                    setTags(data.categorization.tags || []);
-                }
-
-                // Images
-                if (data.images && Array.isArray(data.images)) {
-                    const items = data.images.map((img) => ({
-                        id: Math.random(),
-                        type: img.discriminant,
-                        value: img.value
-                    }));
-                    setMediaItems(items);
-                }
-
-                // Publishing
-                if (data.publishing) {
-                    setCoverImage(data.publishing.cover || '');
-                }
-            } else {
-                const errorText = await res.text();
-                // 404 is expected for new projects or if slug changed, don't alert unless it's a real error
-                if (res.status !== 404) {
-                     console.error(`Failed to load project: ${res.status} ${res.statusText}. Response: ${errorText}`);
-                     alert(`Failed to load project: ${res.status}. Check console for details.`);
-                } else {
-                    console.warn(`Project not found (404) for slug: ${slug}. This might be a new project.`);
-                }
-            }
-            setLoading(false); 
-        } catch (error) {
-            console.error('Error loading project:', error);
-            setLoading(false);
-        }
-    };
 
     const transliterate = (text: string) => {
         const ru: Record<string, string> = {

@@ -218,6 +218,41 @@ export async function getAlbum(slug: string) {
   }
 }
 
+export function getRawAlbum(slug: string) {
+  try {
+    const albumsDir = path.join(process.cwd(), 'src/content/albums');
+    const folderPath = path.join(albumsDir, slug);
+    const mdocPath = path.join(albumsDir, `${slug}.mdoc`);
+    const indexMdocPath = path.join(folderPath, 'index.mdoc');
+
+    let filePath = null;
+
+    if (fs.existsSync(indexMdocPath)) {
+        filePath = indexMdocPath;
+    } else if (fs.existsSync(mdocPath)) {
+        filePath = mdocPath;
+    }
+
+    if (!filePath) {
+        return null;
+    }
+
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const parsed = matter(fileContent);
+    const data = parsed.data;
+    const content = parsed.content;
+
+    return { 
+        slug,
+        ...data,
+        content 
+    };
+  } catch (error) {
+    console.error(`Error in getRawAlbum for ${slug}:`, error);
+    return null;
+  }
+}
+
 export function getPosts(pathArr: string[]) {
     // Helper to get posts for other collections if needed
     // The original code used a custom getPosts helper, likely from utils.ts

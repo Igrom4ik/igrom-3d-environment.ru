@@ -1,4 +1,4 @@
-import { getAlbums } from "@/utils/reader";
+import { getAlbums, getRawAlbum } from "@/utils/reader";
 import ClientPage from "./ClientPage";
 import { Suspense } from "react";
 
@@ -22,9 +22,15 @@ interface PageProps {
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
+  
+  let initialData = null;
+  if (slug !== 'create') {
+      initialData = getRawAlbum(slug);
+  }
+
   return (
     <Suspense fallback={<div>Loading editor...</div>}>
-      <ClientPage slug={slug} />
+      <ClientPage slug={slug} initialData={initialData} />
     </Suspense>
   );
 }

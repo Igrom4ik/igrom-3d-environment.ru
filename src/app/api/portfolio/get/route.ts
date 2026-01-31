@@ -1,56 +1,27 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { log } from '../../../../utils/logger';
+
+// This API route is incompatible with "output: export" because it uses query parameters.
+// The logic has been moved to server-side fetching in /admin/portfolio/[slug]/page.tsx.
+// We keep this file as a placeholder to avoid breaking the build or if user wants to restore it later.
+
+export const dynamic = 'force-static';
+
+export async function GET() {
+  return NextResponse.json({ 
+    message: 'This API route is deprecated in static export mode. Use direct server-side file reading instead.' 
+  });
+}
+
+/*
+// ORIGINAL LOGIC (Preserved for reference)
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
-import { log } from '../../../../utils/logger';
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const slug = url.searchParams.get('slug');
-  log(`API GET /api/portfolio/get called. URL: ${req.url}, Extracted slug: ${slug}`);
-  
-  try {
-    if (!slug) {
-      log("API Error: Slug is required");
-      return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
-    }
-
-    const albumsDir = path.join(process.cwd(), 'src/content/albums');
-    const folderPath = path.join(albumsDir, slug);
-    const mdocPath = path.join(albumsDir, `${slug}.mdoc`);
-    const indexMdocPath = path.join(folderPath, 'index.mdoc');
-
-    log(`API Checking paths: ${indexMdocPath}, ${mdocPath}`);
-
-    let filePath = null;
-
-    if (fs.existsSync(indexMdocPath)) {
-        filePath = indexMdocPath;
-        log("API Found file at indexMdocPath");
-    } else if (fs.existsSync(mdocPath)) {
-        filePath = mdocPath;
-        log("API Found file at mdocPath");
-    }
-
-    if (!filePath) {
-        log(`API Error: Project not found for slug: ${slug}`);
-        return NextResponse.json({ error: 'Project not found' }, { status: 404 });
-    }
-
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const parsed = matter(fileContent);
-    const data = parsed.data;
-    const content = parsed.content;
-
-    log(`API Successfully returned project for slug: ${slug}`);
-    return NextResponse.json({ 
-        slug,
-        ...data,
-        content 
-    });
-
-  } catch (error) {
-    log(`API ERROR for slug ${slug}:`, error);
-    return NextResponse.json({ error: 'Failed to fetch project' }, { status: 500 });
-  }
+  // ...
 }
+*/
