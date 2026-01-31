@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ContentService } from '@/core/content/ContentService';
 
+export async function generateStaticParams() {
+  const posts = await ContentService.getAllTelegramPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
 export const dynamicParams = true;
 
 export async function GET(
