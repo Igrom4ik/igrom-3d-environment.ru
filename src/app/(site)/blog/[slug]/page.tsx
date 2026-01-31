@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-
-export const dynamic = 'error';
-
 import { getPosts } from "@/utils/utils";
 import { mdxComponents } from "../mdxComponents";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { ArrowLeft } from "lucide-react";
 import styles from "./blog-post.module.css";
+
+export const dynamic = 'error';
+export const dynamicParams = false;
 
 type Params = { slug: string };
 
@@ -15,8 +15,6 @@ export async function generateStaticParams(): Promise<Params[]> {
   const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
   return posts.map((p) => ({ slug: p.slug }));
 }
-
-export const dynamicParams = false;
 
 export default async function BlogPostPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
