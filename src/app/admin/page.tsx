@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LayoutGrid, FileText, Send, Upload } from 'lucide-react';
+import { LayoutGrid, FileText, Send, Upload, Rocket } from 'lucide-react';
 import styles from './portfolio/portfolio.module.css'; // Reuse styles
 
 export default function AdminDashboard() {
@@ -39,6 +39,14 @@ export default function AdminDashboard() {
                         </div>
                         <span style={{ fontSize: '18px', fontWeight: 600 }}>Uploads</span>
                         <span style={{ fontSize: '14px', color: '#9a9cab', textAlign: 'center' }}>Upload large files and manage assets.</span>
+                    </Link>
+
+                    <Link href="/admin/deploy" className={styles.projectCard} style={{ padding: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textDecoration: 'none', color: '#f4f4f6' }}>
+                        <div style={{ padding: '16px', background: 'rgba(240, 80, 51, 0.1)', borderRadius: '50%', color: '#f05033' }}>
+                            <Rocket size={32} />
+                        </div>
+                        <span style={{ fontSize: '18px', fontWeight: 600 }}>Deploy</span>
+                        <span style={{ fontSize: '14px', color: '#9a9cab', textAlign: 'center' }}>Manage Git version control and Vercel deployments.</span>
                     </Link>
                 </div>
             </div>
