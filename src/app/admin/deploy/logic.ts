@@ -1,4 +1,4 @@
-'use server';
+// Logic for deployment actions (used by API route)
 
 import { exec } from 'child_process';
 import { promisify } from 'util';

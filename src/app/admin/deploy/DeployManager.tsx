@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getGitStatus, deployToGit, triggerVercelDeploy } from './actions';
+// import { getGitStatus, deployToGit, triggerVercelDeploy } from './actions';
 import { GitBranch, Globe, Loader2, CheckCircle, AlertCircle, RefreshCw, Upload } from 'lucide-react';
 import styles from '../portfolio/portfolio.module.css';
 
@@ -14,11 +14,16 @@ export default function DeployManager() {
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
 
   const fetchStatus = async () => {
-    const res = await getGitStatus();
-    if (res.success) {
-      setStatus(res.status || 'Clean working directory');
-    } else {
-      setStatus('Error fetching status: ' + res.error);
+    try {
+      const res = await fetch('/api/admin/deploy');
+      const data = await res.json();
+      if (data.success) {
+        setStatus(data.status || 'Clean working directory');
+      } else {
+        setStatus('Error fetching status: ' + data.error);
+      }
+    } catch (e) {
+      setStatus('Network error fetching status');
     }
   };
 
@@ -31,9 +36,14 @@ export default function DeployManager() {
     setGitLoading(true);
     setResult(null);
     try {
-      const res = await deployToGit(message);
-      setResult({ success: res.success, message: res.success ? res.message : res.error });
-      if (res.success) {
+      const res = await fetch('/api/admin/deploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'git', message })
+      });
+      const data = await res.json();
+      setResult({ success: data.success, message: data.success ? data.message : data.error });
+      if (data.success) {
         setMessage('');
         fetchStatus();
       }
@@ -48,8 +58,13 @@ export default function DeployManager() {
     setVercelLoading(true);
     setResult(null);
     try {
-      const res = await triggerVercelDeploy();
-      setResult({ success: res.success, message: res.success ? res.message : res.error });
+      const res = await fetch('/api/admin/deploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'vercel' })
+      });
+      const data = await res.json();
+      setResult({ success: data.success, message: data.success ? data.message : data.error });
     } catch (e) {
       setResult({ success: false, message: 'Unexpected error occurred' });
     } finally {

@@ -2,6 +2,13 @@ import BlogEditor from '../../BlogEditor';
 import { getBlogPosts } from '@/utils/blog-reader';
 import { notFound } from 'next/navigation';
 
+export async function generateStaticParams() {
+    const posts = await getBlogPosts();
+    return posts.map((post: any) => ({
+        slug: post.slug,
+    }));
+}
+
 export default async function EditBlogPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
     const posts = await getBlogPosts();
