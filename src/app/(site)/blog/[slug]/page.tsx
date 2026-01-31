@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+
+export const dynamic = 'error';
+
 import { getPosts } from "@/utils/utils";
 import { mdxComponents } from "../mdxComponents";
 import { MDXRemote } from "next-mdx-remote/rsc";
