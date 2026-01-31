@@ -7,10 +7,10 @@ const withMDX = mdx({
 });
 
 const isProd = process.env.NODE_ENV === 'production';
-const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+const isGitHubPages = process.env.IS_GITHUB_PAGES === 'true';
 
 console.log('[NextConfig] NODE_ENV:', process.env.NODE_ENV);
-console.log('[NextConfig] GITHUB_ACTIONS:', process.env.GITHUB_ACTIONS);
+console.log('[NextConfig] IS_GITHUB_PAGES:', process.env.IS_GITHUB_PAGES);
 console.log('[NextConfig] isGitHubPages:', isGitHubPages);
 console.log('[NextConfig] Setting output to:', isGitHubPages ? 'export' : 'standalone (default)');
 
