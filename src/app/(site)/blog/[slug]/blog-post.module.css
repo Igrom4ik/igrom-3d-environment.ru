@@ -6,14 +6,16 @@
 
 .layout {
     display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 64px;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 48px;
     align-items: start;
+    justify-content: center;
 }
 
 .sidebar {
     position: sticky;
     top: 120px;
+    width: 100%;
 }
 
 .backLink {
@@ -83,12 +85,13 @@
 
 .article {
     width: 100%;
-    max-width: 800px; /* Optimal reading width */
+    max-width: 900px; /* Increased from 800px */
     border-radius: 24px;
-    padding: 48px;
+    padding: 56px; /* Increased padding */
     background: linear-gradient(145deg, rgba(9, 12, 28, 0.98), rgba(4, 6, 16, 0.98));
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.06);
+    margin: 0 auto;
 }
 
 .title {
