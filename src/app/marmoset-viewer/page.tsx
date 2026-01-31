@@ -17,24 +17,30 @@ function MarmosetViewerContent() {
 
   // Check if marmoset is already on window
   useEffect(() => {
+    console.log("[Marmoset] Page mounted. File:", file);
     const checkMarmoset = setInterval(() => {
         if (typeof window !== 'undefined' && (window as any).marmoset) {
+            console.log("[Marmoset] Library detected on window");
             setScriptLoaded(true);
             clearInterval(checkMarmoset);
         }
-    }, 100);
+    }, 200);
     return () => clearInterval(checkMarmoset);
-  }, []);
+  }, [file]);
 
   useEffect(() => {
+    if (!scriptLoaded) return;
+
     // Add a small delay to ensure DOM is ready and script is fully processed
     const timer = setTimeout(() => {
-        if (!file || !containerRef.current || viewerRef.current) return;
+        if (!file || !containerRef.current || viewerRef.current) {
+            console.log("[Marmoset] Skipping initialization:", { file, hasContainer: !!containerRef.current, hasViewer: !!viewerRef.current });
+            return;
+        }
 
         const marmoset = (window as any).marmoset;
         if (!marmoset) {
-            console.warn("Marmoset object not found on window, waiting...");
-            // If scriptLoaded is true but marmoset is missing, we might need to retry
+            console.error("[Marmoset] marmoset object missing even after script load!");
             return;
         }
         
@@ -44,7 +50,9 @@ function MarmosetViewerContent() {
         }
 
         try {
-            console.log("Initializing Marmoset Viewer with file:", file);
+            console.log("[Marmoset] Initializing WebViewer with file:", file);
+            
+            // Fix: ensure the file path is correct (relative to public)
             const viewer = new marmoset.WebViewer(
               window.innerWidth,
               window.innerHeight,
@@ -60,10 +68,14 @@ function MarmosetViewerContent() {
             containerRef.current.appendChild(viewer.domRoot);
 
             viewer.onLoad = () => {
-              console.log("Marmoset scene loaded");
+              console.log("[Marmoset] Scene loaded successfully");
               if (autoStart) {
                 viewer.loadScene();
               }
+            };
+            
+            viewer.onError = (err: any) => {
+                console.error("[Marmoset] Viewer error:", err);
             };
 
             const handleResize = () => {
@@ -74,11 +86,10 @@ function MarmosetViewerContent() {
 
             window.addEventListener('resize', handleResize);
             
-            // Clean up function is handled by useEffect return
         } catch (e) {
-            console.error("Marmoset initialization failed:", e);
+            console.error("[Marmoset] Initialization failed:", e);
         }
-    }, 100);
+    }, 300);
 
     return () => {
         clearTimeout(timer);

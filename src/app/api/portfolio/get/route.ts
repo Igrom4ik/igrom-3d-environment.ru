@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
-import { log } from '@/utils/logger';
+import { log } from '../../../../utils/logger';
 
 export const dynamic = 'force-dynamic';
 

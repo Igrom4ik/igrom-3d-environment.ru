@@ -95,6 +95,7 @@ export function readMDXFile(filePath: string) {
       })),
       priority: data.priority ?? 999,
       link: data.link || "",
+      hidden: data.hidden || false,
     };
 
     return { metadata, content };
@@ -113,18 +114,24 @@ export function getPosts(dirParts: string[]) {
   const entries = fs.readdirSync(dirPath, { withFileTypes: true });
 
   return entries
-    .filter((entry) => entry.isDirectory())
     .map((entry) => {
-      const slug = entry.name;
-      const dirPathSlug = path.join(dirPath, slug);
-      
-      // Check for index.mdx or index.mdoc
-      let filePath = path.join(dirPathSlug, "index.mdx");
-      if (!fs.existsSync(filePath)) {
-        filePath = path.join(dirPathSlug, "index.mdoc");
+      let slug = entry.name;
+      let filePath = '';
+
+      if (entry.isDirectory()) {
+        const dirPathSlug = path.join(dirPath, slug);
+        // Check for index.mdx or index.mdoc
+        if (fs.existsSync(path.join(dirPathSlug, "index.mdx"))) {
+            filePath = path.join(dirPathSlug, "index.mdx");
+        } else if (fs.existsSync(path.join(dirPathSlug, "index.mdoc"))) {
+            filePath = path.join(dirPathSlug, "index.mdoc");
+        }
+      } else if (entry.isFile() && (entry.name.endsWith('.mdx') || entry.name.endsWith('.mdoc'))) {
+         slug = entry.name.replace(/\.md(x|oc)$/, '');
+         filePath = path.join(dirPath, entry.name);
       }
-      
-      if (!fs.existsSync(filePath)) {
+
+      if (!filePath || !fs.existsSync(filePath)) {
         return null;
       }
       
@@ -139,6 +146,6 @@ export function getPosts(dirParts: string[]) {
         content,
       };
     })
-    .filter((post): post is { slug: string; metadata: Metadata; content: string } => post !== null)
+    .filter((post): post is { slug: string; metadata: Metadata; content: string } => post !== null && !post.metadata.hidden)
     .sort((a, b) => (a.metadata.priority ?? 999) - (b.metadata.priority ?? 999));
 }

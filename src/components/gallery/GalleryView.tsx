@@ -168,7 +168,7 @@ export default function GalleryView({ images = gallery.images }: GalleryViewProp
                 }}
              >
                <iframe
-                 src={`${basePath}/marmoset-viewer/?file=${image.src}&autoStart=false`}
+                 src={`${basePath}/marmoset-viewer/?file=${encodeURIComponent(image.src)}&autoStart=false`}
                  width="100%"
                  height="100%"
                  allowFullScreen

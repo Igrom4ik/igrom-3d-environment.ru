@@ -37,7 +37,7 @@ export default config({
     }),
     albums: collection({
         label: 'Портфолио (Проекты)',
-        path: 'src/content/albums/*',
+        path: 'src/content/albums/*/',
         slugField: 'title',
         format: { contentField: 'description' },
         previewUrl: '/gallery/{slug}',
@@ -45,6 +45,7 @@ export default config({
         schema: {
             title: fields.slug({ name: { label: 'Название проекта' } }),
             priority: fields.integer({ label: 'Приоритет (сортировка)', defaultValue: 0 }),
+            hidden: fields.checkbox({ label: 'Скрыто (Hidden)', defaultValue: false, description: 'Скрыть проект с сайта, но оставить в админке' }),
             
             // Artwork Details
             description: fields.document({

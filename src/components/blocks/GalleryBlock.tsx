@@ -15,7 +15,8 @@ interface GalleryBlockProps {
 
 export async function GalleryBlock({ data }: GalleryBlockProps) {
   const { title, limit } = data;
-  const albums = await getAlbums();
+  const allAlbums = await getAlbums();
+  const albums = allAlbums.filter((album: any) => !album.entry.hidden);
   
   // Map albums to GalleryImage format using cover
   const albumImages: GalleryImage[] = albums.map((album: any) => ({

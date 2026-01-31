@@ -100,115 +100,159 @@
 /* Main Content Layout */
 .mainLayout {
     display: flex;
-    padding: 20px 40px;
-    gap: 40px;
-    max-width: 1600px;
-    margin: 0 auto;
-    width: 100%;
+    flex: 1;
+    height: calc(100vh - 56px);
+    overflow: hidden; /* Prevent full page scroll if sidebar transitions */
 }
 
 /* Sidebar */
 .sidebar {
-    width: 260px;
-    flex-shrink: 0;
+    width: 280px;
+    background-color: #101015;
+    border-right: 1px solid #282a36;
+    padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    position: sticky;
-    top: 40px;
-    height: fit-content;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: visible; /* Allows toggle button to hang out */
+    white-space: nowrap; /* Prevent text wrapping during transition */
+    flex-shrink: 0; /* Prevent sidebar from shrinking below set width */
+    z-index: 50;
+}
+
+.sidebarCollapsed {
+    width: 80px;
+    padding: 24px 12px;
+}
+
+.toggleButton {
+    position: absolute;
+    top: 50%;
+    right: -12px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    background-color: #181920;
+    border: 1px solid #282a36;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    color: #9a9cab;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.toggleButton:hover {
+    background-color: #1e90ff;
+    color: white;
+    border-color: #1e90ff;
 }
 
 .sidebarSection {
-    background-color: #181920;
-    border: 1px solid #282a36;
+    padding: 12px;
     border-radius: 8px;
-    padding: 14px;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebarHeaderContent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebarText {
+    transition: opacity 0.2s;
+}
+
+.sidebarCollapsed .sidebarText,
+.sidebarCollapsed .sidebarInfo,
+.sidebarCollapsed .chevron,
+.sidebarCollapsed .createButton span {
+    display: none;
+}
+
+.sidebarCollapsed .sidebarHeader {
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.sidebarCollapsed .sidebarHeaderContent {
+    justify-content: center;
+}
+
+.sidebarCollapsed .sidebarSection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+    height: 48px; /* Fixed height for consistency */
+}
+
+.sidebarCollapsed .createButton {
+    padding: 10px;
+    justify-content: center;
+}
+
+.sidebarSection:hover {
+    background-color: #181920;
+}
+
+.activeSidebar {
+    background-color: #181920;
 }
 
 .sidebarHeader {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    font-weight: bold;
+    justify-content: space-between;
+    color: #9a9cab;
+    font-weight: 600;
     font-size: 14px;
-    color: #f4f4f6;
     margin-bottom: 8px;
-    cursor: pointer;
 }
 
 .sidebarInfo {
     font-size: 12px;
-    color: #9a9cab;
-    line-height: 1.4;
-}
-
-.createButton {
-    width: 100%;
-    height: 36px;
-    background: transparent;
-    border: 1px solid #282a36;
-    border-radius: 6px;
-    color: #1e90ff;
-    font-size: 13px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background 0.2s;
-}
-
-.createButton:hover {
-    background-color: #1e2028;
-}
-
-.dragHint {
-    padding: 8px;
-    border-left: 2px solid #f39c12;
-    font-size: 11px;
-    color: #9a9cab;
+    color: #5c5c6b;
     line-height: 1.5;
+    padding-left: 24px;
+    opacity: 1;
+    transition: opacity 0.2s;
 }
 
-.trashSection {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 14px;
-    color: #9a9cab;
-    font-size: 14px;
-    cursor: pointer;
+.divider {
+    height: 1px;
+    background-color: #282a36;
+    margin: 8px 0;
 }
 
-.badge {
-    background-color: #1e2028;
-    color: #9a9cab;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-}
-
-/* Content Area */
+/* Grid Area */
 .contentArea {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+    flex: 1;
+    background-color: #0b0b10;
+    padding: 24px;
+    overflow-y: auto;
+    min-width: 0; /* Important for flex child to shrink properly */
 }
 
 .portfolioHeader {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 24px;
-    border-bottom: none;
+    align-items: flex-start;
+    margin-bottom: 32px;
 }
 
 .pageTitle {
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 700;
     color: #f4f4f6;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 }
 
 .tabRow {
@@ -220,41 +264,17 @@
 .activeTab {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 14px;
+    gap: 8px;
     color: #f4f4f6;
-    font-weight: bold;
+    font-weight: 500;
 }
 
 .subText {
-    font-size: 13px;
-    color: #9a9cab;
-}
-
-.filtersRow {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.filterSelect {
-    height: 32px;
-    background-color: #1e2028;
-    border: 1px solid #282a36;
-    border-radius: 6px;
-    padding: 0 12px;
-    font-size: 13px;
-    color: #f4f4f6;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
+    color: #5c5c6b;
+    font-size: 14px;
 }
 
 .actionButton {
-    height: 36px;
-    padding: 0 16px;
     background-color: #1e90ff;
     border-radius: 6px;
     color: white;
@@ -263,6 +283,7 @@
     align-items: center;
     gap: 8px;
     text-decoration: none;
+    padding: 8px 16px;
     transition: background 0.2s;
 }
 
@@ -270,74 +291,60 @@
     background-color: #1670cb;
 }
 
-/* Grid */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
-    padding: 0;
-}
-
-/* New Project Card */
-.newCard {
-    background: transparent;
-    border: 2px dashed #282a36;
-    border-radius: 8px;
-    height: 280px;
+.filtersRow {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 50;
+    background: linear-gradient(180deg, #0b0b10 0%, rgba(11, 11, 16, 0.8) 100%);
+    padding-bottom: 8px;
 }
 
-.newCard:hover {
-    border-color: #1e90ff;
-    background: rgba(30, 144, 255, 0.05);
-}
-
-.plusIcon {
-    font-size: 48px;
-    color: #1e90ff;
-    font-weight: 300;
-    margin-bottom: 8px;
-}
-
-.newText {
-    font-size: 14px;
-    color: #9a9cab;
-    font-weight: 500;
-}
-
-/* Project Card */
-.projectCard {
+.filterSelect {
     background-color: #181920;
     border: 1px solid #282a36;
-    border-radius: 8px;
-    overflow: hidden;
-    height: 280px;
+    color: #f4f4f6;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding-bottom: 40px;
+}
+
+.projectCard {
+    background-color: #181920;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
-    /* Restored transition for smooth hover, dnd-kit overrides this inline during drag */
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-    text-decoration: none;
-    /* Removed animation to prevent jerky behavior during drag */
+    border: 1px solid transparent;
+}
+
+.projectCardSelected {
+    border: 1px solid #1e90ff;
+    box-shadow: 0 0 0 1px #1e90ff;
 }
 
 .projectCard:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-    border-color: #1e90ff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
 }
 
 .cardImageContainer {
     width: 100%;
-    height: 160px;
-    background-color: #0b0b10;
+    aspect-ratio: 16/9;
+    background-color: #282a36;
     position: relative;
+    overflow: hidden;
 }
 
 .cardImage {
@@ -347,96 +354,231 @@
 }
 
 .selectorCircle {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: rgba(0,0,0,0.3);
+    z-index: 20;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 4px; /* Squared checkbox style */
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
-    z-index: 10;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.selectorCircle:hover {
+    background: rgba(0,0,0,0.7);
+    border-color: rgba(255,255,255,0.6);
 }
 
 .selectorCircleActive {
-    background: #1e90ff;
-    border-color: #1e90ff;
+    background: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 10px rgba(30, 144, 255, 0.4);
 }
 
-.projectCardSelected {
-    border-color: #1e90ff !important;
-    background-color: rgba(30, 144, 255, 0.05);
+.dragHandle {
+    transition: background 0.2s;
 }
 
-.projectCard:hover .selectorCircle {
-    background: rgba(0,0,0,0.5);
+.dragHandle:hover {
+    background: rgba(0,0,0,0.7) !important;
+}
+
+.visibilityToggle {
+    transition: all 0.2s;
+}
+
+.visibilityToggle:hover {
+    background: rgba(0,0,0,0.7) !important;
+    transform: scale(1.1);
 }
 
 .cardMeta {
     padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex-grow: 1;
-    justify-content: space-between;
 }
 
 .cardTitle {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     color: #f4f4f6;
-    line-height: 1.3;
+    margin-bottom: 8px;
+    white-space: nowrap;
     overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
 }
 
-.statusBadge {
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    display: inline-block;
-    width: fit-content;
-}
-
-.statusPublished {
-    background-color: #2ecc71;
-    color: white;
-}
-
-.statusDraft {
-    background-color: #f39c12;
-    color: #0b0b10;
-}
-
-.cardStats {
+.cardDetails {
     display: flex;
-    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cardDate {
+    font-size: 12px;
+    color: #5c5c6b;
+}
+
+.cardPriority {
     font-size: 12px;
     color: #9a9cab;
-    margin-top: 4px;
+    background-color: #282a36;
+    padding: 2px 6px;
+    border-radius: 4px;
 }
 
-.statItem {
+.newCard {
+    border: 2px dashed #282a36;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: rgba(255, 255, 255, 0.02);
+    text-decoration: none;
+    min-height: 200px;
+}
+
+.newCard:hover {
+    border-color: #1e90ff;
+    background-color: rgba(30, 144, 255, 0.05);
+}
+
+.plusIcon {
+    width: 48px;
+    height: 48px;
+    color: #282a36;
+    transition: color 0.2s;
+}
+
+.newCard:hover .plusIcon {
+    color: #1e90ff;
+}
+
+.newText {
+    color: #5c5c6b;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.newCard:hover .newText {
+    color: #1e90ff;
+}
+
+.loadingContainer {
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
+    height: 100vh;
+    background-color: #101015;
+    color: #5c5c6b;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Context Menu */
+.contextMenu {
+    position: fixed;
+    background-color: #181920;
+    border: 1px solid #282a36;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    z-index: 1000;
+    min-width: 160px;
+    padding: 4px 0;
+}
+
+.contextMenuItem {
+    padding: 8px 16px;
+    color: #f4f4f6;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.contextMenuItem:hover {
+    background-color: #282a36;
+}
+
+.contextMenuItem.delete {
+    color: #ff4d4d;
+}
+
+.contextMenuItem.delete:hover {
+    background-color: rgba(255, 77, 77, 0.1);
+}
+
+/* Deletion Animation Styles */
+.deleteBatchButton {
+    transition: all 0.2s;
+}
+
+.deleteBatchButton:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+/* Sidebar Extra */
+.createButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #1e90ff;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    justify-content: center;
+    transition: background 0.2s;
+    margin-top: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.createButton:hover {
+    background-color: #1670cb;
+}
+
+.dragHint {
+    color: #5c5c6b;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.badge {
+    background-color: #282a36;
+    color: #9a9cab;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+/* Sidebar Collapsed Overrides */
+.sidebarCollapsed .createButton span {
+    display: none;
+}
+.sidebarCollapsed .createButton {
+    padding: 10px;
+}
+.sidebarCollapsed .dragHint {
+    display: none;
+}
+
+.sidebarCollapsed .badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 2px 4px;
+    font-size: 9px;
+    min-width: 14px;
+    text-align: center;
 }

@@ -16,7 +16,9 @@ interface Project {
 }
 
 export function Projects({ range, exclude, slugs }: ProjectsProps) {
-  const allProjects: Project[] = getPosts(["src", "app", "(site)", "work", "projects"]);
+  const legacyPosts = getPosts(["src", "app", "(site)", "work", "projects"]);
+  const newPosts = getPosts(["src", "content", "albums"]);
+  const allProjects: Project[] = [...legacyPosts, ...newPosts];
 
   let displayedProjects: Project[] = [];
 

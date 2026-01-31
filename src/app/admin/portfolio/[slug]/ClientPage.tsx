@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from '../editor.module.css';
 import { 
     Image as ImageIcon, Video, Box, Globe, Upload, Trash2, 
-    ChevronLeft, Save, Eye, Check, GripVertical, X 
+    ChevronLeft, Save, Eye, Check, GripVertical, X, Star, EyeOff 
 } from 'lucide-react';
 import {
   DndContext, 
@@ -15,16 +15,20 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay
 } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   rectSortingStrategy,
-  useSortable
+  useSortable,
+  defaultAnimateLayoutChanges
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { motion } from 'framer-motion';
 
 interface ProjectEditorProps {
     slug: string;
@@ -49,6 +53,7 @@ interface ProjectData {
     title?: string;
     content?: string;
     description?: string; // Keystatic often stores it here
+    hidden?: boolean;
     categorization?: {
         medium?: string[];
         software?: string[];
@@ -58,12 +63,30 @@ interface ProjectData {
     publishing?: { cover?: string };
 }
 
-function SortableMediaItem({ item, index, onDelete, onChange, onExpand }: { 
+type DeletionStyle = 'dissolve' | 'trash';
+
+function SortableMediaItem({ 
+    item, 
+    index, 
+    onDelete, 
+    onChange, 
+    onExpand,
+    isBeingDeleted,
+    deletionStyle,
+    isOverlay,
+    isCover,
+    onSetCover
+}: { 
     item: MediaItem, 
-    index: number, 
+    index?: number, 
     onDelete: () => void, 
     onChange: (item: MediaItem) => void,
-    onExpand: (item: MediaItem) => void 
+    onExpand: (item: MediaItem) => void,
+    isBeingDeleted: boolean,
+    deletionStyle: DeletionStyle,
+    isOverlay?: boolean,
+    isCover?: boolean,
+    onSetCover?: () => void
 }) {
     const {
         attributes,
@@ -72,27 +95,68 @@ function SortableMediaItem({ item, index, onDelete, onChange, onExpand }: {
         transform,
         transition,
         isDragging
-    } = useSortable({ id: item.id });
+    } = useSortable({ 
+        id: item.id,
+        animateLayoutChanges: (args) => 
+            defaultAnimateLayoutChanges({ ...args, wasDragging: true }),
+    });
 
     const style = {
-        transform: CSS.Translate.toString(transform),
-        transition: isDragging ? 'none' : transition,
-        zIndex: isDragging ? 999 : 'auto',
-        opacity: isDragging ? 0.5 : 1,
+        transform: CSS.Transform.toString(transform),
+        transition,
+        zIndex: isOverlay ? 9999 : (isDragging ? 999 : (isBeingDeleted ? 0 : 'auto')),
         touchAction: 'none'
     };
 
+    // Animation variants
+    const getExitAnimation = () => {
+        if (deletionStyle === 'trash') {
+            return {
+                opacity: 0,
+                scale: 0.6,
+                x: 120, 
+                y: 80,
+                rotate: -12,
+            };
+        }
+        return {
+            opacity: 0,
+            scale: 0.7,
+            y: 40,
+            filter: "blur(4px)",
+        };
+    };
+
     return (
-        <div 
+        <motion.div 
             ref={setNodeRef} 
-            style={style} 
+            style={style as any} 
             className={styles.mediaCard}
+            // layout prop removed to prevent conflict with dnd-kit
+            initial={false}
+            animate={
+                isBeingDeleted
+                    ? getExitAnimation()
+                    : {
+                        scale: isOverlay ? 1.05 : (isDragging ? 0.95 : 1),
+                        boxShadow: isOverlay
+                            ? "0 20px 40px rgba(0,0,0,0.6), 0 0 0 2px #1e90ff" 
+                            : "0 2px 10px rgba(0,0,0,0.2)",
+                        opacity: isDragging && !isOverlay ? 0.3 : 1,
+                        y: 0,
+                        x: 0,
+                        rotate: isOverlay ? 3 : 0,
+                        filter: isDragging && !isOverlay ? "grayscale(100%) blur(1px)" : "blur(0px)",
+                    }
+            }
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
         >
             {/* Card Header (Drag Handle + Actions) */}
             <div 
                 className={styles.cardHeader}
                 {...attributes} 
                 {...listeners}
+                style={{ cursor: isOverlay ? 'grabbing' : 'grab' }}
             >
                 <div className={styles.cardHeaderLeft}>
                     <GripVertical size={16} />
@@ -102,15 +166,39 @@ function SortableMediaItem({ item, index, onDelete, onChange, onExpand }: {
                          item.type === 'marmoset' ? 'Marmoset' : 'Embed'}
                     </span>
                 </div>
-                <button 
-                    className={styles.headerDeleteBtn} 
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete();
-                    }}
-                >
-                    <Trash2 size={14} />
-                </button>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }} onPointerDown={(e) => e.stopPropagation()}>
+                    {/* Set Cover Button */}
+                    {onSetCover && (
+                         <button
+                            type="button"
+                            className={styles.headerActionBtn || styles.headerDeleteBtn}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onSetCover();
+                            }}
+                            title="Set as Main Image"
+                            style={{ 
+                                color: isCover ? '#ffd700' : '#555',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <Star size={14} fill={isCover ? '#ffd700' : 'none'} />
+                        </button>
+                    )}
+                    <button 
+                        className={styles.headerDeleteBtn} 
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete();
+                        }}
+                    >
+                        <Trash2 size={14} />
+                    </button>
+                </div>
             </div>
 
             {/* Preview */}
@@ -126,7 +214,7 @@ function SortableMediaItem({ item, index, onDelete, onChange, onExpand }: {
                 ) : item.type === 'video' ? (
                     <video src={item.value.src} style={{width:'100%', height:'100%'}} muted />
                 ) : item.type === 'image' ? (
-                    <img src={item.value.src} alt={item.value.caption} style={{width:'100%', height:'100%'}} />
+                    <img src={item.value.src} alt={item.value.caption} style={{width:'100%', height:'100%', objectFit: 'cover'}} />
                 ) : (
                     <div style={{ color: '#555', display:'flex', flexDirection:'column', alignItems:'center' }}>
                         <Globe size={32} />
@@ -174,25 +262,37 @@ function SortableMediaItem({ item, index, onDelete, onChange, onExpand }: {
                     />
                 )}
             </div>
-        </div>
+        </motion.div>
     );
 }
 
 export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps) {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [slug, setSlug] = useState<string>(initialSlug);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     
+    // Deletion animation state
+    const [deletingIds, setDeletingIds] = useState<number[]>([]);
+    const [deletionStyle, setDeletionStyle] = useState<DeletionStyle>('dissolve');
+    const [activeId, setActiveId] = useState<number | null>(null);
+
     // Form State
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [hidden, setHidden] = useState(false);
     const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
     const [mediums, setMediums] = useState<string[]>([]);
     const [software, setSoftware] = useState<string[]>([]);
     const [tags, setTags] = useState<string[]>([]);
     const [coverImage, setCoverImage] = useState('');
     const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // DnD Sensors
     const sensors = useSensors(
@@ -210,9 +310,11 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
         if (slug !== 'create') {
             loadProject(slug);
         } else {
+            const isHidden = searchParams.get('hidden') === 'true';
+            if (isHidden) setHidden(true);
             setLoading(false);
         }
-    }, [slug]);
+    }, [slug, searchParams]);
 
     const loadProject = async (slug: string) => {
         try {
@@ -225,6 +327,7 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                 setTitle(data.title || '');
                 // Handle both 'content' (markdown body) and 'description' (frontmatter field)
                 setDescription(data.description || data.content || '');
+                setHidden(data.hidden || false);
                 
                 // Categorization
                 if (data.categorization) {
@@ -249,8 +352,13 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                 }
             } else {
                 const errorText = await res.text();
-                console.error(`Failed to load project: ${res.status} ${res.statusText}. Response: ${errorText}`);
-                alert(`Failed to load project: ${res.status}. Check console for details.`);
+                // 404 is expected for new projects or if slug changed, don't alert unless it's a real error
+                if (res.status !== 404) {
+                     console.error(`Failed to load project: ${res.status} ${res.statusText}. Response: ${errorText}`);
+                     alert(`Failed to load project: ${res.status}. Check console for details.`);
+                } else {
+                    console.warn(`Project not found (404) for slug: ${slug}. This might be a new project.`);
+                }
             }
             setLoading(false); 
         } catch (error) {
@@ -259,14 +367,31 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
         }
     };
 
+    const transliterate = (text: string) => {
+        const ru: Record<string, string> = {
+            'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
+            'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+            'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts',
+            'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu',
+            'я': 'ya'
+        };
+        
+        return text.toLowerCase().split('').map(char => {
+            return ru[char] || char;
+        }).join('').replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    };
+
     const handleSave = async () => {
         setSaving(true);
+        const generatedSlug = slug === 'create' ? transliterate(title) : slug;
+        
         const data = {
-            slug: slug === 'create' ? title.toLowerCase().replace(/ /g, '-') : slug,
+            slug: generatedSlug,
             title,
             description, // This needs to be MDOC content? Or structured? Keystatic uses document field.
             // We'll save it as content for now.
             content: description, 
+            hidden,
             categorization: {
                 medium: mediums,
                 software: software,
@@ -407,8 +532,20 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
         }
     };
 
+    const handleDeleteMedia = async (id: number) => {
+        setDeletingIds(prev => [...prev, id]);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setMediaItems(prev => prev.filter(item => item.id !== id));
+        setDeletingIds(prev => prev.filter(did => did !== id));
+    };
+
+    const handleDragStart = (event: DragStartEvent) => {
+        setActiveId(event.active.id as number);
+    };
+
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
+        setActiveId(null);
 
         if (over && active.id !== over.id) {
             setMediaItems((items) => {
@@ -432,18 +569,35 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                 </div>
                 <div className={styles.actions}>
                     <button 
-                        type="button"
+                        type="button" 
                         className={styles.btnSecondary}
-                        onClick={() => {
-                            if (slug && slug !== 'create') {
-                                window.open(`/gallery/${slug}`, '_blank');
-                            } else {
-                                alert('Please save the project first to preview.');
-                            }
-                        }}
+                        onClick={() => setHidden(!hidden)}
+                        title={hidden ? "Project is hidden" : "Project is public"}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
-                        Preview
+                        {hidden ? <EyeOff size={16} color="#ff4d4d" /> : <Eye size={16} />}
+                        <span>{hidden ? 'Hidden' : 'Public'}</span>
                     </button>
+
+                    {slug && slug !== 'create' ? (
+                        <a 
+                            href={`/gallery/${slug}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className={styles.btnSecondary}
+                            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                            Preview
+                        </a>
+                    ) : (
+                        <button 
+                            type="button"
+                            className={styles.btnSecondary}
+                            onClick={() => alert('Please save the project first to preview.')}
+                        >
+                            Preview
+                        </button>
+                    )}
                     <button type="button" className={styles.btnPrimary} onClick={handleSave} disabled={saving}>
                         {saving ? 'Saving...' : 'Publish'}
                     </button>
@@ -477,9 +631,11 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
 
                 {/* Media Section */}
                 <div className={styles.section}>
-                    <h2 className={styles.sectionTitle}>
-                        <ImageIcon size={20} /> Media
-                    </h2>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        <h2 className={styles.sectionTitle} style={{ margin: 0 }}>
+                            <ImageIcon size={20} /> Media
+                        </h2>
+                    </div>
                     
                     <div className={styles.mediaToolbar}>
                         <button className={styles.mediaButton} onClick={() => addMedia('image')}>
@@ -517,31 +673,57 @@ export default function ProjectEditor({ slug: initialSlug }: ProjectEditorProps)
                         <DndContext 
                             sensors={sensors}
                             collisionDetection={closestCenter}
+                            onDragStart={handleDragStart}
                             onDragEnd={handleDragEnd}
                         >
-                            <SortableContext 
-                                items={mediaItems.map(item => item.id)}
-                                strategy={rectSortingStrategy}
-                            >
-                                {mediaItems.map((item, index) => (
-                                    <SortableMediaItem 
-                                        key={item.id} 
-                                        item={item} 
-                                        index={index}
-                                        onDelete={() => {
-                                            const newItems = [...mediaItems];
-                                            newItems.splice(index, 1);
-                                            setMediaItems(newItems);
-                                        }}
-                                        onChange={(updatedItem: MediaItem) => {
-                                            const newItems = [...mediaItems];
-                                            newItems[index] = updatedItem;
-                                            setMediaItems(newItems);
-                                        }}
-                                        onExpand={(item) => setSelectedMedia(item)}
+                            {isMounted ? (
+                                <SortableContext 
+                                    items={mediaItems.map(item => item.id)}
+                                    strategy={rectSortingStrategy}
+                                >
+                                    {mediaItems.map((item, index) => (
+                                        <SortableMediaItem 
+                                            key={item.id} 
+                                            item={item} 
+                                            index={index}
+                                            onDelete={() => handleDeleteMedia(item.id)}
+                                            onChange={(updatedItem: MediaItem) => {
+                                                const newItems = [...mediaItems];
+                                                newItems[index] = updatedItem;
+                                                setMediaItems(newItems);
+                                            }}
+                                            onExpand={(item) => setSelectedMedia(item)}
+                                            isBeingDeleted={deletingIds.includes(item.id)}
+                                            deletionStyle={deletionStyle}
+                                            isCover={coverImage === item.value.src}
+                                            onSetCover={() => setCoverImage(item.value.src)}
+                                        />
+                                    ))}
+                                </SortableContext>
+                            ) : (
+                                mediaItems.map((item) => (
+                                    <div key={item.id} className={styles.mediaCard}>
+                                        <div className={styles.mediaPreview}>
+                                            {item.type === 'image' && <img src={item.value.src} style={{width:'100%', height:'100%'}} />}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                            <DragOverlay adjustScale={true}>
+                                {activeId ? (
+                                    <SortableMediaItem
+                                        item={mediaItems.find(i => i.id === activeId)!}
+                                        index={0}
+                                        onDelete={() => {}}
+                                        onChange={() => {}}
+                                        onExpand={() => {}}
+                                        isBeingDeleted={false}
+                                        deletionStyle={deletionStyle}
+                                        isOverlay
+                                        isCover={coverImage === mediaItems.find(i => i.id === activeId)?.value.src}
                                     />
-                                ))}
-                            </SortableContext>
+                                ) : null}
+                            </DragOverlay>
                         </DndContext>
                     </div>
                 </div>

@@ -275,4 +275,5 @@ export interface Metadata {
   team?: TeamMember[];
   priority?: number;
   link?: string;
+  hidden?: boolean;
 }

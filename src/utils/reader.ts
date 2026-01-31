@@ -64,8 +64,10 @@ export async function getTelegramSettings() {
 
 export async function getAlbums() {
   log("getAlbums called");
+  let albums: any[] = [];
+  
   try {
-    const albums = await reader.collections.albums.all();
+    albums = await reader.collections.albums.all();
     
     // Sort by priority (ascending: 0, 10, 20...)
     albums.sort((a, b) => {
@@ -75,10 +77,17 @@ export async function getAlbums() {
     });
 
     log("Keystatic albums count:", albums.length);
-    if (albums.length > 0) {
-        return albums;
-    }
-    
+  } catch (error: any) {
+    log("Keystatic reader failed:", error.message || String(error));
+    // Continue to fallback
+  }
+
+  // Always run fallback to catch flat files that Keystatic might miss in mixed mode
+  // if (albums.length > 0) {
+  //    return albums;
+  // }
+  
+  try {
     // Fallback: Read from filesystem
     const albumsDir = path.join(process.cwd(), 'src/content/albums');
     log("Fallback: Checking directory:", albumsDir);
@@ -87,32 +96,48 @@ export async function getAlbums() {
         return [];
     }
     
-    const dirs = fs.readdirSync(albumsDir).filter(file => 
-        fs.statSync(path.join(albumsDir, file)).isDirectory()
-    );
-    log("Directories found in albumsDir:", dirs);
+    const entries = fs.readdirSync(albumsDir);
     
-    const fallbackAlbums = dirs.map(slug => {
-        const indexPath = path.join(albumsDir, slug, 'index.mdoc');
-        log(`Checking for index.mdoc in: ${slug}`);
-        if (fs.existsSync(indexPath)) {
-            const fileContent = fs.readFileSync(indexPath, 'utf-8');
+    const fallbackAlbums = entries.map(entryName => {
+        const entryPath = path.join(albumsDir, entryName);
+        const stats = fs.statSync(entryPath);
+        let slug = entryName;
+        let fileContent = '';
+
+        if (stats.isDirectory()) {
+            const indexPath = path.join(entryPath, 'index.mdoc');
+            if (fs.existsSync(indexPath)) {
+                fileContent = fs.readFileSync(indexPath, 'utf-8');
+            } else {
+                log(`No index.mdoc found for directory: ${entryName}`);
+                return null;
+            }
+        } else if (stats.isFile() && entryName.endsWith('.mdoc')) {
+            slug = entryName.replace('.mdoc', '');
+            fileContent = fs.readFileSync(entryPath, 'utf-8');
+        } else {
+            return null;
+        }
+
+        try {
             const { data } = matter(fileContent);
             log(`Successfully parsed fallback for: ${slug}`);
             return {
                 slug,
                 entry: {
                     title: data.title || slug,
-                    description: () => Promise.resolve([]), // Placeholder for list view
+                    description: () => Promise.resolve([]),
                     images: data.images || [],
                     categorization: data.categorization,
                     publishing: data.publishing,
-                    priority: data.priority
+                    priority: data.priority,
+                    hidden: data.hidden || false
                 }
             };
+        } catch (e) {
+            log(`Error parsing frontmatter for ${slug}:`, e);
+            return null;
         }
-        log(`No index.mdoc found for: ${slug}`);
-        return null;
     }).filter(a => a !== null);
 
     // Sort fallback albums by priority
@@ -124,8 +149,9 @@ export async function getAlbums() {
 
     log("Total fallback albums found:", fallbackAlbums.length);
     return fallbackAlbums as any;
-  } catch (error) {
-    log("ERROR in getAlbums:", error);
+  } catch (error: any) {
+    log("ERROR in getAlbums:", error.message || String(error));
+    if (error.stack) log("Stack:", error.stack);
     return [];
   }
 }
@@ -147,11 +173,21 @@ export async function getAlbum(slug: string) {
     const albumsDir = path.join(process.cwd(), 'src/content/albums');
     
     for (const s of slugsToTry) {
+        // Check for directory with index.mdoc
         const indexPath = path.join(albumsDir, s, 'index.mdoc');
-        log(`Trying fallback path: ${indexPath}`);
+        // Check for flat .mdoc file
+        const mdocPath = path.join(albumsDir, `${s}.mdoc`);
+        
+        let filePath = '';
         if (fs.existsSync(indexPath)) {
-            log(`Found file at: ${indexPath}`);
-            const fileContent = fs.readFileSync(indexPath, 'utf-8');
+            filePath = indexPath;
+        } else if (fs.existsSync(mdocPath)) {
+            filePath = mdocPath;
+        }
+
+        if (filePath) {
+            log(`Found file at: ${filePath}`);
+            const fileContent = fs.readFileSync(filePath, 'utf-8');
             const { data, content } = matter(fileContent);
             
             // Mock Keystatic AST for description
@@ -168,7 +204,8 @@ export async function getAlbum(slug: string) {
                 description: () => Promise.resolve(descriptionAST),
                 images: data.images || [],
                 categorization: data.categorization || {},
-                publishing: data.publishing || {}
+                publishing: data.publishing || {},
+                hidden: data.hidden || false
             } as any;
         }
     }

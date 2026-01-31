@@ -2,7 +2,7 @@
   "name": "@once-ui-system/magic-portfolio",
   "version": "2.3.0",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev",
+    "dev": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev --turbo",
     "export": "next export",
     "build": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next build",
     "biome-write": "npx @biomejs/biome format --write .",
@@ -22,6 +22,7 @@
     "classnames": "^2.5.1",
     "cookie": "^1.0.2",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.29.2",
     "gray-matter": "^4.0.3",
     "lint-staged": "^16.1.5",
     "lucide-react": "^0.563.0",
