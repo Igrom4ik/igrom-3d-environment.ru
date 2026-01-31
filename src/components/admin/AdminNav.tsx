@@ -52,6 +52,24 @@ export default function AdminNav() {
                         Portfolio
                     </Link>
                     <Link 
+                        href="/keystatic/collection/posts" 
+                        className={`${styles.navLink} ${pathname.includes('/keystatic/collection/posts') ? styles.navLinkActive : ''}`}
+                    >
+                        Blog
+                    </Link>
+                    <Link 
+                        href="/keystatic/singleton/home" 
+                        className={`${styles.navLink} ${pathname.includes('/keystatic/singleton/home') ? styles.navLinkActive : ''}`}
+                    >
+                        Home
+                    </Link>
+                    <Link 
+                        href="/keystatic/singleton/about" 
+                        className={`${styles.navLink} ${pathname.includes('/keystatic/singleton/about') ? styles.navLinkActive : ''}`}
+                    >
+                        About
+                    </Link>
+                    <Link 
                         href="/admin/telegram" 
                         className={`${styles.navLink} ${isActive('/admin/telegram') ? styles.navLinkActive : ''}`}
                     >
@@ -62,6 +80,12 @@ export default function AdminNav() {
                         className={`${styles.navLink} ${isActive('/admin/upload') ? styles.navLinkActive : ''}`}
                     >
                         Uploads
+                    </Link>
+                    <Link 
+                        href="/keystatic/singleton/settings" 
+                        className={`${styles.navLink} ${pathname.includes('/keystatic/singleton/settings') ? styles.navLinkActive : ''}`}
+                    >
+                        Settings
                     </Link>
                 </nav>
 
