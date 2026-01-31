@@ -203,6 +203,9 @@ export const mdxComponents = {
   img: function ImageWithZoom(props: any) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [isZoomed, setIsZoomed] = React.useState(false);
+    
+    // Filter out potential conflicting props
+    const { width, height, style, ...rest } = props;
 
     return (
       <>
@@ -218,10 +221,10 @@ export const mdxComponents = {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            {...props}
+            {...rest}
             style={{
               maxWidth: "100%",
-              maxHeight: "300px",
+              maxHeight: "250px", // Reduced and Enforced
               width: "auto", 
               height: "auto",
               borderRadius: 8,
@@ -255,7 +258,7 @@ export const mdxComponents = {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              {...props}
+              {...rest}
               style={{
                 maxWidth: '95vw',
                 maxHeight: '95vh',
