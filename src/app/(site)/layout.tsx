@@ -5,6 +5,7 @@ import "@/resources/custom.css";
 import classNames from "classnames";
 
 import { Footer, Header, Providers, RouteGuard } from "@/components";
+import FloatingContactButton from "@/components/FloatingContactButton";
 import { baseURL, dataStyle, effects, fonts, home, style } from "@/resources";
 import { getDesignSettings } from "@/utils/reader";
 import Script from "next/script";
@@ -189,6 +190,7 @@ export default async function RootLayout({
             </Flex>
           </Flex>
           <Footer />
+          <FloatingContactButton />
         </Column>
       </Providers>
     </Flex>
