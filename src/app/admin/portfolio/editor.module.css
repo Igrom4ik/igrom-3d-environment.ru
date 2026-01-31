@@ -17,7 +17,7 @@
     align-items: center;
     justify-content: space-between;
     position: sticky;
-    top: 56px; /* Offset for global AdminNav */
+    top: 100px; /* Offset for global fixed AdminNav (24+64+12 gap) */
     z-index: 100;
 }
 

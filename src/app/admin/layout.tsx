@@ -21,7 +21,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Column
           as="body"
           fillWidth
-          style={{ minHeight: "100vh", margin: 0, padding: 0 }}
+          style={{ minHeight: "100vh", margin: 0, padding: 0, backgroundColor: "#000000", paddingTop: "112px" }}
           background="page"
         >
           <AdminNav />
