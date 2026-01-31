@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getGitStatus, deployToGit, triggerVercelDeploy } from './actions';
-import { GitBranch, Globe, Loader2, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import { GitBranch, Globe, Loader2, CheckCircle, AlertCircle, RefreshCw, Upload } from 'lucide-react';
 import styles from '../portfolio/portfolio.module.css';
 
 export default function DeployManager() {
