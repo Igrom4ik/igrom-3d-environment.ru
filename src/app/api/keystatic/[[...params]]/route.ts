@@ -2,7 +2,7 @@ import { makeRouteHandler } from "@keystatic/next/route-handler";
 import config from "../../../../../keystatic.config";
 import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-static';
 
 const { GET: _GET, POST: _POST } = makeRouteHandler({
   config,
