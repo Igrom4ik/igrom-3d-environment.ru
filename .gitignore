@@ -70,3 +70,7 @@ src/content/projects/
 *.zip
 *.rar
 backup-content-*
+
+# Secrets
+secrets.json
+SECRETS_REFERENCE.txt

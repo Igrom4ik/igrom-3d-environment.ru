@@ -108,6 +108,12 @@ export default function AdminNav() {
                         >
                             Settings
                         </Link>
+                        <Link 
+                            href="/admin/secrets" 
+                            className={`${styles.navLink} ${isActive('/admin/secrets') ? styles.navLinkActive : ''}`}
+                        >
+                            Secrets
+                        </Link>
                     </nav>
 
                     <div className={styles.breadcrumbs}>
@@ -150,6 +156,7 @@ export default function AdminNav() {
                              <Link href="/admin/telegram" onClick={() => setIsMobileMenuOpen(false)} className={styles.mobileNavLink}>Telegram</Link>
                              <Link href="/admin/upload" onClick={() => setIsMobileMenuOpen(false)} className={styles.mobileNavLink}>Uploads</Link>
                              <Link href="/keystatic/singleton/settings" onClick={() => setIsMobileMenuOpen(false)} className={styles.mobileNavLink}>Settings</Link>
+                             <Link href="/admin/secrets" onClick={() => setIsMobileMenuOpen(false)} className={styles.mobileNavLink}>Secrets</Link>
                         </nav>
                     </div>
                 </div>

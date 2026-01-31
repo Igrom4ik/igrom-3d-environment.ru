@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { getSecret } from '@/utils/secrets';
 
 // NOTE: This API route will NOT work with "output: export" (static site generation).
 // It requires a Node.js server (e.g. Vercel, VPS, or "npm start" without "output: export").
@@ -11,32 +12,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
+    // Get config from secrets.json or env
+    const host = getSecret('SMTP_HOST') || 'smtp.beget.com';
+    const port = Number(getSecret('SMTP_PORT')) || 465;
+    const user = getSecret('SMTP_USER');
+    const pass = getSecret('SMTP_PASS');
+
     // Debug logging for SMTP config (careful not to log full password)
     console.log('Initializing SMTP transport with:', {
-      host: process.env.SMTP_HOST || 'smtp.beget.com',
-      port: Number(process.env.SMTP_PORT) || 465,
-      user: process.env.SMTP_USER,
-      passLength: process.env.SMTP_PASS ? process.env.SMTP_PASS.length : 0
+      host,
+      port,
+      user,
+      passLength: pass ? pass.length : 0
     });
 
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error('SMTP credentials missing in environment variables');
+    if (!user || !pass) {
+      console.error('SMTP credentials missing in environment variables or secrets.json');
       return NextResponse.json({ error: 'Server configuration error (missing credentials)' }, { status: 500 });
     }
 
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.beget.com',
-      port: Number(process.env.SMTP_PORT) || 465,
+      host,
+      port,
       secure: true, // true for 465, false for other ports
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user,
+        pass,
       },
     });
 
     const mailOptions = {
-      from: process.env.SMTP_USER, // Sender address
-      to: process.env.SMTP_USER, // Receiver address (send to self)
+      from: user, // Sender address
+      to: user, // Receiver address (send to self)
       replyTo: email,
       subject: `New Contact Form Submission from ${name}`,
       text: `
