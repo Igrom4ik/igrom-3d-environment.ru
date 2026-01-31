@@ -180,6 +180,15 @@
     }
     .header {
         justify-content: space-between;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        background: rgba(15, 23, 42, 0.95); /* More solid on mobile */
     }
 }
 

@@ -1,10 +1,12 @@
 .pageContainer {
     background-color: #101015;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     color: #f4f4f6;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     display: flex;
     flex-direction: column;
+    padding-top: 110px; /* Space for fixed AdminNav */
 }
 
 /* Header */
@@ -16,6 +18,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    display: none; /* Hide old internal header */
 }
 
 .headerLeft {
@@ -101,7 +104,7 @@
 .mainLayout {
     display: flex;
     flex: 1;
-    height: calc(100vh - 56px);
+    height: 100%;
     overflow: hidden; /* Prevent full page scroll if sidebar transitions */
 }
 
@@ -315,9 +318,96 @@
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 24px;
     padding-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+    .pageContainer {
+        height: auto;
+        min-height: 100vh; /* Allow page to grow */
+        overflow-y: auto; /* Enable page scroll */
+        padding-top: 80px; 
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .mainLayout {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+    }
+
+    /* Fix Content Area Scrolling */
+    .contentArea {
+        padding: 16px;
+        overflow: visible; /* Let page handle scroll */
+        height: auto;
+        flex: none; /* Don't try to fill height */
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        min-height: 60px;
+        border-right: none;
+        border-bottom: 1px solid #282a36;
+        padding: 16px;
+        position: relative;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+        z-index: 60; /* Higher than content but lower than modal */
+    }
+
+    .sidebarCollapsed {
+        width: 100%; /* Ensure full width when collapsed on mobile */
+        height: 60px;
+        overflow: hidden;
+        padding: 0 16px;
+        display: block; /* Force block display */
+    }
+
+    /* Hide internal elements when collapsed on mobile */
+    .sidebarCollapsed .sidebarSection,
+    .sidebarCollapsed .createButton,
+    .sidebarCollapsed .dragHint,
+    .sidebarCollapsed .divider {
+        opacity: 0;
+        pointer-events: none;
+        height: 0;
+        margin: 0;
+        padding: 0;
+        display: none; /* Fully remove from flow */
+    }
+
+    .toggleButton {
+        display: flex;
+        top: 18px;
+        right: 16px;
+        transform: rotate(90deg); /* Rotate arrow for vertical expand/collapse */
+        background-color: #282a36;
+        z-index: 101;
+    }
+
+    .contentArea {
+        padding: 16px;
+        overflow-y: visible;
+    }
+
+    .portfolioHeader {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .filtersRow {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
 }
 
 .projectCard {
