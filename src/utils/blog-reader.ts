@@ -43,9 +43,10 @@ export async function getBlogPosts() {
                 return null;
             }
 
-            const { data } = matter(fileContent);
+            const { data, content } = matter(fileContent);
             return {
                 slug,
+                content, // Include content for editing
                 entry: {
                     title: data.title || slug,
                     publishedAt: data.publishedAt || null,

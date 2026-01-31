@@ -129,9 +129,9 @@ export default function BlogGrid({ posts: initialPosts, onBatchAction }: BlogGri
             </div>
 
             <div className={styles.grid}>
-                {/* Create New Card - Link to Keystatic Create */}
+                {/* Create New Card - Link to Custom Create */}
                 <Link 
-                    href="/keystatic/collection/posts/create" 
+                    href="/admin/blog/create" 
                     className={styles.newCard}
                 >
                     <Plus className={styles.plusIcon} />
@@ -188,7 +188,7 @@ function BlogPostCard({
                     </div>
                 </div>
 
-                <Link href={`/keystatic/collection/posts/item/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
+                <Link href={`/admin/blog/edit/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
                     {post.entry.image ? (
                         <img 
                             src={post.entry.image} 
@@ -204,7 +204,7 @@ function BlogPostCard({
             </div>
             
             <Link 
-                href={`/keystatic/collection/posts/item/${post.slug}`} 
+                href={`/admin/blog/edit/${post.slug}`} 
                 className={styles.cardMeta} 
                 style={{ textDecoration: 'none', display: 'block' }}
             >
