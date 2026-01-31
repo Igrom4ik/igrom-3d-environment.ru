@@ -3,6 +3,7 @@ import "@once-ui-system/core/css/tokens.css";
 import "@/resources/custom.css";
 
 import { Providers } from "@/components";
+import AdminNav from "@/components/admin/AdminNav";
 import { Column, Flex } from "@once-ui-system/core";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -15,6 +16,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           style={{ minHeight: "100vh", margin: 0, padding: 0 }}
           background="page"
         >
+          <AdminNav />
           {children}
         </Column>
       </Providers>
