@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { getSiteSettings, saveSiteSettings } from '@/utils/siteSettings';
 
 // Ensure this route is not statically exported
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic';
+export const dynamic = 'force-static';
 
 export async function GET() {
   const settings = getSiteSettings();

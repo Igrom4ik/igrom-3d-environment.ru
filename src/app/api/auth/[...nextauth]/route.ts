@@ -38,4 +38,9 @@ const { handlers } = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
 });
 
-export const { GET, POST } = handlers;
+export const GET = handlers.GET;
+export const POST = handlers.POST;
+
+export async function generateStaticParams() {
+  return [{ nextauth: ['signin'] }];
+}
