@@ -200,6 +200,24 @@ export function AudioPlayer({ src }: { src: string }) {
 export const mdxComponents = {
   code: CodeBlock,
   pre: (props: any) => <div {...props} />, // Prevent double <pre>
+  img: (props: any) => (
+    <div style={{ display: 'flex', justifyContent: 'center', margin: '24px 0' }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        {...props}
+        style={{
+          maxWidth: "100%",
+          maxHeight: "300px",
+          width: "auto", 
+          height: "auto",
+          borderRadius: 8,
+          display: "block",
+          border: "1px solid rgba(255,255,255,0.1)",
+          objectFit: "contain",
+        }}
+      />
+    </div>
+  ),
   HeroImage,
   Note,
   VideoPlayer,

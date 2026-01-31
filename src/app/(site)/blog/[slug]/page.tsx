@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getPosts } from "@/utils/utils";
 import { mdxComponents } from "../mdxComponents";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import { ArrowLeft } from "lucide-react";
+import styles from "./blog-post.module.css";
 
 type Params = { slug: string };
 
@@ -19,73 +22,70 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
 
   const { metadata, content } = post;
 
-  return (
-    <main
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        padding: "80px 16px 120px",
-      }}
-    >
-      <article
-        style={{
-          maxWidth: 720,
-          width: "100%",
-          borderRadius: 24,
-          padding: "clamp(24px, 5vw, 40px) clamp(16px, 4vw, 28px) 40px",
-          background:
-            "linear-gradient(145deg, rgba(9,12,28,0.98), rgba(4,6,16,0.98))",
-          boxShadow:
-            "0 24px 80px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <header style={{ marginBottom: 24 }}>
-          <div
-            style={{
-              fontSize: 12,
-              letterSpacing: 0.14,
-              textTransform: "uppercase",
-              color: "#7f86a8",
-              marginBottom: 6,
-            }}
-          >
-            Devlog • {new Date(metadata.publishedAt).toLocaleDateString()}
-          </div>
-          <h1
-            style={{
-              fontSize: "clamp(22px, 5vw, 28px)",
-              lineHeight: 1.2,
-              margin: 0,
-              color: "#f4f5ff",
-            }}
-          >
-            {metadata.title}
-          </h1>
-          {metadata.summary && (
-            <p
-              style={{
-                marginTop: 12,
-                fontSize: "clamp(14px, 4vw, 15px)",
-                color: "#a7adc7",
-                lineHeight: 1.6,
-              }}
-            >
-              {metadata.summary}
-            </p>
-          )}
-        </header>
+  // Split tags if they are a string
+  const tags = Array.isArray(metadata.tag) 
+    ? metadata.tag 
+    : (metadata.tag ? metadata.tag.split(',').map((t: string) => t.trim()) : []);
 
-        <section
-          style={{
-            fontSize: "clamp(15px, 4vw, 16px)",
-            lineHeight: 1.7,
-            color: "#cdd2eb",
-          }}
-        >
-          <MDXRemote source={content} components={mdxComponents as any} />
-        </section>
-      </article>
+  return (
+    <main className={styles.container}>
+      <div className={styles.layout}>
+        {/* Left Sidebar */}
+        <aside className={styles.sidebar}>
+          <Link href="/blog" className={styles.backLink}>
+            <ArrowLeft size={16} /> Back to Blog
+          </Link>
+
+          {metadata.image && (
+            <div className={styles.coverImageWrapper}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src={metadata.image} 
+                alt={metadata.title} 
+                className={styles.coverImage} 
+              />
+            </div>
+          )}
+
+          <div className={styles.metaSection}>
+            <div className={styles.metaLabel}>Published</div>
+            <div className={styles.metaValue}>
+              {new Date(metadata.publishedAt).toLocaleDateString('ru-RU', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
+          </div>
+
+          {tags.length > 0 && (
+            <div className={styles.metaSection}>
+              <div className={styles.metaLabel}>Tags</div>
+              <div className={styles.tagsWrapper}>
+                {tags.map((tag: string) => (
+                  <span key={tag} className={styles.tag}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </aside>
+
+        {/* Main Content */}
+        <article className={styles.article}>
+          <header style={{ marginBottom: 40 }}>
+            <h1 className={styles.title}>{metadata.title}</h1>
+            {metadata.summary && (
+              <p className={styles.summary}>{metadata.summary}</p>
+            )}
+          </header>
+
+          <section className={styles.content}>
+            <MDXRemote source={content} components={mdxComponents as any} />
+          </section>
+        </article>
+      </div>
     </main>
   );
 }

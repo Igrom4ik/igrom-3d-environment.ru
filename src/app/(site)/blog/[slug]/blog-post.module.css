@@ -1,0 +1,187 @@
+.container {
+    padding: 80px 24px 120px;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 64px;
+    align-items: start;
+}
+
+.sidebar {
+    position: sticky;
+    top: 120px;
+}
+
+.backLink {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #9a9cab;
+    text-decoration: none;
+    margin-bottom: 32px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.backLink:hover {
+    color: #1e90ff;
+}
+
+.coverImageWrapper {
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #1e2028;
+    aspect-ratio: 16/9;
+}
+
+.coverImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.metaSection {
+    margin-bottom: 24px;
+}
+
+.metaLabel {
+    font-size: 12px;
+    color: #5c5c6b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.metaValue {
+    color: #f4f4f6;
+    font-size: 14px;
+}
+
+.tagsWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #9a9cab;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.article {
+    width: 100%;
+    max-width: 800px; /* Optimal reading width */
+    border-radius: 24px;
+    padding: 48px;
+    background: linear-gradient(145deg, rgba(9, 12, 28, 0.98), rgba(4, 6, 16, 0.98));
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.title {
+    font-size: clamp(28px, 5vw, 42px);
+    line-height: 1.1;
+    margin: 0 0 16px 0;
+    color: #f4f5ff;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.summary {
+    font-size: 18px;
+    color: #a7adc7;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.content {
+    font-size: 17px;
+    line-height: 1.7;
+    color: #cdd2eb;
+}
+
+.content p {
+    margin-bottom: 24px;
+}
+
+.content h2 {
+    font-size: 24px;
+    color: #fff;
+    margin: 48px 0 16px;
+    font-weight: 700;
+}
+
+.content h3 {
+    font-size: 20px;
+    color: #e0e0e0;
+    margin: 32px 0 12px;
+    font-weight: 600;
+}
+
+.content ul, .content ol {
+    margin-bottom: 24px;
+    padding-left: 24px;
+}
+
+.content li {
+    margin-bottom: 8px;
+}
+
+@media (max-width: 1024px) {
+    .layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .sidebar {
+        position: static;
+        order: -1; /* Sidebar on top for mobile? Or maybe just back link? */
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items: start;
+    }
+    
+    .backLink {
+        grid-column: 1 / -1;
+        margin-bottom: 0;
+    }
+
+    .coverImageWrapper {
+        grid-column: 1 / -1; /* Full width image on mobile */
+        margin-bottom: 0;
+        max-height: 300px;
+    }
+
+    .metaSection {
+        margin-bottom: 0;
+    }
+
+    .article {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 80px 16px 80px;
+    }
+    
+    .sidebar {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
