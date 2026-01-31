@@ -14,7 +14,8 @@ export async function POST(request: Request) {
             content, 
             tag, 
             image,
-            publishedAt 
+            publishedAt,
+            hidden
         } = data;
 
         if (!slug || !title) {
@@ -52,7 +53,8 @@ export async function POST(request: Request) {
             summary,
             tag,
             image,
-            publishedAt
+            publishedAt,
+            hidden
         };
 
         // Create file content using gray-matter stringify or manual

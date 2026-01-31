@@ -1,191 +1,112 @@
-import { CustomMDX, ScrollToHash } from "../../../../components";
-import { Posts } from "../../../../components/blog/Posts";
-import { ShareSection } from "../../../../components/blog/ShareSection";
-import { about, baseURL, blog, person } from "../../../../resources";
-import { formatDate } from "../../../../utils/formatDate";
-import { getTelegramSettings } from "../../../../utils/reader";
-import { getPosts } from "../../../../utils/utils";
-import type { Metadata } from "@/types";
-import {
-  Avatar,
-  Column,
-  Heading,
-  HeadingNav,
-  Line,
-  Media,
-  Meta,
-  Row,
-  Schema,
-  SmartLink,
-  Text,
-} from "@once-ui-system/core";
-import type { Metadata as NextMetadata } from "next";
 import { notFound } from "next/navigation";
-import React from "react";
+import { getPosts } from "@/utils/utils";
+import { mdxComponents } from "../../../(site)/blog/mdxComponents";
+import { MDXRemote } from "next-mdx-remote/rsc";
 
-type Post = {
-  metadata: Metadata;
-  slug: string;
-  content: string;
-};
+type Params = { slug: string };
 
-// For preview, we might not need static params if it's purely for dev/preview
-export const dynamic = 'force-static';
-
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
+export async function generateStaticParams() {
   const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
-  return posts.map((post: Post) => ({
-    slug: post.slug,
-  }));
+  return posts.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string | string[] }>;
-}): Promise<NextMetadata> {
-  const routeParams = await params;
-  const slugPath = Array.isArray(routeParams.slug)
-    ? routeParams.slug.join("/")
-    : routeParams.slug || "";
-
+export default async function PostPreview({ params }: { params: Promise<Params> }) {
+  const { slug } = await params;
   const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
-  const post = posts.find((post: Post) => post.slug === slugPath);
+  const post = posts.find((p) => p.slug === slug);
 
-  if (!post) return {};
+  if (!post) return notFound();
 
-  return Meta.generate({
-    title: `Preview: ${post.metadata.title}`,
-    description: post.metadata.summary || "",
-    baseURL: baseURL,
-    image: post.metadata.image || `/api/og/generate?title=${post.metadata.title}`,
-    path: `${blog.path}/${post.slug}`,
-  });
-}
-
-export default async function PostPreview({ params }: { params: Promise<{ slug: string | string[] }> }) {
-  const routeParams = await params;
-  const slugPath = Array.isArray(routeParams.slug)
-    ? routeParams.slug.join("/")
-    : routeParams.slug || "";
-
-  // Note: In a real "Preview" with Draft Mode, we would fetch from Keystatic Reader API or Draft State.
-  // Here, since we use local file storage, we just read the file from disk (which is updated when saved).
-  const post = getPosts(["src", "app", "(site)", "blog", "posts"]).find(
-    (post: Post) => post.slug === slugPath,
-  );
-
-  const telegramSettings = await getTelegramSettings();
-  const chatId = telegramSettings?.chatId || "";
-
-  if (!post) {
-    notFound();
-  }
+  const { metadata, content } = post;
 
   return (
-    <Row fillWidth>
-      <Row maxWidth={12} m={{ hide: true }} />
-      <Row fillWidth horizontal="center">
-        <Column as="section" maxWidth="m" horizontal="center" gap="l" paddingTop="24">
-            <div style={{ 
-                background: '#ffeb3b', 
-                color: 'black', 
-                padding: '8px 16px', 
-                borderRadius: '4px', 
-                fontWeight: 'bold',
-                marginBottom: '16px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%'
-            }}>
-                <span>PREVIEW MODE</span>
-            </div>
-          <Schema
-            as="blogPosting"
-            baseURL={baseURL}
-            path={`${blog.path}/${post.slug}`}
-            title={post.metadata.title}
-            description={post.metadata.summary || ""}
-            datePublished={post.metadata.publishedAt}
-            dateModified={post.metadata.publishedAt}
-            image={
-              post.metadata.image ||
-              `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`
-            }
-            author={{
-              name: person.name,
-              url: `${baseURL}${about.path}`,
-              image: `${baseURL}${person.avatar}`,
-            }}
-          />
-          <Column maxWidth="s" gap="16" horizontal="center" align="center">
-            <SmartLink href="/blog">
-              <Text variant="label-strong-m">Blog</Text>
-            </SmartLink>
-            <Text variant="body-default-xs" onBackground="neutral-weak" marginBottom="12">
-              {post.metadata.publishedAt && formatDate(post.metadata.publishedAt)}
-            </Text>
-            <Heading variant="display-strong-m">{post.metadata.title}</Heading>
-            {post.metadata.subtitle && (
-              <Text
-                variant="body-default-l"
-                onBackground="neutral-weak"
-                align="center"
-                style={{ fontStyle: "italic" }}
-              >
-                {post.metadata.subtitle}
-              </Text>
-            )}
-          </Column>
-          <Row marginBottom="32" horizontal="center">
-            <Row gap="16" vertical="center">
-              <Avatar size="s" src={person.avatar} />
-              <Text variant="label-default-m" onBackground="brand-weak">
-                {person.name}
-              </Text>
-            </Row>
-          </Row>
-          {post.metadata.image && (
-            <Media
-              src={post.metadata.image}
-              alt={post.metadata.title}
-              aspectRatio="16/9"
-              priority
-              sizes="(min-width: 768px) 100vw, 768px"
-              border="neutral-alpha-weak"
-              radius="l"
-              marginTop="12"
-              marginBottom="8"
-            />
-          )}
-          <Column as="article" maxWidth="s">
-            <CustomMDX source={post.content} />
-          </Column>
+    <main
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "80px 16px 120px",
+        minHeight: "100vh",
+        background: "#050712", // Match the new dark theme
+      }}
+    >
+        {/* Preview Banner */}
+        <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            background: '#ffeb3b',
+            color: 'black',
+            textAlign: 'center',
+            padding: '4px',
+            fontSize: '12px',
+            fontWeight: 'bold',
+            zIndex: 9999,
+            letterSpacing: '1px'
+        }}>
+            PREVIEW MODE
+        </div>
 
-          <ShareSection title={post.metadata.title} url={`${baseURL}${blog.path}/${post.slug}`} />
-
-          <Column fillWidth gap="40" horizontal="center" marginTop="40">
-            <Line maxWidth="40" />
-            <Text as="h2" id="recent-posts" variant="heading-strong-xl" marginBottom="24">
-              Recent posts
-            </Text>
-            <Posts exclude={[post.slug]} range={[1, 2]} columns="2" thumbnail direction="column" />
-          </Column>
-          <ScrollToHash />
-        </Column>
-      </Row>
-      <Column
-        maxWidth={12}
-        paddingLeft="40"
-        fitHeight
-        position="sticky"
-        top="80"
-        gap="16"
-        m={{ hide: true }}
+      <article
+        style={{
+          maxWidth: 720,
+          width: "100%",
+          borderRadius: 24,
+          padding: "clamp(24px, 5vw, 40px) clamp(16px, 4vw, 28px) 40px",
+          background:
+            "linear-gradient(145deg, rgba(9,12,28,0.98), rgba(4,6,16,0.98))",
+          boxShadow:
+            "0 24px 80px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.06)",
+        }}
       >
-        <HeadingNav fitHeight />
-      </Column>
-    </Row>
+        <header style={{ marginBottom: 24 }}>
+          <div
+            style={{
+              fontSize: 12,
+              letterSpacing: 0.14,
+              textTransform: "uppercase",
+              color: "#7f86a8",
+              marginBottom: 6,
+            }}
+          >
+            Devlog • {new Date(metadata.publishedAt).toLocaleDateString()}
+          </div>
+          <h1
+            style={{
+              fontSize: "clamp(22px, 5vw, 28px)",
+              lineHeight: 1.2,
+              margin: 0,
+              color: "#f4f5ff",
+            }}
+          >
+            {metadata.title}
+          </h1>
+          {metadata.summary && (
+            <p
+              style={{
+                marginTop: 12,
+                fontSize: "clamp(14px, 4vw, 15px)",
+                color: "#a7adc7",
+                lineHeight: 1.6,
+              }}
+            >
+              {metadata.summary}
+            </p>
+          )}
+        </header>
+
+        <section
+          style={{
+            fontSize: "clamp(15px, 4vw, 16px)",
+            lineHeight: 1.7,
+            color: "#cdd2eb",
+          }}
+        >
+          <MDXRemote source={content} components={mdxComponents as any} />
+        </section>
+      </article>
+    </main>
   );
 }

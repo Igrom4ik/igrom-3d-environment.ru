@@ -1,4 +1,4 @@
-import BlogEditor from '../BlogEditor';
+import BlogEditor from '../../BlogEditor';
 import { getBlogPosts } from '@/utils/blog-reader';
 import { notFound } from 'next/navigation';
 

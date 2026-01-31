@@ -48,6 +48,7 @@ async function readPostsFromDir(dirPath: string) {
                     summary: data.summary || '',
                     image: data.image || null,
                     tag: data.tag || '',
+                    hidden: data.hidden || false,
                 }
             };
         } catch (e) {

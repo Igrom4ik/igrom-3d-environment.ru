@@ -58,9 +58,9 @@
     display: none; /* Hide on small mobile if needed */
 }
 
-@media (min-width: 600px) {
-    .statusBadge {
-        display: block;
+@media (max-width: 600px) {
+    .hideOnMobile {
+        display: none;
     }
 }
 
@@ -168,4 +168,26 @@
 
 .toolbarBtn:active {
     transform: scale(0.95);
+}
+
+/* Context Menu Button Style */
+.contextBtn {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: #f4f4f6;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.contextBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
 }

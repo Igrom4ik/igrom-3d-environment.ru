@@ -135,7 +135,7 @@ export default function BlogGrid({
                                             padding: '4px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px'
                                         }}
                                     >
-                                        <RefreshCw size={14} /> Restore ({selectedSlugs.length})
+                                        <RefreshCw size={14} /> Восстановить ({selectedSlugs.length})
                                     </button>
                                     <button 
                                         type="button"
@@ -148,7 +148,7 @@ export default function BlogGrid({
                                             padding: '4px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px'
                                         }}
                                     >
-                                        <Trash2 size={14} /> Delete Forever ({selectedSlugs.length})
+                                        <Trash2 size={14} /> Удалить Навсегда ({selectedSlugs.length})
                                     </button>
                                 </>
                             ) : (
@@ -163,7 +163,7 @@ export default function BlogGrid({
                                         padding: '4px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px'
                                     }}
                                 >
-                                    <Trash2 size={14} /> Move to Trash ({selectedSlugs.length})
+                                    <Trash2 size={14} /> В Корзину ({selectedSlugs.length})
                                 </button>
                             )}
                         </>
@@ -173,7 +173,7 @@ export default function BlogGrid({
                         onClick={handleSelectAll}
                         style={{ background: 'none', border: 'none', color: '#1e90ff', cursor: 'pointer', fontSize: '13px' }}
                     >
-                        {selectedSlugs.length === posts.length ? 'Deselect All' : 'Select All'}
+                        {selectedSlugs.length === posts.length ? 'Снять выделение' : 'Выбрать Все'}
                     </button>
                 </div>
             </div>
@@ -185,7 +185,7 @@ export default function BlogGrid({
                         className={styles.newCard}
                     >
                         <Plus className={styles.plusIcon} />
-                        <span className={styles.newText}>Create New Post</span>
+                        <span className={styles.newText}>Создать Статью</span>
                     </Link>
                 )}
 
@@ -265,14 +265,15 @@ function BlogPostCard({
                     <span 
                         className={`${styles.statusBadge}`}
                         style={{ 
-                            background: '#282a36',
-                            color: '#9a9cab',
+                            background: post.entry.hidden ? 'rgba(231, 76, 60, 0.1)' : '#282a36',
+                            color: post.entry.hidden ? '#e74c3c' : '#9a9cab',
                             padding: '2px 6px',
                             borderRadius: '4px',
-                            fontSize: '12px'
+                            fontSize: '12px',
+                            border: post.entry.hidden ? '1px solid rgba(231, 76, 60, 0.2)' : 'none'
                         }}
                     >
-                        {isTrash ? 'Deleted' : (post.entry.publishedAt ? new Date(post.entry.publishedAt).toLocaleDateString() : 'Draft')}
+                        {isTrash ? 'Deleted' : (post.entry.hidden ? 'Draft' : (post.entry.publishedAt ? new Date(post.entry.publishedAt).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Draft'))}
                     </span>
                     
                     {post.entry.tag && (

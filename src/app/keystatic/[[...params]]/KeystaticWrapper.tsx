@@ -21,6 +21,10 @@ export default function KeystaticWrapper() {
     if (pathname?.includes('/collection/albums') && !pathname?.includes('/item/') && !pathname?.includes('/create')) {
         router.replace('/admin/portfolio');
     }
+    // Redirect "Posts" list view to custom Admin Blog Dashboard
+    if (pathname?.includes('/collection/posts') && !pathname?.includes('/item/') && !pathname?.includes('/create')) {
+        router.replace('/admin/blog');
+    }
   }, [pathname, router]);
 
   useEffect(() => {

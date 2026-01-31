@@ -43,14 +43,18 @@ export default function BlogManager({ initialPosts, initialTrashPosts = [] }: Bl
     // Extract all unique tags
     const allTags = useMemo(() => {
         const tags = new Set<string>();
-        [...posts, ...trashPosts].forEach(p => {
+        // Only use active posts for tag filtering, or all posts? 
+        // Usually you want to filter by tags available in the current view.
+        const targetPosts = activeTab === 'active' ? posts : trashPosts;
+        
+        targetPosts.forEach(p => {
             if (p.entry.tag) {
                 // Split by comma if multiple tags
                 p.entry.tag.split(',').forEach((t: string) => tags.add(t.trim()));
             }
         });
         return Array.from(tags).sort();
-    }, [posts, trashPosts]);
+    }, [activeTab, posts, trashPosts]);
 
     // Filter and Sort Logic
     const currentList = activeTab === 'active' ? posts : trashPosts;
@@ -117,7 +121,7 @@ export default function BlogManager({ initialPosts, initialTrashPosts = [] }: Bl
         <div className={styles.mainLayout}>
             <div className={styles.sidebar}>
                 <div className={styles.sidebarSection}>
-                    <div className={styles.sidebarHeader}>Blog Management</div>
+                    <div className={styles.sidebarHeader}>Управление Блогом</div>
                     
                     {/* Tabs */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
@@ -131,7 +135,7 @@ export default function BlogManager({ initialPosts, initialTrashPosts = [] }: Bl
                             }}
                             onClick={() => setActiveTab('active')}
                         >
-                            <FileText size={16} /> All Posts ({posts.length})
+                            <FileText size={16} /> Все Статьи ({posts.length})
                         </button>
                         <button 
                             className={activeTab === 'trash' ? styles.tabActive : styles.tab}
@@ -143,11 +147,11 @@ export default function BlogManager({ initialPosts, initialTrashPosts = [] }: Bl
                             }}
                             onClick={() => setActiveTab('trash')}
                         >
-                            <Trash2 size={16} /> Trash ({trashPosts.length})
+                            <Trash2 size={16} /> Корзина ({trashPosts.length})
                         </button>
                     </div>
 
-                    <div className={styles.sidebarHeader} style={{ marginTop: '24px' }}>Filters</div>
+                    <div className={styles.sidebarHeader} style={{ marginTop: '24px' }}>Фильтры</div>
                     
                     {/* Tag Filter */}
                     <select 
@@ -155,22 +159,22 @@ export default function BlogManager({ initialPosts, initialTrashPosts = [] }: Bl
                         value={selectedTag}
                         onChange={(e) => setSelectedTag(e.target.value)}
                     >
-                        <option value="all">All Categories</option>
+                        <option value="all">Все Категории</option>
                         {allTags.map(tag => (
                             <option key={tag} value={tag}>{tag}</option>
                         ))}
                     </select>
 
-                    <div className={styles.sidebarHeader} style={{ marginTop: '24px' }}>Sort By</div>
+                    <div className={styles.sidebarHeader} style={{ marginTop: '24px' }}>Сортировка</div>
                     <select 
                         style={{ width: '100%', background: '#1e2028', color: '#fff', border: '1px solid #282a36', padding: '8px', borderRadius: '4px', outline: 'none', marginTop: '8px' }}
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as SortOption)}
                     >
-                        <option value="date-desc">Date (Newest)</option>
-                        <option value="date-asc">Date (Oldest)</option>
-                        <option value="title-asc">Title (A-Z)</option>
-                        <option value="title-desc">Title (Z-A)</option>
+                        <option value="date-desc">По дате (Новые)</option>
+                        <option value="date-asc">По дате (Старые)</option>
+                        <option value="title-asc">По названию (А-Я)</option>
+                        <option value="title-desc">По названию (Я-А)</option>
                     </select>
                 </div>
             </div>
@@ -180,10 +184,10 @@ export default function BlogManager({ initialPosts, initialTrashPosts = [] }: Bl
                 <div className={styles.portfolioHeader}>
                     <div>
                         <h1 className={styles.pageTitle}>
-                            {activeTab === 'active' ? 'Blog Posts' : 'Trash'}
+                            {activeTab === 'active' ? 'Статьи Блога' : 'Корзина'}
                         </h1>
                         <p className={styles.subText}>
-                            {activeTab === 'active' ? 'Manage your articles.' : 'Recover or permanently delete items.'}
+                            {activeTab === 'active' ? 'Управление вашими публикациями.' : 'Восстановление или удаление статей.'}
                         </p>
                     </div>
                     
@@ -191,7 +195,7 @@ export default function BlogManager({ initialPosts, initialTrashPosts = [] }: Bl
                         <Search size={16} />
                         <input 
                             type="text" 
-                            placeholder="Search posts..." 
+                            placeholder="Поиск статей..." 
                             style={{ background: 'transparent', border: 'none', color: 'inherit', width: '100%', outline: 'none' }}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}

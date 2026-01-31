@@ -152,10 +152,56 @@ export function Note({
   );
 }
 
+export function VideoPlayer({ src }: { src: string }) {
+  return (
+    <div
+      style={{
+        margin: "24px 0",
+        borderRadius: 18,
+        overflow: "hidden",
+        border: "1px solid rgba(255,255,255,0.08)",
+        background: "black",
+        position: "relative",
+        paddingTop: "56.25%", // 16:9 Aspect Ratio
+      }}
+    >
+      <video
+        controls
+        src={src}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+        }}
+      />
+    </div>
+  );
+}
+
+export function AudioPlayer({ src }: { src: string }) {
+  return (
+    <div
+      style={{
+        margin: "16px 0",
+        padding: "16px",
+        borderRadius: 12,
+        border: "1px solid rgba(255,255,255,0.08)",
+        background: "rgba(10,10,20,0.95)",
+      }}
+    >
+      <audio controls src={src} style={{ width: "100%" }} />
+    </div>
+  );
+}
+
 // Export components object for MDX
 export const mdxComponents = {
   code: CodeBlock,
   pre: (props: any) => <div {...props} />, // Prevent double <pre>
   HeroImage,
   Note,
+  VideoPlayer,
+  AudioPlayer,
 };
