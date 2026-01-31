@@ -52,8 +52,8 @@ export default function AdminNav() {
                         Portfolio
                     </Link>
                     <Link 
-                        href="/keystatic/collection/posts" 
-                        className={`${styles.navLink} ${pathname.includes('/keystatic/collection/posts') ? styles.navLinkActive : ''}`}
+                        href="/admin/blog" 
+                        className={`${styles.navLink} ${isActive('/admin/blog') ? styles.navLinkActive : ''}`}
                     >
                         Blog
                     </Link>

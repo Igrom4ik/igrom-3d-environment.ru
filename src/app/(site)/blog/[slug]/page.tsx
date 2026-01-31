@@ -1,167 +1,90 @@
-import { CustomMDX, ScrollToHash } from "@/components";
-import { Posts } from "@/components/blog/Posts";
-import { ShareSection } from "@/components/blog/ShareSection";
-import { about, baseURL, blog, person } from "@/resources";
-import { formatDate } from "@/utils/formatDate";
-import { getPosts } from "@/utils/utils";
-import {
-  Avatar,
-  Column,
-  Heading,
-  HeadingNav,
-  Icon,
-  Line,
-  Media,
-  Meta,
-  Row,
-  Schema,
-  SmartLink,
-  Text,
-} from "@once-ui-system/core";
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import React from "react";
+import { getPosts } from "@/utils/utils";
+import { mdxComponents } from "../mdxComponents";
+import { MDXRemote } from "next-mdx-remote/rsc";
 
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
+type Params = { slug: string };
+
+export async function generateStaticParams() {
   const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  return posts.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string | string[] }>;
-}): Promise<Metadata> {
-  const routeParams = await params;
-  const slugPath = Array.isArray(routeParams.slug)
-    ? routeParams.slug.join("/")
-    : routeParams.slug || "";
-
+export default async function BlogPostPage({ params }: { params: Promise<Params> }) {
+  const { slug } = await params;
   const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
-  const post = posts.find((post) => post.slug === slugPath);
+  const post = posts.find((p) => p.slug === slug);
 
-  if (!post) return {};
+  if (!post) return notFound();
 
-  return Meta.generate({
-    title: post.metadata.title,
-    description: post.metadata.summary || "",
-    baseURL: baseURL,
-    image: post.metadata.image || `/api/og/generate?title=${post.metadata.title}`,
-    path: `${blog.path}/${post.slug}`,
-  });
-}
-
-export default async function Blog({ params }: { params: Promise<{ slug: string | string[] }> }) {
-  const routeParams = await params;
-  const slugPath = Array.isArray(routeParams.slug)
-    ? routeParams.slug.join("/")
-    : routeParams.slug || "";
-
-  const post = getPosts(["src", "app", "(site)", "blog", "posts"]).find(
-    (post) => post.slug === slugPath,
-  );
-
-  if (!post) {
-    notFound();
-  }
-
-  const avatars =
-    post.metadata.team?.map((person) => ({
-      src: person.avatar,
-    })) || [];
+  const { metadata, content } = post;
 
   return (
-    <Row fillWidth>
-      <Row maxWidth={12} m={{ hide: true }} />
-      <Row fillWidth horizontal="center">
-        <Column as="section" maxWidth="m" horizontal="center" gap="l" paddingTop="24">
-          <Schema
-            as="blogPosting"
-            baseURL={baseURL}
-            path={`${blog.path}/${post.slug}`}
-            title={post.metadata.title}
-            description={post.metadata.summary || ""}
-            datePublished={post.metadata.publishedAt}
-            dateModified={post.metadata.publishedAt}
-            image={
-              post.metadata.image ||
-              `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`
-            }
-            author={{
-              name: person.name,
-              url: `${baseURL}${about.path}`,
-              image: `${baseURL}${person.avatar}`,
-            }}
-          />
-          <Column maxWidth="s" gap="16" horizontal="center" align="center">
-            <SmartLink href="/blog">
-              <Text variant="label-strong-m">Blog</Text>
-            </SmartLink>
-            <Text variant="body-default-xs" onBackground="neutral-weak" marginBottom="12">
-              {post.metadata.publishedAt && formatDate(post.metadata.publishedAt)}
-            </Text>
-            <Heading variant="display-strong-m">{post.metadata.title}</Heading>
-            {post.metadata.subtitle && (
-              <Text
-                variant="body-default-l"
-                onBackground="neutral-weak"
-                align="center"
-                style={{ fontStyle: "italic" }}
-              >
-                {post.metadata.subtitle}
-              </Text>
-            )}
-          </Column>
-          <Row marginBottom="32" horizontal="center">
-            <Row gap="16" vertical="center">
-              <Avatar size="s" src={person.avatar} />
-              <Text variant="label-default-m" onBackground="brand-weak">
-                {person.name}
-              </Text>
-            </Row>
-          </Row>
-          {post.metadata.image && (
-            <Media
-              src={post.metadata.image}
-              alt={post.metadata.title}
-              aspectRatio="16/9"
-              priority
-              sizes="(min-width: 768px) 100vw, 768px"
-              border="neutral-alpha-weak"
-              radius="l"
-              marginTop="12"
-              marginBottom="8"
-            />
-          )}
-          <Column as="article" maxWidth="s">
-            <CustomMDX source={post.content} />
-          </Column>
-
-          <ShareSection title={post.metadata.title} url={`${baseURL}${blog.path}/${post.slug}`} />
-
-          <Column fillWidth gap="40" horizontal="center" marginTop="40">
-            <Line maxWidth="40" />
-            <Text as="h2" id="recent-posts" variant="heading-strong-xl" marginBottom="24">
-              Recent posts
-            </Text>
-            <Posts exclude={[post.slug]} range={[1, 2]} columns="2" thumbnail direction="column" />
-          </Column>
-          <ScrollToHash />
-        </Column>
-      </Row>
-      <Column
-        maxWidth={12}
-        paddingLeft="40"
-        fitHeight
-        position="sticky"
-        top="80"
-        gap="16"
-        m={{ hide: true }}
+    <main
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        padding: "80px 16px 120px",
+      }}
+    >
+      <article
+        style={{
+          maxWidth: 840,
+          width: "100%",
+          borderRadius: 24,
+          padding: "32px 28px 40px",
+          background:
+            "linear-gradient(145deg, rgba(9,12,28,0.98), rgba(4,6,16,0.98))",
+          boxShadow:
+            "0 24px 80px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.06)",
+        }}
       >
-        <HeadingNav fitHeight />
-      </Column>
-    </Row>
+        <header style={{ marginBottom: 24 }}>
+          <div
+            style={{
+              fontSize: 12,
+              letterSpacing: 0.14,
+              textTransform: "uppercase",
+              color: "#7f86a8",
+              marginBottom: 6,
+            }}
+          >
+            Devlog • {new Date(metadata.publishedAt).toLocaleDateString()}
+          </div>
+          <h1
+            style={{
+              fontSize: 28,
+              lineHeight: 1.15,
+              margin: 0,
+              color: "#f4f5ff",
+            }}
+          >
+            {metadata.title}
+          </h1>
+          {metadata.summary && (
+            <p
+              style={{
+                marginTop: 12,
+                fontSize: 15,
+                color: "#a7adc7",
+              }}
+            >
+              {metadata.summary}
+            </p>
+          )}
+        </header>
+
+        <section
+          style={{
+            fontSize: 15,
+            lineHeight: 1.6,
+            color: "#cdd2eb",
+          }}
+        >
+          <MDXRemote source={content} components={mdxComponents as any} />
+        </section>
+      </article>
+    </main>
   );
 }
