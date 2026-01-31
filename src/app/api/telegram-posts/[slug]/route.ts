@@ -8,7 +8,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 
 export async function GET(
   _req: NextRequest,
