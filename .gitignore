@@ -50,3 +50,17 @@ next-env.d.ts
 # AI / Agent files
 .trae
 .continue
+
+# Тяжёлый контент — только на сервере, не в git
+public/images/
+public/marmoset/
+public/images/gallery/
+public/images/blog/
+public/images/projects/
+public/images/avatars/
+
+# Keystatic content collections
+src/content/albums/
+src/content/telegram-posts/
+src/app/(site)/blog/posts/
+src/content/projects/
