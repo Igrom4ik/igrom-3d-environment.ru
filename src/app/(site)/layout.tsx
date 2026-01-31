@@ -29,12 +29,15 @@ export async function generateMetadata() {
   });
 }
 
+import { getSiteSettings } from "@/utils/siteSettings";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const settings = await getDesignSettings();
+  const siteSettings = getSiteSettings();
   let activeStyle = settings ? { ...style, ...settings } : style;
 
   if (settings?.preset === 'ios-liquid-glass') {
@@ -78,12 +81,12 @@ export default async function RootLayout({
       )}
     >
       <head>
-        <meta property="og:title" content="Mikitar — личный сайт 3D‑художника" />
-        <meta property="og:site_name" content="igrom-3d-environment.ru" />
-        <meta property="og:description" content="Мой личный сайт и портфолио 3D‑окружения и моделей." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://igrom-3d-environment.ru/" />
-        <meta property="og:image" content="https://igrom-3d-environment.ru/images/og/avatar.jpg" />
+        <meta property="og:title" content={siteSettings.ogTitle} />
+        <meta property="og:site_name" content={siteSettings.ogSiteName} />
+        <meta property="og:description" content={siteSettings.ogDescription} />
+        <meta property="og:type" content={siteSettings.ogType} />
+        <meta property="og:url" content={siteSettings.ogUrl} />
+        <meta property="og:image" content={siteSettings.ogImage} />
         
         <Script id="theme-init" strategy="beforeInteractive">
           {`(function() {

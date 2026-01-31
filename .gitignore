@@ -74,3 +74,6 @@ backup-content-*
 # Secrets
 secrets.json
 SECRETS_REFERENCE.txt
+
+# Site Settings (local override)
+site-settings.json
