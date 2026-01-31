@@ -6,7 +6,6 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { ArrowLeft } from "lucide-react";
 import styles from "./blog-post.module.css";
 
-export const dynamic = 'error';
 export const dynamicParams = false;
 
 type Params = { slug: string };
