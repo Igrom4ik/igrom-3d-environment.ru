@@ -196,10 +196,88 @@ export function AudioPlayer({ src }: { src: string }) {
   );
 }
 
+export function BlogImage({
+  src,
+  alt,
+  size = "m",
+}: {
+  src: string;
+  alt?: string;
+  size?: "s" | "m" | "l";
+}) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [open, setOpen] = React.useState(false);
+
+  const maxWidth = size === "s" ? 260 : size === "l" ? 720 : 480;
+
+  return (
+    <>
+      {/* Thumbnail in text */}
+      <figure
+        style={{
+          margin: "16px auto",
+          maxWidth,
+          cursor: "zoom-in",
+          width: "100%", // Ensure it doesn't collapse if flex
+          display: "flex",
+          justifyContent: "center",
+        }}
+        onClick={() => setOpen(true)}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={alt ?? ""}
+          style={{
+            width: "100%",
+            height: "auto",
+            display: "block",
+            borderRadius: 16,
+            border: "1px solid rgba(255,255,255,0.12)",
+          }}
+        />
+      </figure>
+
+      {/* Fullscreen Overlay */}
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.85)", // Slightly darker
+            backdropFilter: "blur(10px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999, // High z-index
+            cursor: "zoom-out",
+            padding: "24px",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={alt ?? ""}
+            style={{
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+              borderRadius: 20,
+              boxShadow: "0 24px 80px rgba(0,0,0,0.85)",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+      )}
+    </>
+  );
+}
+
 // Export components object for MDX
 export const mdxComponents = {
   code: CodeBlock,
   pre: (props: any) => <div {...props} />, // Prevent double <pre>
+  BlogImage,
   img: function ImageWithZoom(props: any) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [isZoomed, setIsZoomed] = React.useState(false);
@@ -223,18 +301,20 @@ export const mdxComponents = {
           <img
             {...rest}
             style={{
-              maxWidth: "100%",
-              maxHeight: "250px", // Reduced and Enforced
+              maxWidth: "100%", // Responsive
               width: "auto", 
               height: "auto",
-              borderRadius: 8,
+              maxHeight: "500px", // Reasonable limit for tall images
+              borderRadius: 16,
               display: "block",
-              border: "1px solid rgba(255,255,255,0.1)",
+              border: "1px solid rgba(255,255,255,0.08)",
               objectFit: "contain",
               transition: "transform 0.2s ease-in-out",
+              margin: "0 auto",
             }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
-            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+            // Apply max-width constraint similar to user suggestion via style prop if needed, 
+            // but here we let it be controlled by container or max-height.
+            // User suggested max-width: min(640px, 100%). Let's apply that to the container or img.
           />
         </div>
 
