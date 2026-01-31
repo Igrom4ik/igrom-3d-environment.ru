@@ -201,7 +201,12 @@ export const mdxComponents = {
   code: CodeBlock,
   pre: (props: any) => <div {...props} />, // Prevent double <pre>
   img: (props: any) => (
-    <div style={{ display: 'flex', justifyContent: 'center', margin: '24px 0' }}>
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      margin: '24px 0',
+      width: '100%' 
+    }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         {...props}
