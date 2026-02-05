@@ -13,6 +13,7 @@ const isValidSlug = (s: string) => s && !s.includes('..') && !s.includes('/') &&
 async function processDelete(slugs: string[], mode: DeleteMode) {
   const albumsDir = path.join(process.cwd(), 'src/content/albums');
   const processed: string[] = [];
+  const alreadyDeleted: string[] = [];
   const errors: string[] = [];
 
   for (const slug of slugs) {
@@ -38,7 +39,10 @@ async function processDelete(slugs: string[], mode: DeleteMode) {
           await fs.access(mdocPath);
           targetPath = mdocPath;
         } catch {
-          errors.push(`Project files not found for: ${slug}`);
+          // File not found - treat as already deleted
+          log(`Project files not found for: ${slug} (already deleted)`);
+          processed.push(slug);
+          alreadyDeleted.push(slug);
           continue;
         }
       }
