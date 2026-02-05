@@ -1,0 +1,196 @@
+/* Shared Admin Design System based on portfolio.module.css */
+
+/* Page Layout */
+.pageContainer {
+    background-color: #101015;
+    height: 100vh;
+    overflow: hidden;
+    color: #f4f4f6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Typography */
+.pageTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f4f4f6;
+    margin-bottom: 8px;
+}
+
+.subText {
+    color: #5c5c6b;
+    font-size: 14px;
+}
+
+/* Headers */
+.header {
+    height: 64px;
+    background-color: #0b0b10;
+    border-bottom: 1px solid #282a36;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+/* Content Area */
+.contentArea {
+    flex: 1;
+    background-color: #0b0b10;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+/* Buttons */
+.primaryButton {
+    background-color: #1e90ff;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.primaryButton:hover {
+    background-color: #1670cb;
+}
+
+.secondaryButton {
+    background-color: #282a36;
+    color: #f4f4f6;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.secondaryButton:hover {
+    border-color: #5c5c6b;
+    background-color: #383a47;
+}
+
+.dangerButton {
+    background-color: rgba(255, 77, 77, 0.1);
+    color: #ff4d4d;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dangerButton:hover {
+    background-color: rgba(255, 77, 77, 0.2);
+    border-color: rgba(255, 77, 77, 0.3);
+}
+
+/* Inputs & Forms */
+.input {
+    background-color: #181920;
+    border: 1px solid #282a36;
+    color: #f4f4f6;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    border-color: #1e90ff;
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #9a9cab;
+}
+
+/* Cards & Containers */
+.card {
+    background-color: #181920;
+    border: 1px solid #282a36;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+/* Tables */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableHeader {
+    background-color: #101015;
+    text-align: left;
+}
+
+.tableHeader th {
+    padding: 12px 16px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #5c5c6b;
+    font-weight: 600;
+    border-bottom: 1px solid #282a36;
+}
+
+.tableRow {
+    border-bottom: 1px solid #282a36;
+    transition: background 0.2s;
+}
+
+.tableRow:hover {
+    background-color: #181920;
+}
+
+.tableCell {
+    padding: 16px;
+    color: #f4f4f6;
+    font-size: 14px;
+}
+
+/* Loading */
+.loadingContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #5c5c6b;
+}
+
+/* Utilities */
+.flexBetween {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flexGap {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}

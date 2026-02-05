@@ -143,8 +143,55 @@ export function AdminToolbar() {
         toolbar.appendChild(btn);
       }
 
-      // 5. Insert Toolbar after the label
-      labelEl.insertAdjacentElement('afterend', toolbar);
+      // 6. Inject "Theme Editor" Link into Sidebar
+      const navObserver = new MutationObserver(() => {
+        const nav = document.querySelector('nav');
+        if (!nav) return;
+        
+        if (nav.querySelector('#custom-theme-link')) return;
+
+        // Find the "System" section or just append to the end of the list
+        // Keystatic nav is usually a list of links.
+        // Let's create a link element style like Keystatic's
+        
+        const link = document.createElement('a');
+        link.id = 'custom-theme-link';
+        link.href = '/admin/theme-editor';
+        link.innerHTML = '<span>🎨 Theme Editor</span>';
+        link.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            margin: 4px 8px;
+            text-decoration: none;
+            color: var(--text-secondary, #888);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 4px;
+            transition: all 0.2s;
+        `;
+        link.onmouseover = () => {
+            link.style.backgroundColor = 'var(--bg-hover, rgba(255,255,255,0.05))';
+            link.style.color = 'var(--text-primary, #fff)';
+        };
+        link.onmouseout = () => {
+            link.style.backgroundColor = 'transparent';
+            link.style.color = 'var(--text-secondary, #888)';
+        };
+
+        // Try to insert after "Settings" or at the bottom
+        // We look for a link containing "Settings"
+        const settingsLink = Array.from(nav.querySelectorAll('a')).find(a => a.textContent?.includes('Settings') || a.textContent?.includes('Настройки сайта'));
+        
+        if (settingsLink) {
+            settingsLink.parentElement?.insertAdjacentElement('afterend', link);
+        } else {
+            nav.appendChild(link);
+        }
+      });
+      
+      navObserver.observe(document.body, { childList: true, subtree: true });
 
     });
 

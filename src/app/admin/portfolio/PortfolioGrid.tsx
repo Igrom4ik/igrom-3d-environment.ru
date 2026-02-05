@@ -169,14 +169,11 @@ export default function PortfolioGrid({ albums: initialAlbums, onAlbumUpdate, on
         await new Promise(resolve => setTimeout(resolve, 500));
 
         try {
-            const res = await fetch('/api/portfolio/delete', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    slugs: selectedSlugs, 
-                    action: 'hard' 
-                })
-            });
+            const params = new URLSearchParams();
+            params.set('slugs', selectedSlugs.join(','));
+            params.set('action', 'hard');
+
+            const res = await fetch(`/api/portfolio/delete?${params.toString()}`, { method: 'DELETE' });
             
             let data;
             try {

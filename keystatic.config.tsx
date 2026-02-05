@@ -952,16 +952,62 @@ export default config({
                 ],
                 defaultValue: 'custom',
             }),
-            backgroundEffect: fields.select({
-                label: 'Эффект фона',
-                options: [
-                    { label: 'Нет', value: 'none' },
-                    { label: 'Аврора', value: 'aurora' },
-                    { label: 'Частицы', value: 'particles' },
-                    { label: 'Сетка', value: 'grid' },
-                ],
-                defaultValue: 'none',
-            }),
+            background: fields.conditional(
+                fields.select({
+                    label: 'Эффект фона',
+                    options: [
+                        { label: 'Нет', value: 'none' },
+                        { label: 'Аврора', value: 'aurora' },
+                        { label: 'Частицы', value: 'particles' },
+                        { label: 'Сетка (Старая)', value: 'grid' },
+                        { label: 'Созвездие (Constellation)', value: 'constellation' },
+                        { label: 'Интерактивная сетка', value: 'interactive-grid' },
+                        { label: 'Вихрь (Vortex)', value: 'vortex' },
+                        { label: 'Топография', value: 'topography' },
+                        { label: 'Волновая сетка (3D)', value: 'wave-grid' },
+                        { label: 'Лучи (Beams)', value: 'beams' },
+                        { label: 'Снег', value: 'snow' },
+                    ],
+                    defaultValue: 'none',
+                }),
+                {
+                    none: fields.empty(),
+                    aurora: fields.empty(), // Placeholder for existing or future params
+                    particles: fields.empty(),
+                    grid: fields.empty(),
+                    constellation: fields.object({
+                        color: fields.text({ label: 'Цвет линий (HEX/RGBA)', defaultValue: 'rgba(255, 255, 255, 0.5)' }),
+                    }),
+                    'interactive-grid': fields.object({
+                        color: fields.text({ label: 'Цвет активных точек', defaultValue: 'rgba(100, 200, 255, 0.8)' }),
+                    }),
+                    vortex: fields.object({
+                        particleCount: fields.integer({ label: 'Количество частиц', defaultValue: 400 }),
+                    }),
+                    topography: fields.object({
+                        color: fields.text({ label: 'Цвет линий', defaultValue: 'rgba(255, 255, 255, 0.3)' }),
+                    }),
+                    'wave-grid': fields.object({
+                        color: fields.text({ label: 'Цвет сетки', defaultValue: 'rgba(0, 255, 200, 0.5)' }),
+                    }),
+                    beams: fields.object({
+                        color: fields.text({ label: 'Цвет лучей (не используется в демо)', defaultValue: '#fff' }),
+                    }),
+                    snow: fields.object({
+                        density: fields.integer({ label: 'Плотность', defaultValue: 150 }),
+                    }),
+                }
+            ),
+            backgroundMusic: fields.object({
+                file: fields.file({
+                    label: 'Файл музыки (MP3)',
+                    directory: 'public/music',
+                    publicPath: '/music',
+                    validation: { isRequired: false }
+                }),
+                autoplay: fields.checkbox({ label: 'Автовоспроизведение', defaultValue: false }),
+                volume: fields.number({ label: 'Громкость (0.0 - 1.0)', defaultValue: 0.3, validation: { min: 0, max: 1 }, step: 0.1 }),
+            }, { label: 'Фоновая музыка' }),
             theme: fields.select({
                 label: 'Тема (Системная/Тёмная/Светлая)',
                 options: [

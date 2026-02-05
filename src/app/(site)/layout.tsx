@@ -6,6 +6,7 @@ import classNames from "classnames";
 
 import { Footer, Header, Providers, RouteGuard } from "@/components";
 import FloatingContactButton from "@/components/FloatingContactButton";
+import { BackgroundManager } from "@/components/BackgroundManager";
 import { baseURL, dataStyle, effects, fonts, home, style } from "@/resources";
 import { getDesignSettings } from "@/utils/reader";
 import Script from "next/script";
@@ -54,7 +55,15 @@ export default async function RootLayout({
     };
   }
 
-  const backgroundEffect = settings?.backgroundEffect ?? 'none';
+  // Handle both old backgroundEffect and new background conditional field
+  let backgroundEffect = 'none';
+  const background = settings?.background;
+  
+  if (background && typeof background === 'object' && 'discriminant' in background) {
+    backgroundEffect = background.discriminant;
+  } else if (typeof background === 'string') {
+    backgroundEffect = background;
+  }
 
   return (
     <Flex
@@ -150,6 +159,7 @@ export default async function RootLayout({
           padding="0"
           horizontal="center"
         >
+          <BackgroundManager settings={settings} />
           <RevealFx fill position="absolute">
             <Background
               mask={{

@@ -1,13 +1,26 @@
+/* Admin Layout Styles */
 .adminBody {
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    background-color: #000000;
-    padding-top: 112px;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+  
+  /* Отступ под ваш header (64px) + top offset (24px) + padding */
+  padding-top: 112px;
+}
+
+.adminBodyWithSidebar {
+  padding-left: 280px;
+  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.adminBodySidebarClosed {
+  padding-left: 0;
 }
 
 @media (max-width: 1024px) {
-    .adminBody {
-        padding-top: 80px;
-    }
+  .adminBody {
+    padding-top: 80px; /* Уменьшенный header на мобилке */
+    padding-left: 0; /* Sidebar скрыт на мобилке */
+  }
 }

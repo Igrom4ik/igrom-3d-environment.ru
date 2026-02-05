@@ -1,8 +1,16 @@
 {
   "preset": "ios-liquid-glass",
-  "backgroundEffect": "aurora",
+  "background": {
+    "discriminant": "interactive-grid",
+    "value": {}
+  },
+  "backgroundMusic": {
+    "file": null,
+    "autoplay": false,
+    "volume": 0.35
+  },
   "theme": "system",
-  "brand": "cyan",
+  "brand": "green",
   "accent": "red",
   "neutral": "gray",
   "border": "playful",

@@ -12,8 +12,10 @@
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
   
-  --accent: #3b82f6; /* Blue standard */
-  --accent-hover: #60a5fa;
+  --accent: #1e90ff;
+  --accent-hover: #4aa6ff;
+  --accent-weak: rgba(30, 144, 255, 0.12);
+  --accent-weak-strong: rgba(30, 144, 255, 0.2);
   
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -37,14 +39,14 @@ body, html {
 }
 
 /* Sidebar / Navigation Container */
-aside {
+div[data-split-pane="primary"] aside {
   background-color: var(--bg-panel) !important;
   border-right: 1px solid var(--border-subtle) !important;
   width: 280px !important; /* Wider sidebar for "Pro" feel */
 }
 
 /* Navigation List Container */
-nav {
+div[data-split-pane="primary"] nav {
   padding: 16px !important;
   display: flex !important;
   flex-direction: column !important;
@@ -52,8 +54,8 @@ nav {
 }
 
 /* Group Headers (Blog, Portfolio, Settings) */
-nav h3, 
-div[class*="GroupLabel"] {
+div[data-split-pane="primary"] nav h3, 
+div[data-split-pane="primary"] div[class*="GroupLabel"] {
   text-transform: uppercase !important;
   font-size: 11px !important;
   letter-spacing: 0.1em !important;
@@ -66,7 +68,7 @@ div[class*="GroupLabel"] {
 }
 
 /* Sidebar Links (The Items) */
-nav a {
+div[data-split-pane="primary"] nav a {
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
@@ -81,17 +83,79 @@ nav a {
 }
 
 /* Hover State */
-nav a:hover {
+div[data-split-pane="primary"] nav a:hover {
   background-color: var(--bg-card) !important;
   color: var(--text-primary) !important;
   transform: translateX(2px);
 }
 
 /* Active State */
-nav a[aria-current="page"] {
+div[data-split-pane="primary"] nav a[aria-current="page"] {
   background-color: var(--accent) !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(30, 144, 255, 0.28) !important;
+}
+
+div[data-split-pane="secondary"] a {
+  color: rgba(30, 144, 255, 0.92) !important;
+}
+
+div[data-split-pane="secondary"] a:hover {
+  color: var(--accent-hover) !important;
+}
+
+/* --- Form Elements Overrides --- */
+
+/* Inputs (Text, Number, Date, etc.) */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    color: var(--text-primary) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+    outline: none !important;
+}
+
+/* Labels */
+label {
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+}
+
+/* Buttons (Standard Keystatic Buttons) */
+button[type="button"],
+button[type="submit"] {
+    border-radius: var(--radius-sm) !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Primary Actions (Save, Create) - heuristic based on likely classes or context */
+/* Keystatic primary buttons usually have a specific background. We override based on attribute if possible or generic button styling */
+
+/* Panels / Cards */
+div[class*="Card"],
+div[class*="Panel"] {
+    background-color: var(--bg-panel) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-md) !important;
 }
 
 /* --- Custom Icons via Mask Image --- */
@@ -109,10 +173,6 @@ nav a::before {
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
 }
-
-/* Specific Icons based on href or order would require :nth-child or href selectors if possible */
-/* Since we can't easily target by text, we rely on generic or specific structure overrides if needed */
-
 
 /* --- Block Picker / Menu Items --- */
 /* Target the menu container */

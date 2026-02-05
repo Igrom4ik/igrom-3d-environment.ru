@@ -76,7 +76,14 @@ const LocationDisplay: React.FC = () => {
 
 export default TimeDisplay;
 
-export const Header = ({ preset }: { preset?: string }) => {
+export type HeaderLink = {
+  href: string;
+  label?: string;
+  prefixIcon?: string;
+  exact?: boolean;
+};
+
+export const Header = ({ preset, links }: { preset?: string; links?: HeaderLink[] }) => {
   const pathname = usePathname() ?? "";
   const { t } = useLanguage();
   const isLiquid = preset === 'ios-liquid-glass';
@@ -133,55 +140,79 @@ export const Header = ({ preset }: { preset?: string }) => {
             <Row gap="4" vertical="center" textVariant="body-default-s" suppressHydrationWarning>
               {/* Desktop Navigation */}
               <Row s={{ hide: true }} vertical="center" gap="4">
-                {routes["/"] && (
-                  <ToggleButton prefixIcon="home" href="/" selected={pathname === "/"} />
-                )}
-                <Line background="neutral-alpha-medium" vert maxHeight="24" />
-                {routes["/about"] && (
-                  <ToggleButton
-                    className={styles.navItem}
-                    prefixIcon="person"
-                    href="/about"
-                    label={t("nav.about")}
-                    selected={pathname === "/about"}
-                  />
-                )}
-                {routes["/work"] && (
-                  <ToggleButton
-                    className={styles.navItem}
-                    prefixIcon="grid"
-                    href="/work"
-                    label={t("nav.work")}
-                    selected={pathname.startsWith("/work")}
-                  />
-                )}
-                {routes["/blog"] && (
-                  <ToggleButton
-                    className={styles.navItem}
-                    prefixIcon="book"
-                    href="/blog"
-                    label={t("nav.blog")}
-                    selected={pathname.startsWith("/blog")}
-                  />
-                )}
-                {routes["/gallery"] && (
-                  <ToggleButton
-                    className={styles.navItem}
-                    prefixIcon="gallery"
-                    href="/gallery"
-                    label={t("nav.gallery")}
-                    selected={pathname.startsWith("/gallery")}
-                  />
-                )}
-                {routes["/coding"] && (
-                  <ToggleButton
-                    className={styles.navItem}
-                    prefixIcon="terminal"
-                    href="/coding"
-                    label={t("nav.coding")}
-                    selected={pathname.startsWith("/coding")}
-                  />
-                )}
+                  {links && links.length > 0 ? (
+                    <>
+                      <ToggleButton
+                        prefixIcon={links[0]?.prefixIcon}
+                        href={links[0]?.href}
+                        label={links[0]?.label}
+                        selected={links[0]?.exact ? pathname === links[0]?.href : pathname.startsWith(links[0]?.href ?? '')}
+                      />
+                      {links.length > 1 && <Line background="neutral-alpha-medium" vert maxHeight="24" />}
+                      {links.slice(1).map((link) => (
+                        <ToggleButton
+                          key={link.href}
+                          className={styles.navItem}
+                          prefixIcon={link.prefixIcon}
+                          href={link.href}
+                          label={link.label}
+                          selected={link.exact ? pathname === link.href : pathname.startsWith(link.href)}
+                        />
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      {routes["/"] && (
+                        <ToggleButton prefixIcon="home" href="/" selected={pathname === "/"} />
+                      )}
+                      <Line background="neutral-alpha-medium" vert maxHeight="24" />
+                      {routes["/about"] && (
+                        <ToggleButton
+                          className={styles.navItem}
+                          prefixIcon="person"
+                          href="/about"
+                          label={t("nav.about")}
+                          selected={pathname === "/about"}
+                        />
+                      )}
+                      {routes["/work"] && (
+                        <ToggleButton
+                          className={styles.navItem}
+                          prefixIcon="grid"
+                          href="/work"
+                          label={t("nav.work")}
+                          selected={pathname.startsWith("/work")}
+                        />
+                      )}
+                      {routes["/blog"] && (
+                        <ToggleButton
+                          className={styles.navItem}
+                          prefixIcon="book"
+                          href="/blog"
+                          label={t("nav.blog")}
+                          selected={pathname.startsWith("/blog")}
+                        />
+                      )}
+                      {routes["/gallery"] && (
+                        <ToggleButton
+                          className={styles.navItem}
+                          prefixIcon="gallery"
+                          href="/gallery"
+                          label={t("nav.gallery")}
+                          selected={pathname.startsWith("/gallery")}
+                        />
+                      )}
+                      {routes["/coding"] && (
+                        <ToggleButton
+                          className={styles.navItem}
+                          prefixIcon="terminal"
+                          href="/coding"
+                          label={t("nav.coding")}
+                          selected={pathname.startsWith("/coding")}
+                        />
+                      )}
+                    </>
+                  )}
               </Row>
 
               {/* Mobile Navigation Trigger */}

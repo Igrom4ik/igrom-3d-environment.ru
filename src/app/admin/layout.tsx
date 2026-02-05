@@ -4,11 +4,14 @@ import "@/resources/custom.css";
 import styles from "@/components/admin/admin-layout.module.css";
 
 import { Providers } from "@/components";
-import AdminNav from "@/components/admin/AdminNav";
+import { Header } from "@/components/Header";
+import { adminHeaderLinks } from "@/components/admin/adminHeaderLinks";
 import { Column, Flex } from "@once-ui-system/core";
 import { fonts } from "@/resources";
+import { getDesignSettings } from "@/utils/reader";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const settings = await getDesignSettings();
   return (
     <Flex 
       as="html" 
@@ -25,7 +28,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           className={styles.adminBody}
           background="page"
         >
-          <AdminNav />
+          <Header preset={settings?.preset} links={adminHeaderLinks} />
           {children}
         </Column>
       </Providers>

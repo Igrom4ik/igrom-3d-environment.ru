@@ -1,0 +1,78 @@
+header[class*="css-"] {
+  display: none !important;
+}
+
+nav[class*="css-"],
+aside[class*="css-"] {
+  display: none !important;
+}
+
+[class*="breadcrumb"] {
+  display: none !important;
+}
+
+img[alt*="Logo"],
+img[alt*="logo"],
+img[alt*="Igrom"] {
+  display: none !important;
+}
+
+div:has(> img[alt*="Logo"]),
+div:has(> img[alt*="logo"]) {
+  display: none !important;
+}
+
+[data-scope="keystatic"] > div > nav {
+  display: none !important;
+}
+
+div[class*="css-"]:has(> button[aria-label]) {
+  display: none !important;
+}
+
+button[aria-label*="navigation"],
+button[aria-label*="Navigation"],
+button[aria-label*="menu"],
+button[aria-label*="Menu"] {
+  display: none !important;
+}
+
+[data-ks],
+[data-scope="keystatic"] {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+main[class*="css-"] {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+[data-ks] > div {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+div[data-split-pane="primary"] {
+  display: none !important;
+}
+
+div[data-split-pane="secondary"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 1 auto !important;
+}
+
+div[data-split-pane="secondary"] {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+div[data-split-pane="secondary"] > * {
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
