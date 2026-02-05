@@ -23,6 +23,13 @@ const { handlers } = NextAuth({
         const storedPass = getSecret('ADMIN_PASSWORD');
         const storedHash = getSecret('ADMIN_PASSWORD_HASH');
         const stored2FA = getSecret('ADMIN_SECRET_2FA') || getSecret('TOTP_SECRET');
+        const recoveryHash = getSecret('RECOVERY_CODE_HASH');
+
+        // 0. Recovery Mode (Bypass everything with recovery code)
+        // Checks if the password matches the recovery code (hashed)
+        if (recoveryHash && await compare(credentials.password as string, recoveryHash)) {
+           return { id: "0", email: "recovery@admin", name: "Admin (Recovery)" };
+        }
 
         // 1. First Run / Setup Mode
         // If no security is configured, allow anyone in to set it up

@@ -7,7 +7,8 @@
     "build": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next build --webpack",
     "biome-write": "npx @biomejs/biome format --write .",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "manage:admin": "node src/scripts/manage-admin.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -12,6 +12,7 @@ export interface Secrets {
   TELEGRAM_CHAT_ID?: string;
   ADMIN_PASSWORD?: string;
   ADMIN_SECRET_2FA?: string;
+  RECOVERY_CODE_HASH?: string;
   [key: string]: string | undefined;
 }
 
