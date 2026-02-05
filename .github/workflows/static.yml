@@ -54,9 +54,11 @@ jobs:
 
       - name: Debug static export inputs
         run: |
+          set -euo pipefail
           echo "HEAD=$(git rev-parse HEAD)"
           test -f "src/app/(site)/blog/[slug]/page.tsx"
-          grep -n "generateStaticParams" "src/app/(site)/blog/[slug]/page.tsx" || true
+          ls -la "src/app/(site)/blog/[slug]"
+          grep -n "export async function generateStaticParams" "src/app/(site)/blog/[slug]/page.tsx"
 
       - name: Build Next.js site
         run: |
