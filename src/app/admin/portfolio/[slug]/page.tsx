@@ -2,19 +2,7 @@ import { getAlbums, getRawAlbum } from "@/utils/reader";
 import ClientPage from "./ClientPage";
 import { Suspense } from "react";
 
-export async function generateStaticParams() {
-  const albums = await getAlbums();
-  const params = albums.map((album: { slug: string }) => ({
-    slug: album.slug,
-  }));
-  
-  // Add 'create' slug
-  params.push({ slug: 'create' });
-  
-  return params;
-}
-
-export const dynamicParams = false;
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
     params: Promise<{ slug: string }>;
