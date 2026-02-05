@@ -13,23 +13,15 @@ export const dynamicParams = false;
 type Params = { slug: string };
 
 export async function generateStaticParams(): Promise<Params[]> {
-  const postsDir = path.join(process.cwd(), "src", "app", "(site)", "blog", "posts");
-
   try {
     const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
-    return posts.map((p) => ({ slug: p.slug }));
-  } catch {
-    try {
-      if (!fs.existsSync(postsDir)) return [];
-      const entries = fs.readdirSync(postsDir, { withFileTypes: true });
-      const slugs = entries
-        .filter((e) => e.isDirectory())
-        .map((e) => e.name)
-        .filter(Boolean);
-      return slugs.map((slug) => ({ slug }));
-    } catch {
-      return [];
+    if (posts.length === 0) {
+      return [{ slug: 'placeholder-blog' }];
     }
+    return posts.map((p) => ({ slug: p.slug }));
+  } catch (error) {
+    console.error("Error generating blog params:", error);
+    return [{ slug: 'placeholder-blog' }];
   }
 }
 

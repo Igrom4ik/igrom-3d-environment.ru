@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
 
+export const dynamic = 'force-static';
+
 const SETTINGS_FILE_PATH = path.join(process.cwd(), 'src/content/settings.json');
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 const UPLOADS_DIR = path.join(PUBLIC_DIR, "images", "uploads");

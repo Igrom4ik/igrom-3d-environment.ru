@@ -1,11 +1,20 @@
 import { getPosts } from "@/utils/utils";
 import ClientPage from "./ClientPage";
+import { ContentService } from "@/core/content/ContentService";
 
 export async function generateStaticParams() {
-  const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  try {
+    const posts = await ContentService.getAllTelegramPosts();
+    if (posts.length === 0) {
+      return [{ slug: 'placeholder-telegram' }];
+    }
+    return posts.map((post) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    console.error("Error in generateStaticParams for preview/telegram/post:", error);
+    return [{ slug: 'placeholder-telegram' }];
+  }
 }
 
 export const dynamicParams = false;

@@ -3,10 +3,7 @@ import { getBlogPosts } from '@/utils/blog-reader';
 import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
-    const posts = await getBlogPosts();
-    return posts.map((post: any) => ({
-        slug: post.slug,
-    }));
+    return [{ slug: 'placeholder' }];
 }
 
 export default async function EditBlogPage({ params }: { params: Promise<{ slug: string }> }) {

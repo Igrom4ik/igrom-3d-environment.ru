@@ -62,10 +62,18 @@ function getAllProjects() {
 }
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  const posts = getAllProjects();
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  try {
+    const posts = getAllProjects();
+    if (posts.length === 0) {
+      return [{ slug: 'placeholder-work' }];
+    }
+    return posts.map((post) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    console.error("Error in generateStaticParams for work/[slug]:", error);
+    return [{ slug: 'placeholder-work' }];
+  }
 }
 
 export const dynamicParams = false;

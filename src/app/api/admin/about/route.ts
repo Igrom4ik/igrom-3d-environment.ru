@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
 
+export const dynamic = 'force-static';
+
 const ABOUT_FILE_PATH = path.join(process.cwd(), "src/content/about.json");
 
 export async function GET() {

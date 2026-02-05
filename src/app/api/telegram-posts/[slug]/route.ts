@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ContentService } from '@/core/content/ContentService';
 
+export const dynamic = 'force-static';
+
 export async function generateStaticParams() {
-  const posts = await ContentService.getAllTelegramPosts();
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  try {
+    const posts = await ContentService.getAllTelegramPosts();
+    if (posts.length === 0) {
+      return [{ slug: 'placeholder' }];
+    }
+    return posts.map((post) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    console.error("Error in generateStaticParams for api/telegram-posts:", error);
+    return [{ slug: 'placeholder' }];
+  }
 }
 
 export const dynamicParams = false;

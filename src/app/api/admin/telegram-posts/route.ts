@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
+export const dynamic = 'force-static';
+
 const POSTS_DIR = path.join(process.cwd(), 'src/content/telegram-posts');
 
 export async function GET() {

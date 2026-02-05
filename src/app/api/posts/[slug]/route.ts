@@ -1,21 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPosts } from '@/utils/utils';
 
-export async function generateStaticParams() {
-  const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
-}
+export const dynamic = 'force-static';
 
-export const dynamicParams = false;
+export async function generateStaticParams() {
+  try {
+    const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
+    if (posts.length === 0) {
+      return [{ slug: 'placeholder-post' }];
+    }
+    return posts.map((post) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    console.error("Error in generateStaticParams for api/posts:", error);
+    return [{ slug: 'placeholder-post' }];
+  }
+}
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  context: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = await params;
+    const { slug } = await context.params;
     
     // Using existing utility that reads from disk
     // This ensures we get the latest saved content

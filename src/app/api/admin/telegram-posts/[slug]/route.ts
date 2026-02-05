@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
 
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+  return [{ slug: 'placeholder' }];
+}
+
+export async function GET() {
+  return NextResponse.json({ error: "Not found" }, { status: 404 });
+}
+
 const POSTS_DIR = path.join(process.cwd(), 'src/content/telegram-posts');
 
 export async function DELETE(

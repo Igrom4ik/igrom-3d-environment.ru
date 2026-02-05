@@ -6,8 +6,16 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 type Params = { slug: string };
 
 export async function generateStaticParams() {
-  const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
-  return posts.map((p) => ({ slug: p.slug }));
+  try {
+    const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
+    if (posts.length === 0) {
+      return [{ slug: 'placeholder-preview' }];
+    }
+    return posts.map((p) => ({ slug: p.slug }));
+  } catch (error) {
+    console.error("Error in generateStaticParams for preview/post:", error);
+    return [{ slug: 'placeholder-preview' }];
+  }
 }
 
 export default async function PostPreview({ params }: { params: Promise<Params> }) {

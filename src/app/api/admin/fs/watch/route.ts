@@ -3,6 +3,7 @@ import path from "node:path";
 import { type NextRequest } from "next/server";
 
 export const runtime = "nodejs";
+export const dynamic = 'force-static';
 
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 
@@ -14,6 +15,10 @@ const isSafePublicPath = (p: string) => {
 };
 
 export async function GET(req: NextRequest) {
+  if (process.env.IS_GITHUB_PAGES === "true") {
+    return new Response("Not available in static export", { status: 404 });
+  }
+
   const { searchParams } = new URL(req.url);
   const publicPath = searchParams.get("publicPath") ?? "";
 
