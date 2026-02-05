@@ -113,7 +113,7 @@ export default function ThemeEditorPage() {
         </div>
       </header>
 
-      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+      <div style={{ flex: 1, display: "flex", overflow: "auto" }}>
         {/* Sidebar Settings */}
         <aside style={{ 
             width: "350px", 

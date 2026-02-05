@@ -153,10 +153,10 @@ export const SettingsEditor = () => {
       URL.revokeObjectURL(url);
       throw new Error("Слишком маленькое изображение. Минимум 200×200 пикселей.");
     }
-    if (w > 1000 || h > 1000) {
-      URL.revokeObjectURL(url);
-      throw new Error("Слишком большое изображение. Максимум 1000×1000 пикселей.");
-    }
+    if (w > 5000 || h > 5000) {
+        URL.revokeObjectURL(url);
+        throw new Error("Слишком большое изображение. Максимум 5000×5000 пикселей.");
+      }
 
     return { url, w, h };
   };

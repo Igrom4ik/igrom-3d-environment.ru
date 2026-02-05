@@ -74,7 +74,7 @@ async function processDelete(slugs: string[], mode: DeleteMode) {
     }
   }
 
-  return { processed, errors };
+  return { processed, errors, alreadyDeleted };
 }
 
 function parseSlugsFromQuery(req: NextRequest) {

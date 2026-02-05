@@ -155,22 +155,30 @@ export default function PortfolioGrid({ albums: initialAlbums, onAlbumUpdate, on
         }
         
         if (selectedSlugs.length === 0) return;
+
+        // Preliminary check: ensure items are still in the list
+        const validSlugs = selectedSlugs.filter(slug => albums.some(a => a.slug === slug));
+        if (validSlugs.length === 0) {
+            console.warn("Selected items are no longer in the list, skipping delete request.");
+            setSelectedSlugs([]);
+            return;
+        }
         
-        const message = `Are you sure you want to PERMANENTLY delete ${selectedSlugs.length} project(s)? This action cannot be undone and will remove files from the server.`;
+        const message = `Are you sure you want to PERMANENTLY delete ${validSlugs.length} project(s)? This action cannot be undone and will remove files from the server.`;
 
         // Synchronous blocking confirm
         if (!window.confirm(message)) return;
         
         // Start animation ONLY after confirmation
         console.log('User confirmed deletion, starting animation...');
-        setDeletingIds(selectedSlugs);
+        setDeletingIds(validSlugs);
 
         // Wait for animation to complete (approx 500ms)
         await new Promise(resolve => setTimeout(resolve, 500));
 
         try {
             const params = new URLSearchParams();
-            params.set('slugs', selectedSlugs.join(','));
+            params.set('slugs', validSlugs.join(','));
             params.set('action', 'hard');
 
             const res = await fetch(`/api/portfolio/delete?${params.toString()}`, { method: 'DELETE' });
