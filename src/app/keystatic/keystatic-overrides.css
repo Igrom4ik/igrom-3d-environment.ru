@@ -66,6 +66,7 @@ div[data-split-pane="secondary"] {
 div[data-split-pane="secondary"] {
   display: flex !important;
   justify-content: center !important;
+  background: linear-gradient(180deg, #0f0f11 0%, #111216 100%) !important;
 }
 
 div[data-split-pane="secondary"] > * {

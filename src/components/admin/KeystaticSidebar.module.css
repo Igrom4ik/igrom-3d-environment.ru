@@ -5,10 +5,10 @@
   top: 0;
   height: 100vh;
   width: 280px;
-  background: rgba(15, 23, 42, 0.9);
+  background: linear-gradient(180deg, #101118 0%, #0f111a 55%, #111216 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(46, 49, 56, 0.9);
   z-index: 998; /* Ниже чем header (1000) */
   display: flex;
   flex-direction: column;
@@ -29,11 +29,11 @@
   left: 16px;
   top: 96px;
   z-index: 1002;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(16, 17, 24, 0.7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
+  border: 1px solid rgba(46, 49, 56, 0.9);
+  color: #e5e7eb;
   width: 40px;
   height: 40px;
   border-radius: 12px;
@@ -45,8 +45,8 @@
 }
 
 .sidebarReopen:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(16, 17, 24, 0.9);
+  border-color: rgba(45, 212, 191, 0.35);
   transform: translateY(-1px);
 }
 
@@ -59,7 +59,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(46, 49, 56, 0.9);
 }
 
 .sidebarTitle {
@@ -71,22 +71,22 @@
 .sidebarTitleMain {
   font-size: 18px;
   font-weight: 700;
-  color: #fff;
+  color: #e5e7eb;
   letter-spacing: -0.02em;
 }
 
 .sidebarTitleSub {
   font-size: 12px;
-  color: #94a3b8;
+  color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
 
 .sidebarToggle {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(229, 231, 235, 0.06);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
+  border: 1px solid rgba(46, 49, 56, 0.9);
+  color: #e5e7eb;
   width: 32px;
   height: 32px;
   border-radius: 8px;
@@ -99,8 +99,8 @@
 }
 
 .sidebarToggle:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(229, 231, 235, 0.1);
+  border-color: rgba(45, 212, 191, 0.35);
   transform: scale(1.05);
 }
 
@@ -125,7 +125,7 @@
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  color: #64748b;
+  color: #6b7280;
   padding: 0 12px 8px;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
@@ -134,7 +134,7 @@
 .sidebarNav {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .sidebarLink {
@@ -143,7 +143,7 @@
   gap: 12px;
   padding: 10px 12px;
   border-radius: 8px;
-  color: #94a3b8;
+  color: #9ca3af;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -161,15 +161,15 @@
   top: 0;
   height: 100%;
   width: 3px;
-  background: linear-gradient(to bottom, #1e90ff, #4aa6ff);
+  background: linear-gradient(to bottom, #22d3ee, #2dd4bf);
   transform: translateX(-100%);
   transition: transform 0.2s ease;
 }
 
 .sidebarLink:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #f4f4f5;
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(229, 231, 235, 0.06);
+  color: #e5e7eb;
+  border-color: rgba(46, 49, 56, 0.9);
   transform: translateX(2px);
 }
 
@@ -178,9 +178,9 @@
 }
 
 .sidebarLinkActive {
-  background: rgba(30, 144, 255, 0.1);
-  color: #1e90ff;
-  border-color: rgba(30, 144, 255, 0.2);
+  background: rgba(20, 184, 166, 0.12);
+  color: #e5e7eb;
+  border-color: rgba(45, 212, 191, 0.28);
   font-weight: 600;
 }
 
@@ -189,9 +189,9 @@
 }
 
 .sidebarLinkActive:hover {
-  background: rgba(30, 144, 255, 0.15);
-  color: #4aa6ff;
-  border-color: rgba(30, 144, 255, 0.3);
+  background: rgba(20, 184, 166, 0.18);
+  color: #e5e7eb;
+  border-color: rgba(45, 212, 191, 0.38);
 }
 
 .sidebarIcon {
@@ -206,12 +206,12 @@
 }
 
 .sidebarLinkActive .sidebarIcon {
-  color: #1e90ff;
+  color: #14b8a6;
 }
 
 .activeIndicator {
   margin-left: auto;
-  color: #1e90ff;
+  color: #22d3ee;
   opacity: 0;
   transition: opacity 0.2s ease;
 }

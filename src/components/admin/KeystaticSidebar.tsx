@@ -106,14 +106,6 @@ export const KeystaticSidebar = ({ isOpen, onToggle }: KeystaticSidebarProps) =>
               <NavItem href="/keystatic/singleton/settings" icon={Settings} label="Settings" />
             </nav>
           </div>
-
-          <div className={styles.sidebarSection}>
-            <div className={styles.sidebarSectionTitle}>Management</div>
-            <nav className={styles.sidebarNav}>
-              <NavItem href="/admin/blog" icon={FileText} label="Blog Manager" />
-              <NavItem href="/admin/upload" icon={ImageIcon} label="Uploads" />
-            </nav>
-          </div>
         </div>
       </aside>
     </>

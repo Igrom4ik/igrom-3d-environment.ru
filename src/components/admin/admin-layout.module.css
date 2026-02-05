@@ -3,7 +3,7 @@
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  background-color: #000000;
+  background: linear-gradient(180deg, #0f0f11 0%, #111216 100%);
   
   /* Отступ под ваш header (64px) + top offset (24px) + padding */
   padding-top: 112px;

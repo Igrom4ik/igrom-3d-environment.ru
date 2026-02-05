@@ -31,7 +31,13 @@ export default async function PreviewLayout({
     };
   }
 
-  const backgroundEffect = settings?.backgroundEffect ?? 'none';
+  const backgroundEffect = (() => {
+    const discriminant = settings?.background?.discriminant;
+    if (discriminant === "aurora" || discriminant === "particles" || discriminant === "grid") {
+      return discriminant;
+    }
+    return "none";
+  })();
 
   return (
     <Flex

@@ -86,6 +86,43 @@
 
 - Добавлена зависимость `react-colorful` (используется в админском UI/редакторах): [package.json](file:///d:/igrom-3d-environment.ru/package.json)
 
+## 9) Settings/About: аватар, кроп, SSE и объединение разделов
+
+### UI (единый блок Settings + About)
+- Редактор настроек расширен и объединён с базовыми полями About (в одном экране и с одной кнопкой сохранения):
+  - [SettingsEditor.tsx](file:///d:/igrom-3d-environment.ru/src/components/admin/SettingsEditor.tsx)
+  - добавлена секция “About” (title/description + toggle `avatar.display`) с теми же отступами/типографикой/цветами
+- Исправлено перекрытие элементов (avatar img / labels / inputs / dropzone) за счёт вынесения стилей в CSS‑модуль и нормализации layout через grid/minmax:
+  - [SettingsEditor.module.css](file:///d:/igrom-3d-environment.ru/src/components/admin/SettingsEditor.module.css)
+
+### Управление аватаром (клиент)
+- Добавлены:
+  - системный выбор файла, drag-and-drop
+  - предпросмотр и кроп 1:1 (перетаскивание + точные поля X/Y/Scale + reset)
+  - прогресс загрузки (проценты), toast‑уведомления на русском
+  - “Сбросить” (reset к `/images/avatar.jpg`) с подтверждением
+- Реализация: [SettingsEditor.tsx](file:///d:/igrom-3d-environment.ru/src/components/admin/SettingsEditor.tsx)
+
+### API `/api/admin/settings` (multipart + атомарность и чистка старых файлов)
+- Endpoint расширен для `multipart/form-data`:
+  - принимает `settings` (json), `avatarMode=upload|reset|keep` и `avatar` (file)
+  - сохраняет аватар в `public/images/uploads`, удаляет старый upload‑файл при замене/сбросе
+  - серверная валидация: MIME (JPEG/PNG/WebP), размер (≤5MB), разрешение (200–1000px)
+- Реализация: [settings/route.ts](file:///d:/igrom-3d-environment.ru/src/app/api/admin/settings/route.ts)
+
+### Мониторинг файла (SSE)
+- Добавлен SSE endpoint для отслеживания изменений файла в `public` и мгновенного обновления превью:
+  - [fs/watch/route.ts](file:///d:/igrom-3d-environment.ru/src/app/api/admin/fs/watch/route.ts)
+
+### API `/api/admin/about`
+- Добавлен простой API для чтения/сохранения `src/content/about.json` (для объединённого редактора):
+  - [about/route.ts](file:///d:/igrom-3d-environment.ru/src/app/api/admin/about/route.ts)
+
+## 10) Build/Preview: TypeScript fix для `backgroundEffect`
+
+- Убрано обращение к несуществующему `settings.backgroundEffect` в preview layout (типобезопасное вычисление из `settings.background.discriminant`):
+  - [preview/layout.tsx](file:///d:/igrom-3d-environment.ru/src/app/preview/layout.tsx)
+
 ## Проверка (ручной чеклист)
 
 - `/admin/*` — отображается публичный Header, ссылки ведут на нужные разделы.
@@ -93,3 +130,5 @@
 - Dashboard Keystatic (secondary pane) центрируется и имеет ограниченную ширину.
 - В Keystatic “Design” можно выбрать новый фон; на публичной части фон отображается.
 - Включение фоновой музыки не ломает страницу при `null` значениях.
+- `/keystatic/singleton/settings` — блок аватара не перекрывает поля, dnd работает, кроп и загрузка работают.
+- `next build` — проходит TypeScript-check (включая preview layout).
