@@ -43,6 +43,7 @@ Usage:
   npm run manage:admin reset-password <email> <password>
   npm run manage:admin generate-recovery
   npm run manage:admin show-2fa-secret
+  npm run manage:admin remove-2fa
   npm run manage:admin setup-2fa <email>
   npm run manage:admin verify-password <password>
 
@@ -50,6 +51,7 @@ Commands:
   reset-password <email> <password>  Sets a new admin email and password (hashed).
   generate-recovery                  Generates a new One-Time Recovery Code.
   show-2fa-secret                    Displays the current 2FA secret (if any).
+  remove-2fa                         Removes the 2FA secret, disabling 2FA.
   setup-2fa <email>                  Generate new 2FA secret and QR code.
   verify-password <password>         Verify if password matches stored hash.
         `);
@@ -108,6 +110,18 @@ Commands:
         } else {
             console.log("❌ No 2FA secret is currently configured.");
             console.log("Run: npm run manage:admin setup-2fa <email>");
+        }
+    }
+
+    else if (command === 'remove-2fa') {
+        if (!secrets.ADMIN_SECRET_2FA && !secrets.TOTP_SECRET) {
+            console.log("ℹ️  2FA is already disabled (no secrets found).");
+        } else {
+            delete secrets.ADMIN_SECRET_2FA;
+            delete secrets.TOTP_SECRET;
+            saveSecrets(secrets);
+            console.log("✅ 2FA secrets removed. Two-factor authentication is now DISABLED.");
+            console.log("⚠️  Remember to restart the application: pm2 restart igrom-portfolio");
         }
     }
 
