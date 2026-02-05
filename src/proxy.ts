@@ -30,12 +30,12 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. NextAuth Protection for /admin
-  if (pathname.startsWith("/admin")) {
-    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
-    if (!token) {
-      return NextResponse.redirect(new URL("/auth/signin", request.url));
-    }
-  }
+  // if (pathname.startsWith("/admin")) {
+  //   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+  //   if (!token) {
+  //     return NextResponse.redirect(new URL("/auth/signin", request.url));
+  //   }
+  // }
 
   // 2. Rate Limiting (Skip for Keystatic/Admin to prevent blocking)
   if (!pathname.startsWith("/api/keystatic") && !pathname.startsWith("/keystatic") && !pathname.startsWith("/admin")) {
