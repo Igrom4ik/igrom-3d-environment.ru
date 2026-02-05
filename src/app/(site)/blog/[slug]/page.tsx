@@ -5,15 +5,32 @@ import { mdxComponents } from "../mdxComponents";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { ArrowLeft } from "lucide-react";
 import styles from "./blog-post.module.css";
+import fs from "node:fs";
+import path from "node:path";
 
 export const dynamicParams = false;
 
 type Params = { slug: string };
 
 export async function generateStaticParams(): Promise<Params[]> {
-  // Generate params for static export
-  const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
-  return posts.map((p) => ({ slug: p.slug }));
+  const postsDir = path.join(process.cwd(), "src", "app", "(site)", "blog", "posts");
+
+  try {
+    const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
+    return posts.map((p) => ({ slug: p.slug }));
+  } catch {
+    try {
+      if (!fs.existsSync(postsDir)) return [];
+      const entries = fs.readdirSync(postsDir, { withFileTypes: true });
+      const slugs = entries
+        .filter((e) => e.isDirectory())
+        .map((e) => e.name)
+        .filter(Boolean);
+      return slugs.map((slug) => ({ slug }));
+    } catch {
+      return [];
+    }
+  }
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<Params> }) {
