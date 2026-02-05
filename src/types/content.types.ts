@@ -242,10 +242,12 @@ export interface Gallery extends BasePageConfig {
 }
 
 export interface MediaItem {
-  discriminant: 'image' | 'gallery';
+  discriminant: 'image' | 'gallery' | 'marmoset';
   value: {
     image?: string;
     images?: string[];
+    file?: string;
+    folder?: string;
   };
 }
 
@@ -263,6 +265,7 @@ export interface Metadata {
   title: string;
   subtitle?: string;
   publishedAt: string;
+  projectFolder?: string;
   summary?: string;
   image?: string;
   cover?: string;

@@ -60,10 +60,6 @@ public/images/projects/
 public/images/avatars/
 
 # Keystatic content collections
-src/content/albums/
-src/content/telegram-posts/
-src/app/(site)/blog/posts/
-src/content/projects/
 
 # Backups and archives
 *.tar.gz

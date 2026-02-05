@@ -44,6 +44,7 @@ export default config({
         entryLayout: 'content',
         schema: {
             title: fields.slug({ name: { label: 'Название проекта' } }),
+            projectFolder: fields.text({ label: 'Папка проекта (public/...)', description: 'Имя папки в public, где лежат ассеты (например: MilitaryHat)' }),
             priority: fields.integer({ label: 'Приоритет (сортировка)', defaultValue: 0 }),
             hidden: fields.checkbox({ label: 'Скрыто (Hidden)', defaultValue: false, description: 'Скрыть проект с сайта, но оставить в админке' }),
             

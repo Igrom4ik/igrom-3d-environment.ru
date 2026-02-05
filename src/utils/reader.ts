@@ -201,6 +201,7 @@ export async function getAlbum(slug: string) {
             log(`Successfully parsed album data for: ${s}`);
             return {
                 title: data.title || s,
+                projectFolder: data.projectFolder,
                 description: () => Promise.resolve(descriptionAST),
                 images: data.images || [],
                 categorization: data.categorization || {},

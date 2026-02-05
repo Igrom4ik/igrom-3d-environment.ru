@@ -12,6 +12,8 @@ import { LikeButton, CommentSection } from "@/components";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
+import { resolveAssetPath } from "@/utils/utils";
+
 // Helper to normalize media paths with basePath support
 const normalizePath = (file: string) => {
   if (!file || file.startsWith('http')) return file;
@@ -100,12 +102,14 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
 
   // ✅ Типизация для изображений (объединение всех типов медиа)
   type AlbumMediaItem = 
-    | { discriminant: 'image'; value: { src: string | null; alt?: string; caption?: string } }
-    | { discriminant: 'video'; value: { src: string | null; autoPlay?: boolean; muted?: boolean; loop?: boolean } }
+    | { discriminant: 'image'; value: { src: string | null; file?: string; folder?: string; alt?: string; caption?: string } }
+    | { discriminant: 'video'; value: { src: string | null; file?: string; folder?: string; autoPlay?: boolean; muted?: boolean; loop?: boolean } }
     | { discriminant: 'youtube'; value: { url: string | null } }
     | { discriminant: 'sketchfab'; value: { url: string | null } }
-    | { discriminant: 'marmoset'; value: { src?: string | null; manualPath?: string | null } }
-    | { discriminant: 'pano'; value: { image: string | null; caption?: string } };
+    | { discriminant: 'marmoset'; value: { src?: string | null; file?: string; folder?: string; manualPath?: string | null } }
+    | { discriminant: 'pano'; value: { image: string | null; file?: string; folder?: string; caption?: string } };
+
+  const projectFolder = album.projectFolder || "";
 
   return (
     <Flex maxWidth="l" direction="column" gap="32" fillWidth>
@@ -129,22 +133,23 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
           {/* LEFT COLUMN: MEDIA */}
           <Column fillWidth gap="4">
              {album.images?.map((item: AlbumMediaItem, index: number) => {
-                const uniqueKey = 
-                  (item.discriminant === 'image' ? (item.value.src || '') : '') || 
-                  (item.discriminant === 'video' ? item.value.src : '') ||
-                  (item.discriminant === 'youtube' ? item.value.url : '') ||
-                  (item.discriminant === 'sketchfab' ? item.value.url : '') ||
-                  (item.discriminant === 'marmoset' ? (item.value.src || item.value.manualPath) : '') ||
-                  (item.discriminant === 'pano' ? item.value.image : '') ||
-                  `media-${index}`;
+                const resolveSrc = (val: any) => {
+                    if (val.file && projectFolder) {
+                        const resolved = resolveAssetPath({ file: val.file, folder: val.folder }, projectFolder);
+                        return normalizePath(resolved);
+                    }
+                    return normalizePath(val.src || val.image || val.manualPath || val.url || "");
+                };
+
+                const uniqueKey = `media-${index}`;
 
                 if (item.discriminant === 'image') {
-                    if (!item.value.src) return null;
-                    const normalizedSrc = normalizePath(item.value.src);
+                    const src = resolveSrc(item.value);
+                    if (!src) return null;
                     return (
                         <Media
                             key={uniqueKey}
-                            src={normalizedSrc}
+                            src={src}
                             alt={item.value.alt || album.title}
                             style={{ width: '100%', height: 'auto', display: 'block' }}
                             enlarge
@@ -152,12 +157,12 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
                     );
                 }
                 if (item.discriminant === 'video') {
-                    if (!item.value.src) return null;
-                    const normalizedSrc = normalizePath(item.value.src);
+                    const src = resolveSrc(item.value);
+                    if (!src) return null;
                     return (
                         <VideoLoop 
                             key={uniqueKey}
-                            src={normalizedSrc}
+                            src={src}
                             autoPlay={item.value.autoPlay}
                             muted={item.value.muted}
                             loop={item.value.loop}
@@ -173,7 +178,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
                     return <SketchfabEmbed key={uniqueKey} url={item.value.url} />;
                 }
                 if (item.discriminant === 'marmoset') {
-                    const mviewPath = normalizePath(item.value.src || item.value.manualPath || '');
+                    const mviewPath = resolveSrc(item.value);
                     if (!mviewPath) return null;
                     return (
                         <MarmosetViewer 
@@ -185,8 +190,8 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
                     );
                 }
                 if (item.discriminant === 'pano') {
-                    if (!item.value.image) return null;
-                    const normalizedImage = normalizePath(item.value.image);
+                    const normalizedImage = resolveSrc(item.value);
+                    if (!normalizedImage) return null;
                     return <Pano360 key={uniqueKey} image={normalizedImage} caption={item.value.caption} />;
                 }
                 return null;

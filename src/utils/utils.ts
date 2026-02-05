@@ -16,6 +16,23 @@ export const getQueryParam = (
 
 import { notFound } from "next/navigation";
 
+export type ImageValue = {
+  file: string;
+  folder?: string;
+};
+
+export function resolveAssetPath(
+  value: ImageValue,
+  projectFolder: string
+): string {
+  const folder = value.folder ?? projectFolder;
+  const file = value.file;
+
+  if (file.startsWith("/")) return file;
+
+  return `/${folder}/${file}`;
+}
+
 export function readMDXFile(filePath: string) {
   if (!fs.existsSync(filePath)) {
     console.error(`File not found: ${filePath}`);
@@ -26,6 +43,8 @@ export function readMDXFile(filePath: string) {
     const rawContent = fs.readFileSync(filePath, "utf-8");
     const { data, content } = matter(rawContent);
 
+    const projectFolder = data.projectFolder || "";
+
     // Handle legacy images array and Keystatic object format
     let images = (data.images || []).map((img: any) => {
       if (typeof img === 'string') {
@@ -35,6 +54,10 @@ export function readMDXFile(filePath: string) {
       if (img?.value?.src && typeof img.value.src === 'string') {
          const src = img.value.src;
          return src.startsWith("/") ? `${basePath}${src}` : src;
+      }
+      // Handle new format
+      if (img?.value?.file && typeof img.value.file === 'string' && projectFolder) {
+         return resolveAssetPath({ file: img.value.file, folder: img.value.folder }, projectFolder);
       }
       return "";
     }).filter((img: string) => img !== "");
@@ -81,6 +104,7 @@ export function readMDXFile(filePath: string) {
           ? data.publishedAt.toISOString()
           : String(data.publishedAt || new Date().toISOString()),
       summary: data.summary || "",
+      projectFolder: projectFolder,
       image: data.image
         ? data.image.startsWith("/")
           ? `${basePath}${data.image}`
