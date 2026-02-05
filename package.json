@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev --turbo",
     "export": "next export",
-    "build": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next build --webpack",
     "biome-write": "npx @biomejs/biome format --write .",
     "start": "next start",
     "lint": "next lint"

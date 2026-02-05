@@ -77,3 +77,7 @@ SECRETS_REFERENCE.txt
 
 # Site Settings (local override)
 site-settings.json
+
+.env.production
+logs/
+build-verbose.log
