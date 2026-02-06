@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 
 function MarmosetViewerContent() {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
   const searchParams = useSearchParams();
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<any>(null);
@@ -77,15 +78,19 @@ function MarmosetViewerContent() {
             viewer.onLoad = () => {
               console.log("[Marmoset] Scene loaded successfully");
               isViewerReadyRef.current = true; // Mark as ready for resize events
-              
-              if (autoStart) {
-                viewer.loadScene();
-              }
             };
             
             viewer.onError = (err: any) => {
                 console.error("[Marmoset] Viewer error:", err);
             };
+
+            if (autoStart) {
+              try {
+                viewer.loadScene();
+              } catch (e) {
+                console.error("[Marmoset] loadScene exception:", e);
+              }
+            }
 
         } catch (e) {
             console.error("[Marmoset] Initialization exception:", e);
@@ -109,7 +114,7 @@ function MarmosetViewerContent() {
   return (
     <>
       <Script 
-        src="/marmoset/marmoset.js" 
+        src="https://viewer.marmoset.co/main/marmoset.js" 
         strategy="beforeInteractive"
         onLoad={() => {
             console.log("[Marmoset] Script loaded via onLoad");

@@ -3,6 +3,7 @@ import keystaticConfig from '../../keystatic.config';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { cache } from 'react';
 import { log } from './logger';
 
 const reader = createReader(process.cwd(), keystaticConfig);
@@ -62,7 +63,7 @@ export async function getTelegramSettings() {
   }
 }
 
-export async function getAlbums() {
+async function _getAlbums() {
   log("getAlbums called");
   let albums: any[] = [];
   
@@ -156,7 +157,9 @@ export async function getAlbums() {
   }
 }
 
-export async function getAlbum(slug: string) {
+export const getAlbums = cache(_getAlbums);
+
+async function _getAlbum(slug: string) {
   log(`getAlbum called with slug: ${slug}`);
   try {
     // 1. Try Keystatic reader first
@@ -218,6 +221,8 @@ export async function getAlbum(slug: string) {
     return null;
   }
 }
+
+export const getAlbum = cache(_getAlbum);
 
 export function getRawAlbum(slug: string) {
   try {

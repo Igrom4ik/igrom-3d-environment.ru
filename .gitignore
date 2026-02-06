@@ -55,6 +55,7 @@ next-env.d.ts
 public/images/
 public/marmoset/*
 !public/marmoset/marmoset.js
+public/uploads/
 public/images/gallery/
 public/images/blog/
 public/images/projects/

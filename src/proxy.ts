@@ -47,7 +47,16 @@ export async function proxy(request: NextRequest) {
 
   // 3. Vite Client (Dev mode)
   if (pathname === "/@vite/client") {
-    return new NextResponse(null, { status: 200 });
+    if (process.env.NODE_ENV === "development") {
+      return new NextResponse("export {};\n", {
+        status: 200,
+        headers: {
+          "Content-Type": "application/javascript; charset=utf-8",
+          "Cache-Control": "no-store",
+        },
+      });
+    }
+    return new NextResponse("Not Found", { status: 404 });
   }
 
   // 4. Keystatic API

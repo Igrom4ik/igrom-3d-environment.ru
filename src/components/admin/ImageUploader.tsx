@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, type ChangeEvent } from 'react';
 import { Upload, X, Check, Image as ImageIcon } from 'lucide-react';
-import styles from '@/app/admin/portfolio/portfolio.module.css'; // Reusing existing styles
+import { uploadFileUnified } from '@/utils/largeFileUpload';
 
 interface ImageUploaderProps {
     onUploadComplete: (path: string) => void;
@@ -23,23 +23,17 @@ export default function ImageUploader({ onUploadComplete, currentImage, label = 
         setError(null);
 
         try {
-            // Use existing upload API
-            const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}&type=image`, {
-                method: 'POST',
-                body: file,
-                // fetch automatically sets Content-Type for File/Blob
-            });
-
-            const data = await res.json();
-
-            if (res.ok && data.success) {
-                onUploadComplete(data.path);
+            // Use Unified Large File Upload
+            const path = await uploadFileUnified(file);
+            
+            if (path) {
+                onUploadComplete(path);
             } else {
-                setError(data.error || 'Upload failed');
+                setError('Upload failed: No path returned');
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            setError('Network error');
+            setError(err.message || 'Network error');
         } finally {
             setUploading(false);
         }

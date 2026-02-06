@@ -122,17 +122,12 @@ export default config({
                     },
                     marmoset: {
                         label: 'Marmoset Viewer',
-                        itemLabel: (props) => props.fields.manualPath.value || props.fields.src.value?.filename || 'Marmoset Viewer',
+                        itemLabel: (props) => props.fields.manualPath.value || 'Marmoset Viewer',
                         schema: fields.object({
-                            src: fields.file({
-                                label: 'Файл MView (Опционально, для небольших файлов)',
-                                directory: 'public/marmoset',
-                                publicPath: '/marmoset',
-                                validation: { isRequired: false },
-                            }),
                             manualPath: fields.text({
-                                label: 'Путь к большому файлу (> 100MB)',
-                                description: 'Для больших файлов используйте "Large File Uploader" в меню слева, затем вставьте полученный путь сюда (например: /marmoset/model.mview).',
+                                label: 'Путь к файлу (.mview)',
+                                description: 'ВАЖНО: Загрузите файл через "Upload" в меню слева (или /admin/upload), затем вставьте путь сюда (например: /marmoset/model.mview).',
+                                validation: { length: { min: 1 } },
                             }),
                             alt: fields.text({ label: 'Альтернативный текст' }),
                             orientation: fields.select({
@@ -399,17 +394,12 @@ export default config({
                 },
                 marmoset: {
                         label: 'Marmoset Viewer',
-                        itemLabel: (props) => props.fields.manualPath.value || props.fields.src.value?.filename || 'Marmoset Viewer',
+                        itemLabel: (props) => props.fields.manualPath.value || 'Marmoset Viewer',
                         schema: fields.object({
-                            src: fields.file({
-                                label: 'Файл MView (Опционально, для небольших файлов)',
-                                directory: 'public/marmoset',
-                                publicPath: '/marmoset',
-                                validation: { isRequired: false },
-                            }),
                             manualPath: fields.text({
-                                label: 'Путь к большому файлу (> 100MB)',
-                                description: 'Для больших файлов используйте "Large File Uploader" в меню слева, затем вставьте полученный путь сюда (например: /marmoset/model.mview).',
+                                label: 'Путь к файлу (.mview)',
+                                description: 'ВАЖНО: Загрузите файл через "Upload" в меню слева (или /admin/upload), затем вставьте путь сюда.',
+                                validation: { length: { min: 1 } },
                             }),
                             width: fields.text({ label: 'Ширина (px или %)', defaultValue: '100%' }),
                             height: fields.text({ label: 'Высота (px)', defaultValue: '600px' }),

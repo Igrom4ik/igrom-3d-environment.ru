@@ -1,6 +1,6 @@
 "use client";
 
-import { type FC, useEffect, useState } from "react";
+import { type FC, useEffect, useRef, useState } from "react";
 import { Media, Text, Column, Grid } from "@once-ui-system/core";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -142,6 +142,10 @@ export const MarmosetViewer: FC<MarmosetViewerProps> = ({
   autoStart = false,
 }) => {
   const [scriptLoaded, setScriptLoaded] = useState(false);
+  const [viewerError, setViewerError] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const viewerRef = useRef<any>(null);
+  const isViewerReadyRef = useRef(false);
 
   useEffect(() => {
     if ((window as any).marmoset) {
@@ -149,17 +153,22 @@ export const MarmosetViewer: FC<MarmosetViewerProps> = ({
       return;
     }
 
-    const script = document.createElement("script");
-    script.src = "/marmoset/marmoset.js";
-    script.async = true;
-    script.onload = () => setScriptLoaded(true);
-    document.body.appendChild(script);
+    const existingScript = document.querySelector('script[data-marmoset="true"]') as HTMLScriptElement | null;
+    if (existingScript) {
+      const onLoad = () => setScriptLoaded(true);
+      existingScript.addEventListener("load", onLoad);
+      return () => existingScript.removeEventListener("load", onLoad);
+    }
 
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
+    const script = document.createElement("script");
+    script.src = "https://viewer.marmoset.co/main/marmoset.js";
+    script.async = true;
+    script.dataset.marmoset = "true";
+    script.onload = () => setScriptLoaded(true);
+    script.onerror = () => {
+      setViewerError("Failed to load Marmoset Viewer script.");
     };
+    document.body.appendChild(script);
   }, []);
 
   useEffect(() => {
@@ -173,25 +182,142 @@ export const MarmosetViewer: FC<MarmosetViewerProps> = ({
       fileParam = fileParam.replace("/public/", "/");
     }
 
-    const container = document.getElementById("viewer-container");
-    if (container) {
-      container.innerHTML = "";
-      marmoset.embed("viewer-container", {
-        width: 800,
-        height: 600,
-        autoStart: autoStart,
-        fullScreen: false,
-        pagePreset: false,
-        src: fileParam,
-      });
+    const toDownloadableMviewUrl = (input: string) => {
+      try {
+        const url = new URL(input);
+
+        if (url.hostname === "www.dropbox.com") {
+          url.hostname = "dl.dropboxusercontent.com";
+        }
+
+        const dl = url.searchParams.get("dl");
+        if (dl === "0") url.searchParams.set("dl", "1");
+
+        return url.toString();
+      } catch {
+        return input;
+      }
+    };
+
+    fileParam = toDownloadableMviewUrl(fileParam);
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    setViewerError(null);
+
+    if (viewerRef.current?.domRoot && container.contains(viewerRef.current.domRoot)) {
+      container.removeChild(viewerRef.current.domRoot);
     }
+    viewerRef.current = null;
+    isViewerReadyRef.current = false;
+
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+
+    let rafId = 0;
+    let resizeObserver: ResizeObserver | null = null;
+    let cancelled = false;
+
+    const initViewer = () => {
+      if (cancelled) return;
+      if (!containerRef.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      const measuredWidth = Math.floor(rect.width);
+      const measuredHeight = Math.floor(rect.height);
+
+      if (measuredWidth <= 1 || measuredHeight <= 1) {
+        rafId = window.requestAnimationFrame(initViewer);
+        return;
+      }
+
+      const viewer = marmoset.embed(fileParam, {
+        width: measuredWidth,
+        height: measuredHeight,
+        autoStart,
+        fullFrame: false,
+        pagePreset: false,
+      });
+
+      if (!viewer) {
+        setViewerError("Marmoset viewer failed to initialize.");
+        return;
+      }
+
+      if (viewer.domRoot?.parentNode) {
+        viewer.domRoot.parentNode.removeChild(viewer.domRoot);
+      }
+      viewer.domRoot.style.display = "block";
+      containerRef.current.appendChild(viewer.domRoot);
+      viewerRef.current = viewer;
+      isViewerReadyRef.current = false;
+
+      const resizeToContainer = () => {
+        if (!containerRef.current || !viewerRef.current) return;
+        if (!(viewerRef.current as any).gl) return;
+        const nextRect = containerRef.current.getBoundingClientRect();
+        const nextWidth = Math.max(1, Math.floor(nextRect.width));
+        const nextHeight = Math.max(1, Math.floor(nextRect.height));
+        try {
+          viewerRef.current.resize(nextWidth, nextHeight);
+        } catch {
+          setViewerError("Marmoset viewer resize failed.");
+        }
+      };
+
+      viewer.onLoad = () => {
+        isViewerReadyRef.current = true;
+        resizeToContainer();
+      };
+
+      if (typeof viewer.onError !== "undefined") {
+        viewer.onError = () => {
+          isViewerReadyRef.current = false;
+          setViewerError("Marmoset viewer failed to load (WebGL unavailable or scene error).");
+        };
+      }
+
+      if (autoStart) {
+        try {
+          viewer.loadScene();
+        } catch {
+          setViewerError("Marmoset viewer loadScene() failed.");
+        }
+      }
+
+      resizeObserver = new ResizeObserver(() => {
+        if (!isViewerReadyRef.current) return;
+        resizeToContainer();
+      });
+      resizeObserver.observe(containerRef.current);
+    };
+
+    rafId = window.requestAnimationFrame(initViewer);
+
+    return () => {
+      cancelled = true;
+      if (rafId) window.cancelAnimationFrame(rafId);
+      if (resizeObserver) resizeObserver.disconnect();
+      if (viewerRef.current?.domRoot && container.contains(viewerRef.current.domRoot)) {
+        container.removeChild(viewerRef.current.domRoot);
+      }
+      viewerRef.current = null;
+      isViewerReadyRef.current = false;
+    };
   }, [scriptLoaded, src, autoStart]);
 
   if (!src) return null;
 
   return (
     <Column fillWidth marginBottom="4" horizontal="center">
-      <div id="viewer-container" style={{ width: "100%", height: "600px" }} />
+      <div ref={containerRef} style={{ width, height, position: "relative", overflow: "hidden" }} />
+      {viewerError && (
+        <Text variant="body-default-s" onBackground="neutral-weak">
+          {viewerError}
+        </Text>
+      )}
     </Column>
   );
 };

@@ -29,6 +29,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { motion } from 'framer-motion';
+import { uploadFileUnified } from '@/utils/largeFileUpload';
 
 interface ProjectEditorProps {
     slug: string;
@@ -455,37 +456,26 @@ export default function ProjectEditor({ slug: initialSlug, initialData }: Projec
 
     const uploadFile = async (file: File, type: string) => {
         try {
-            // Upload
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', `/api/upload?filename=${encodeURIComponent(file.name)}&type=${type}`, true);
-            
-            // Use Promise to handle XHR
-            const response = await new Promise<{ success: boolean; path: string }>((resolve, reject) => {
-                xhr.onload = () => {
-                    if (xhr.status === 200) resolve(JSON.parse(xhr.responseText));
-                    else reject(xhr.statusText);
-                };
-                xhr.onerror = () => reject('Network Error');
-                xhr.send(file);
-            });
+            // Use Unified Large File Upload (Chunked)
+            const path = await uploadFileUnified(file);
 
-            if (response.success) {
+            if (path) {
                 const newItem = {
                     id: Date.now() + Math.random(),
                     type,
                     value: {
-                        src: response.path,
+                        src: path,
                         caption: '',
                         width: '100%',
                         height: '600px',
-                        manualPath: response.path // For Marmoset compatibility
+                        manualPath: path // For Marmoset compatibility
                     }
                 };
                 setMediaItems(prev => [...prev, newItem]);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Upload failed:', error);
-            alert(`Failed to upload ${file.name}`);
+            alert(`Failed to upload ${file.name}: ${error.message || 'Unknown error'}`);
         }
     };
 
@@ -622,7 +612,7 @@ export default function ProjectEditor({ slug: initialSlug, initialData }: Projec
                         <h3 style={{ color: '#fff', fontSize: '18px', marginBottom: '8px' }}>Upload media files or drag and drop here</h3>
                         <p style={{ color: '#9a9cab', fontSize: '14px' }}>
                             JPG, PNG, GIF, MP4, MVIEW. <br/>
-                            Files {'>'} 100MB are automatically handled.
+                            Large files (Unlimited size) are supported via Chunked Upload.
                         </p>
                     </div>
 
