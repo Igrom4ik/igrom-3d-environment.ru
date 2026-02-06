@@ -6,7 +6,7 @@ import { Flex, Button, Heading, Text, Avatar, useToast } from "@once-ui-system/c
 import { KeystaticLayout } from "@/components/admin/KeystaticLayout";
 import ui from "./SettingsEditor.module.css";
 import { getImageUrl } from "@/lib/assets";
-import { DEFAULT_AVATAR_PATH, normalizeAvatarPath } from "@/lib/avatar";
+import { DEFAULT_AVATAR, resolveAvatar } from "@/utils/avatar";
 
 export const SettingsEditor = () => {
   const [settings, setSettings] = useState<any>(null);
@@ -61,7 +61,7 @@ export const SettingsEditor = () => {
   };
 
   useEffect(() => {
-    const avatar = normalizeAvatarPath(settings?.person?.avatar);
+    const avatar = resolveAvatar(settings?.person?.avatar);
     if (!avatar || typeof avatar !== "string" || avatar.startsWith("http://") || avatar.startsWith("https://")) return;
 
     const es = new EventSource(`/api/admin/fs/watch?publicPath=${encodeURIComponent(avatar)}`);
@@ -278,7 +278,7 @@ export const SettingsEditor = () => {
 
     const nextPayload = structuredClone(safeSettingsPayload);
     if (!nextPayload.person) nextPayload.person = {};
-    nextPayload.person.avatar = DEFAULT_AVATAR_PATH;
+    nextPayload.person.avatar = DEFAULT_AVATAR;
 
     const form = new FormData();
     form.append("settings", JSON.stringify(nextPayload));
@@ -435,11 +435,11 @@ export const SettingsEditor = () => {
                               {settings.person?.avatar ? (
                                 <img
                                   alt="Avatar"
-                                  src={`${getImageUrl(normalizeAvatarPath(settings.person.avatar))}?v=${avatarCacheKey}`}
+                                  src={`${getImageUrl(resolveAvatar(settings.person.avatar))}?v=${avatarCacheKey}`}
                                   className={ui.avatarImg}
                                   onError={(e) => {
                                     const target = e.currentTarget as HTMLImageElement;
-                                    const fallback = `${getImageUrl("/images/avatar.jpg")}?v=${avatarCacheKey}`;
+                                    const fallback = `${getImageUrl(DEFAULT_AVATAR)}?v=${avatarCacheKey}`;
                                     if (target.src !== fallback) target.src = fallback;
                                   }}
                                 />
@@ -466,7 +466,7 @@ export const SettingsEditor = () => {
                                     }
                                   }}
                                   disabled={uploadingAvatar}
-                                  title={`Удалить ${DEFAULT_AVATAR_PATH} (если был)`}
+                                  title={`Удалить ${DEFAULT_AVATAR} (если был)`}
                                 >
                                   Сбросить
                                 </Button>
@@ -484,7 +484,7 @@ export const SettingsEditor = () => {
                                 <label className={ui.fieldLabel}>Публичный путь</label>
                                 <input
                                   type="text"
-                                  value={normalizeAvatarPath(settings.person?.avatar)}
+                                  value={resolveAvatar(settings.person?.avatar)}
                                   readOnly
                                   style={{
                                     width: "100%",

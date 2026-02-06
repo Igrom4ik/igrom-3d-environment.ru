@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
-import { DEFAULT_AVATAR_PATH, normalizeAvatarPath } from "@/lib/avatar";
+import { DEFAULT_AVATAR, resolveAvatar } from "@/utils/avatar";
 
 export const dynamic = "force-dynamic";
 
 const SETTINGS_FILE_PATH = path.join(process.cwd(), 'src/content/settings.json');
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 const UPLOADS_DIR = path.join(PUBLIC_DIR, "images", "uploads");
-const AVATAR_PUBLIC_PATH = DEFAULT_AVATAR_PATH;
+const AVATAR_PUBLIC_PATH = DEFAULT_AVATAR;
 const AVATAR_FILE_NAME = "avatar.webp";
 const AVATAR_FS_PATH = path.join(UPLOADS_DIR, AVATAR_FILE_NAME);
 
@@ -30,7 +30,7 @@ function toFsPublicPath(publicPath: string) {
 }
 
 function getAvatarAbsolutePathFromSettings(settings: any) {
-  const avatar = normalizeAvatarPath(settings?.person?.avatar);
+  const avatar = resolveAvatar(settings?.person?.avatar);
   if (avatar.startsWith("http://") || avatar.startsWith("https://")) return null;
   if (!isSafePublicPath(avatar)) return null;
   return toFsPublicPath(avatar);
