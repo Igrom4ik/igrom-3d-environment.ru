@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sendMail } from '@/utils/mail';
-import { getSecret } from '@/utils/secrets';
+import { sendMail, getMailConfig } from '@/utils/mail';
 
 // NOTE: This API route will NOT work with "output: export" (static site generation).
 // It requires a Node.js server (e.g. Vercel, VPS, or "npm start" without "output: export").
@@ -12,15 +11,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
-    const user = getSecret('SMTP_USER');
+    const config = getMailConfig();
     
-    if (!user) {
-      console.error('SMTP credentials missing (SMTP_USER)');
+    if (!config) {
+      console.error('SMTP credentials missing (Checked Admin Settings and ENV)');
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
     await sendMail({
-      to: user, // Send to self
+      to: config.user, // Send to self
       replyTo: email,
       subject: `New Contact Form Submission from ${name}`,
       text: `

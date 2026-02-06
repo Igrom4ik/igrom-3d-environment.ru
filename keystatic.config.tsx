@@ -584,6 +584,15 @@ export default config({
             description: 'Фотография профиля.'
           }),
         }, { label: 'Личная информация' }),
+        email: fields.object({
+            enabled: fields.checkbox({ label: 'Включить отправку почты через SMTP', defaultValue: false }),
+            host: fields.text({ label: 'SMTP Сервер (Host)', description: 'Например: smtp.yandex.ru' }),
+            port: fields.integer({ label: 'SMTP Порт', defaultValue: 465, description: '465 (SSL) или 587 (TLS)' }),
+            secure: fields.checkbox({ label: 'Использовать SSL (Secure)', defaultValue: true, description: 'Обычно включено для 465' }),
+            user: fields.text({ label: 'SMTP Пользователь (Email)', description: 'Полный email адрес' }),
+            password: fields.text({ label: 'SMTP Пароль', description: 'Пароль приложения (App Password)' }),
+            fromName: fields.text({ label: 'Имя отправителя', description: 'Например: Ivan Gromov' }),
+        }, { label: 'Настройки почты (SMTP)' }),
       },
     }),
     home: singleton({
