@@ -1,4 +1,6 @@
-import type { FC } from "react";
+"use client";
+
+import { type FC, useEffect, useState } from "react";
 import { Media, Text, Column, Grid } from "@once-ui-system/core";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -139,30 +141,57 @@ export const MarmosetViewer: FC<MarmosetViewerProps> = ({
   height = "600px",
   autoStart = false,
 }) => {
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+
+  useEffect(() => {
+    if ((window as any).marmoset) {
+      setScriptLoaded(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "/marmoset/marmoset.js";
+    script.async = true;
+    script.onload = () => setScriptLoaded(true);
+    document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!scriptLoaded || !src) return;
+
+    const marmoset = (window as any).marmoset;
+    if (!marmoset) return;
+
+    let fileParam = normalizePath(src);
+    if (fileParam.startsWith("/public/")) {
+      fileParam = fileParam.replace("/public/", "/");
+    }
+
+    const container = document.getElementById("viewer-container");
+    if (container) {
+      container.innerHTML = "";
+      marmoset.embed("viewer-container", {
+        width: 800,
+        height: 600,
+        autoStart: autoStart,
+        fullScreen: false,
+        pagePreset: false,
+        src: fileParam,
+      });
+    }
+  }, [scriptLoaded, src, autoStart]);
+
   if (!src) return null;
-
-  // Если путь начинается с /public, убираем его, так как Next.js обслуживает public как корень
-  let fileParam = normalizePath(src);
-  if (fileParam.startsWith('/public/')) {
-    fileParam = fileParam.replace('/public/', '/');
-  }
-
-  const viewerPath = `${basePath || ""}/marmoset-viewer/?file=${encodeURIComponent(
-    fileParam,
-  )}&autoStart=${autoStart}`;
 
   return (
     <Column fillWidth marginBottom="4" horizontal="center">
-      <div style={{ width, height, position: "relative" }}>
-        <iframe
-          src={viewerPath}
-          width="100%"
-          height="100%"
-          allowFullScreen
-          style={{ border: 0, display: 'block' }}
-          title="Marmoset Viewer"
-        />
-      </div>
+      <div id="viewer-container" style={{ width: "100%", height: "600px" }} />
     </Column>
   );
 };
