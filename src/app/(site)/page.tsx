@@ -13,7 +13,7 @@ import { PageBuilder } from "@/components/PageBuilder";
 import type { PageBlock } from "@/components/PageBuilder";
 import { HeroBlock } from "@/components/blocks/HeroBlock";
 
-// export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata() {
   return Meta.generate({

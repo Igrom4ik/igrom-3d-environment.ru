@@ -21,6 +21,8 @@ import {
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 import {
   ImageFull,
   VideoLoop,
@@ -60,23 +62,6 @@ function getAllProjects() {
   const newPosts = getPosts(["src", "content", "albums"]);
   return [...legacyPosts, ...newPosts];
 }
-
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  try {
-    const posts = getAllProjects();
-    if (posts.length === 0) {
-      return [{ slug: 'placeholder-work' }];
-    }
-    return posts.map((post) => ({
-      slug: post.slug,
-    }));
-  } catch (error) {
-    console.error("Error in generateStaticParams for work/[slug]:", error);
-    return [{ slug: 'placeholder-work' }];
-  }
-}
-
-export const dynamicParams = false;
 
 export async function generateMetadata({
   params,

@@ -8,22 +8,9 @@ import styles from "./blog-post.module.css";
 import fs from "node:fs";
 import path from "node:path";
 
-export const dynamicParams = false;
+export const dynamic = 'force-dynamic';
 
 type Params = { slug: string };
-
-export async function generateStaticParams(): Promise<Params[]> {
-  try {
-    const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
-    if (posts.length === 0) {
-      return [{ slug: 'placeholder-blog' }];
-    }
-    return posts.map((p) => ({ slug: p.slug }));
-  } catch (error) {
-    console.error("Error generating blog params:", error);
-    return [{ slug: 'placeholder-blog' }];
-  }
-}
 
 export default async function BlogPostPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;

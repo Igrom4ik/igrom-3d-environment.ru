@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { LayoutGrid, FileText, Send, Upload, Rocket } from 'lucide-react';
 import styles from './portfolio/portfolio.module.css'; // Reuse styles
 
+export const dynamic = 'force-dynamic';
+
 export default function AdminDashboard() {
     return (
         <div className={styles.pageContainer}>

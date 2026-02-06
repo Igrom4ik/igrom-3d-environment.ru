@@ -3,6 +3,8 @@ import { getGallerySettings, getAlbums } from "@/utils/reader";
 import { Flex, Meta, Schema } from "@once-ui-system/core";
 import GalleryPage from "@/components/gallery/GalleryPage";
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata() {
   const settings = await getGallerySettings();
   const title = settings?.title || gallery.title;

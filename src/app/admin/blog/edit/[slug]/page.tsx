@@ -2,9 +2,7 @@ import BlogEditor from '../../BlogEditor';
 import { getBlogPosts } from '@/utils/blog-reader';
 import { notFound } from 'next/navigation';
 
-export async function generateStaticParams() {
-    return [{ slug: 'placeholder' }];
-}
+export const dynamic = 'force-dynamic';
 
 export default async function EditBlogPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;

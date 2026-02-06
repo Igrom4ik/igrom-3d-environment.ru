@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getPosts } from "@/utils/utils";
 
+export const dynamic = 'force-dynamic';
+
 export default async function BlogIndexPage() {
   const posts = getPosts(["src", "app", "(site)", "blog", "posts"]);
 

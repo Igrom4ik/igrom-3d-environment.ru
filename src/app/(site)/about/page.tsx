@@ -23,6 +23,8 @@ import { PageBuilder } from '@/components/PageBuilder';
 import type { AboutBlock } from '@/components/blocks/AboutBlock';
 import type { ComponentProps } from 'react';
 
+export const dynamic = 'force-dynamic';
+
 const reader = createReader(process.cwd(), keystaticConfig);
 
 export async function generateMetadata() {

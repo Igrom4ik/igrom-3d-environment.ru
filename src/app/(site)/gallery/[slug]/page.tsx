@@ -10,6 +10,8 @@ import { VideoLoop, YoutubeEmbed, SketchfabEmbed, MarmosetViewer, Pano360 } from
 import { log } from "@/utils/logger";
 import { LikeButton, CommentSection } from "@/components";
 
+export const dynamic = 'force-dynamic';
+
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 import { resolveAssetPath } from "@/utils/utils";
@@ -30,45 +32,6 @@ const normalizePath = (file: string) => {
   }
   return normalized;
 };
-
-export async function generateStaticParams() {
-  console.log('🔍 Generating static params for gallery...');
-  
-  // Hardcoded slugs to ensure they are always generated during static export
-  const staticSlugs = [
-    { slug: 'main-gallery' },
-    { slug: 'military-hat' },
-  ];
-
-  try {
-    const albums = await getAlbums();
-    console.log('📦 Albums found in DB/Filesystem:', albums.length);
-    
-    if (albums && albums.length > 0) {
-      const dbSlugs = albums.map((album: { slug: string }) => ({
-        slug: album.slug,
-      }));
-      
-      // Combine hardcoded and DB slugs, removing duplicates
-      const allSlugs = [...staticSlugs];
-      dbSlugs.forEach((dbSlug: { slug: string }) => {
-        if (!allSlugs.some(s => s.slug === dbSlug.slug)) {
-          allSlugs.push(dbSlug);
-        }
-      });
-      
-      console.log('🚀 Total slugs to generate:', allSlugs.length);
-      return allSlugs;
-    }
-  } catch (error) {
-    console.error('❌ Error fetching albums in generateStaticParams:', error);
-  }
-
-  console.warn('⚠️ Using only hardcoded slugs for gallery');
-  return staticSlugs;
-}
-
-export const dynamicParams = false;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

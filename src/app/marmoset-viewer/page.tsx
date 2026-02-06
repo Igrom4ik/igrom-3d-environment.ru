@@ -4,8 +4,6 @@ import { useEffect, useRef, Suspense, useState, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
 function MarmosetViewerContent() {
   const searchParams = useSearchParams();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -111,8 +109,8 @@ function MarmosetViewerContent() {
   return (
     <>
       <Script 
-        src={`${basePath}/marmoset/marmoset.js`} 
-        strategy="afterInteractive"
+        src="/marmoset/marmoset.js" 
+        strategy="beforeInteractive"
         onLoad={() => {
             console.log("[Marmoset] Script loaded via onLoad");
             setScriptLoaded(true);

@@ -53,7 +53,8 @@ next-env.d.ts
 
 # Тяжёлый контент — только на сервере, не в git
 public/images/
-public/marmoset/
+public/marmoset/*
+!public/marmoset/marmoset.js
 public/images/gallery/
 public/images/blog/
 public/images/projects/
