@@ -1,9 +1,14 @@
 /* Admin Layout Styles */
 .adminBody {
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 0;
   margin: 0;
   padding: 0;
   background: linear-gradient(180deg, #0f0f11 0%, #111216 100%);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
   
   /* Отступ под ваш header (64px) + top offset (24px) + padding */
   padding-top: 112px;

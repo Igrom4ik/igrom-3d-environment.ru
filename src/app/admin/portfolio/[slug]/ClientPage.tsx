@@ -30,6 +30,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { motion } from 'framer-motion';
 import { uploadFileUnified } from '@/utils/largeFileUpload';
+import { getImageUrl } from '@/lib/assets';
 
 interface ProjectEditorProps {
     slug: string;
@@ -214,9 +215,9 @@ function SortableMediaItem({
                         <span style={{marginLeft:8, color:'#777'}}>Marmoset Viewer</span>
                     </div>
                 ) : item.type === 'video' ? (
-                    <video src={item.value.src} style={{width:'100%', height:'100%'}} muted />
+                    <video src={getImageUrl(item.value.src)} style={{width:'100%', height:'100%'}} muted />
                 ) : item.type === 'image' ? (
-                    <img src={item.value.src} alt={item.value.caption} style={{width:'100%', height:'100%', objectFit: 'cover'}} />
+                    <img src={getImageUrl(item.value.src)} alt={item.value.caption} style={{width:'100%', height:'100%', objectFit: 'cover'}} />
                 ) : (
                     <div style={{ color: '#555', display:'flex', flexDirection:'column', alignItems:'center' }}>
                         <Globe size={32} />
@@ -651,7 +652,7 @@ export default function ProjectEditor({ slug: initialSlug, initialData }: Projec
                                 mediaItems.map((item) => (
                                     <div key={item.id} className={styles.mediaCard}>
                                         <div className={styles.mediaPreview}>
-                                            {item.type === 'image' && <img src={item.value.src} style={{width:'100%', height:'100%'}} />}
+                                            {item.type === 'image' && <img src={getImageUrl(item.value.src)} style={{width:'100%', height:'100%'}} />}
                                         </div>
                                     </div>
                                 ))
@@ -753,7 +754,7 @@ export default function ProjectEditor({ slug: initialSlug, initialData }: Projec
                                 Marmoset Viewer Preview Not Available in Lightbox
                              </div>
                         ) : (
-                            <img src={selectedMedia.value.src} alt={selectedMedia.value.caption} />
+                            <img src={getImageUrl(selectedMedia.value.src)} alt={selectedMedia.value.caption} />
                         )}
                         {selectedMedia.value.caption && (
                             <div style={{position:'absolute', bottom:0, left:0, right:0, background:'rgba(0,0,0,0.7)', color:'white', padding:20, textAlign:'center'}}>

@@ -2,24 +2,7 @@
 
 import { type FC, useEffect, useRef, useState } from "react";
 import { Media, Text, Column, Grid } from "@once-ui-system/core";
-
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-function normalizePath(file: string) {
-  if (!file || file.startsWith('http')) return file;
-  let normalized = file.replace(/\\/g, "/");
-  const publicIndex = normalized.indexOf("/public/");
-  if (publicIndex !== -1) {
-    normalized = normalized.slice(publicIndex + "/public".length);
-  }
-  if (!normalized.startsWith("/")) {
-    normalized = `/${normalized}`;
-  }
-  if (basePath && !normalized.startsWith(basePath)) {
-    normalized = `${basePath}${normalized}`;
-  }
-  return normalized;
-}
+import { getImageUrl, getMarmosetPackageUrl } from "@/lib/assets";
 
 interface ImageFullProps {
   src: string;
@@ -28,7 +11,7 @@ interface ImageFullProps {
 
 export const ImageFull: FC<ImageFullProps> = ({ src, caption }) => {
   if (!src) return null;
-  const normalizedSrc = normalizePath(src);
+  const normalizedSrc = getImageUrl(src);
   return (
     <Column fillWidth gap="8" marginBottom="4" horizontal="center">
       <Media src={normalizedSrc} alt={caption || 'Project Image'} style={{ width: '100%' }} />
@@ -51,7 +34,7 @@ interface VideoLoopProps {
 
 export const VideoLoop: FC<VideoLoopProps> = ({ src, autoPlay, muted, loop, caption }) => {
   if (!src) return null;
-  const normalizedSrc = normalizePath(src);
+  const normalizedSrc = getImageUrl(src);
   return (
     <Column fillWidth gap="8" marginBottom="4" horizontal="center">
       <video
@@ -177,7 +160,7 @@ export const MarmosetViewer: FC<MarmosetViewerProps> = ({
     const marmoset = (window as any).marmoset;
     if (!marmoset) return;
 
-    let fileParam = normalizePath(src);
+    let fileParam = getMarmosetPackageUrl(src);
     if (fileParam.startsWith("/public/")) {
       fileParam = fileParam.replace("/public/", "/");
     }
@@ -330,8 +313,8 @@ interface ComparisonSliderProps {
 export const ComparisonSlider: FC<ComparisonSliderProps> = ({ leftImage, rightImage }) => {
     if (!leftImage || !rightImage) return null;
     
-    const normalizedLeft = normalizePath(leftImage);
-    const normalizedRight = normalizePath(rightImage);
+    const normalizedLeft = getImageUrl(leftImage);
+    const normalizedRight = getImageUrl(rightImage);
 
     return (
         <Column fillWidth gap="8" marginBottom="32">
@@ -356,7 +339,7 @@ interface Pano360Props {
 
 export const Pano360: FC<Pano360Props> = ({ image, caption }) => {
     if (!image) return null;
-    const normalizedImage = normalizePath(image);
+    const normalizedImage = getImageUrl(image);
     return (
         <Column fillWidth gap="8" marginBottom="32" horizontal="center" position="relative">
             <Media src={normalizedImage} alt={caption || '360 Panorama'} radius="l" style={{ width: '100%' }} />
@@ -393,7 +376,7 @@ export const ImageGallery: FC<ImageGalleryProps> = ({ images, columns = '2' }) =
         <Column fillWidth marginBottom="32">
              <Grid columns={columns} gap="16" s={{ columns: 1 }}>
                 {images.map((img, idx) => {
-                    const normalizedImg = normalizePath(img);
+                    const normalizedImg = getImageUrl(img);
                     return (
                         <Media 
                             key={img} 

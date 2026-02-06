@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
+import { DEFAULT_AVATAR_PATH, normalizeAvatarPath } from "@/lib/avatar";
 
-export const dynamic = 'force-static';
+export const dynamic = "force-dynamic";
 
 const SETTINGS_FILE_PATH = path.join(process.cwd(), 'src/content/settings.json');
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 const UPLOADS_DIR = path.join(PUBLIC_DIR, "images", "uploads");
+const AVATAR_PUBLIC_PATH = DEFAULT_AVATAR_PATH;
+const AVATAR_FILE_NAME = "avatar.webp";
+const AVATAR_FS_PATH = path.join(UPLOADS_DIR, AVATAR_FILE_NAME);
 
 type AvatarMode = "keep" | "upload" | "reset";
 
@@ -26,8 +30,9 @@ function toFsPublicPath(publicPath: string) {
 }
 
 function getAvatarAbsolutePathFromSettings(settings: any) {
-  const avatar = settings?.person?.avatar;
-  if (typeof avatar !== "string" || !isSafePublicPath(avatar)) return null;
+  const avatar = normalizeAvatarPath(settings?.person?.avatar);
+  if (avatar.startsWith("http://") || avatar.startsWith("https://")) return null;
+  if (!isSafePublicPath(avatar)) return null;
   return toFsPublicPath(avatar);
 }
 
@@ -120,6 +125,196 @@ function getImageSize(buf: Buffer, mime: string) {
   return null;
 }
 
+function parseSettingsJson(raw: unknown) {
+  if (typeof raw !== "string") {
+    return { ok: false as const, error: "Invalid settings payload" };
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return { ok: false as const, error: "Invalid settings payload" };
+    }
+    return { ok: true as const, value: parsed };
+  } catch {
+    return { ok: false as const, error: "Invalid settings payload" };
+  }
+}
+
+function enforceAvatarPath(settings: any) {
+  if (!settings.person) settings.person = {};
+  settings.person.avatar = AVATAR_PUBLIC_PATH;
+}
+
+type ParsedMultipartField =
+  | { kind: "field"; name: string; value: string }
+  | { kind: "file"; name: string; filename: string; contentType: string; buffer: Buffer };
+
+function parseContentDisposition(headerValue: string) {
+  const parts = headerValue.split(";").map((p) => p.trim());
+  const out: Record<string, string> = {};
+  for (const part of parts.slice(1)) {
+    const eq = part.indexOf("=");
+    if (eq === -1) continue;
+    const key = part.slice(0, eq).trim().toLowerCase();
+    let value = part.slice(eq + 1).trim();
+    if (value.startsWith("\"") && value.endsWith("\"")) value = value.slice(1, -1);
+    out[key] = value;
+  }
+  return out;
+}
+
+function parseMultipartBody(body: Buffer) {
+  const firstCrlf = body.indexOf("\r\n");
+  if (firstCrlf === -1) return null;
+  const firstLine = body.slice(0, firstCrlf).toString("utf8");
+  if (!firstLine.startsWith("--") || firstLine.length < 4) return null;
+  const boundary = firstLine.slice(2);
+  const boundaryBuf = Buffer.from(`--${boundary}`);
+  const fields: ParsedMultipartField[] = [];
+
+  let pos = 0;
+  while (true) {
+    const start = body.indexOf(boundaryBuf, pos);
+    if (start === -1) break;
+    let cursor = start + boundaryBuf.length;
+    if (cursor + 2 <= body.length && body.slice(cursor, cursor + 2).toString("utf8") === "--") {
+      break;
+    }
+    if (cursor + 2 <= body.length && body.slice(cursor, cursor + 2).toString("utf8") === "\r\n") {
+      cursor += 2;
+    } else {
+      pos = cursor;
+      continue;
+    }
+
+    const headerEnd = body.indexOf("\r\n\r\n", cursor);
+    if (headerEnd === -1) break;
+    const headerText = body.slice(cursor, headerEnd).toString("utf8");
+    const headers = new Map<string, string>();
+    for (const line of headerText.split("\r\n")) {
+      const idx = line.indexOf(":");
+      if (idx === -1) continue;
+      headers.set(line.slice(0, idx).trim().toLowerCase(), line.slice(idx + 1).trim());
+    }
+
+    const contentDisposition = headers.get("content-disposition") ?? "";
+    const cd = parseContentDisposition(contentDisposition);
+    const name = cd["name"];
+    if (!name) break;
+
+    const partBodyStart = headerEnd + 4;
+    const nextBoundary = body.indexOf(boundaryBuf, partBodyStart);
+    if (nextBoundary === -1) break;
+    let partBodyEnd = nextBoundary;
+    if (partBodyEnd >= 2 && body.slice(partBodyEnd - 2, partBodyEnd).toString("utf8") === "\r\n") {
+      partBodyEnd -= 2;
+    }
+    const partBody = body.slice(partBodyStart, partBodyEnd);
+
+    const filename = cd["filename"];
+    if (filename) {
+      fields.push({
+        kind: "file",
+        name,
+        filename,
+        contentType: headers.get("content-type") ?? "application/octet-stream",
+        buffer: partBody,
+      });
+    } else {
+      fields.push({
+        kind: "field",
+        name,
+        value: partBody.toString("utf8"),
+      });
+    }
+
+    pos = nextBoundary;
+  }
+
+  return { boundary, fields };
+}
+
+async function applyAvatarModeAndSave({
+  nextSettings,
+  prevSettings,
+  avatarMode,
+  avatarBuffer,
+  avatarMime,
+}: {
+  nextSettings: any;
+  prevSettings: any;
+  avatarMode: AvatarMode;
+  avatarBuffer?: Buffer;
+  avatarMime?: string;
+}) {
+  const prevAvatar = typeof prevSettings?.person?.avatar === "string" ? prevSettings.person.avatar : null;
+  enforceAvatarPath(nextSettings);
+
+  if (avatarMode === "reset") {
+    if (fs.existsSync(AVATAR_FS_PATH)) fs.rmSync(AVATAR_FS_PATH, { force: true });
+    if (prevAvatar && isUploadsAvatarPath(prevAvatar) && prevAvatar !== AVATAR_PUBLIC_PATH) {
+      const oldFsPath = toFsPublicPath(prevAvatar);
+      if (fs.existsSync(oldFsPath)) fs.rmSync(oldFsPath, { force: true });
+    }
+    fs.writeFileSync(SETTINGS_FILE_PATH, JSON.stringify(nextSettings, null, 2), "utf-8");
+    return { success: true, settings: nextSettings };
+  }
+
+  if (avatarMode === "upload") {
+    if (!avatarBuffer || !avatarMime) {
+      return { error: "Не передан файл аватара", status: 400 as const };
+    }
+
+    if (avatarBuffer.byteLength > 5 * 1024 * 1024) {
+      return { error: "Файл слишком большой (максимум 5 МБ)", status: 400 as const };
+    }
+
+    const allowed = new Set(["image/jpeg", "image/png", "image/webp"]);
+    if (!allowed.has(avatarMime)) {
+      return { error: "Неверный формат (разрешены JPEG, PNG, WebP)", status: 400 as const };
+    }
+
+    const size = getImageSize(avatarBuffer, avatarMime);
+    if (!size) {
+      return { error: "Не удалось определить размер изображения", status: 400 as const };
+    }
+    if (size.width < 200 || size.height < 200) {
+      return { error: "Слишком маленькое изображение (минимум 200×200)", status: 400 as const };
+    }
+    if (size.width > 1000 || size.height > 1000) {
+      return { error: "Слишком большое изображение (максимум 1000×1000)", status: 400 as const };
+    }
+
+    const tmpName = `avatar-temp-${Date.now()}-${Math.random().toString(16).slice(2)}.webp.tmp`;
+    const tmpPath = path.join(UPLOADS_DIR, tmpName);
+    fs.writeFileSync(tmpPath, avatarBuffer);
+    if (fs.existsSync(AVATAR_FS_PATH)) fs.rmSync(AVATAR_FS_PATH, { force: true });
+    fs.renameSync(tmpPath, AVATAR_FS_PATH);
+
+    try {
+      fs.writeFileSync(SETTINGS_FILE_PATH, JSON.stringify(nextSettings, null, 2), "utf-8");
+    } catch (err) {
+      if (fs.existsSync(AVATAR_FS_PATH)) fs.rmSync(AVATAR_FS_PATH, { force: true });
+      throw err;
+    }
+
+    if (prevAvatar && isUploadsAvatarPath(prevAvatar) && prevAvatar !== AVATAR_PUBLIC_PATH) {
+      const oldFsPath = toFsPublicPath(prevAvatar);
+      if (fs.existsSync(oldFsPath)) fs.rmSync(oldFsPath, { force: true });
+    }
+
+    return { success: true, settings: nextSettings };
+  }
+
+  if (prevAvatar && isUploadsAvatarPath(prevAvatar) && prevAvatar !== AVATAR_PUBLIC_PATH) {
+    const oldFsPath = toFsPublicPath(prevAvatar);
+    if (fs.existsSync(oldFsPath)) fs.rmSync(oldFsPath, { force: true });
+  }
+
+  fs.writeFileSync(SETTINGS_FILE_PATH, JSON.stringify(nextSettings, null, 2), "utf-8");
+  return { success: true, settings: nextSettings };
+}
+
 export async function GET() {
   try {
     if (!fs.existsSync(SETTINGS_FILE_PATH)) {
@@ -149,89 +344,84 @@ export async function PUT(request: Request) {
       const avatarMode = (form.get("avatarMode")?.toString() ?? "keep") as AvatarMode;
       const avatarFile = form.get("avatar");
 
-      if (typeof rawSettings !== "string") {
-        return NextResponse.json({ error: "Не переданы данные настроек" }, { status: 400 });
+      const parsed = parseSettingsJson(rawSettings);
+      if (!parsed.ok) {
+        return NextResponse.json({ error: parsed.error }, { status: 400 });
       }
-
-      const nextSettings = JSON.parse(rawSettings);
+      const nextSettings = parsed.value;
       const prevSettings = fs.existsSync(SETTINGS_FILE_PATH)
         ? JSON.parse(fs.readFileSync(SETTINGS_FILE_PATH, "utf-8"))
         : {};
 
-      const prevAvatar = typeof prevSettings?.person?.avatar === "string" ? prevSettings.person.avatar : null;
-      const defaultAvatar = "/images/avatar.jpg";
-
-      if (!nextSettings.person) nextSettings.person = {};
-
-      if (avatarMode === "reset") {
-        nextSettings.person.avatar = defaultAvatar;
-        if (prevAvatar && isUploadsAvatarPath(prevAvatar)) {
-          const oldFsPath = toFsPublicPath(prevAvatar);
-          if (fs.existsSync(oldFsPath)) fs.rmSync(oldFsPath, { force: true });
-        }
-
-        fs.writeFileSync(SETTINGS_FILE_PATH, JSON.stringify(nextSettings, null, 2), "utf-8");
-        return NextResponse.json({ success: true, settings: nextSettings });
-      }
-
+      let buffer: Buffer | undefined;
+      let mime: string | undefined;
       if (avatarMode === "upload") {
-        if (!(avatarFile instanceof File)) {
+        const fileLike = avatarFile as any;
+        if (!fileLike || typeof fileLike !== "object" || typeof fileLike.arrayBuffer !== "function") {
           return NextResponse.json({ error: "Не передан файл аватара" }, { status: 400 });
         }
-
-        if (avatarFile.size > 5 * 1024 * 1024) {
-          return NextResponse.json({ error: "Файл слишком большой (максимум 5 МБ)" }, { status: 400 });
-        }
-
-        const mime = avatarFile.type || "application/octet-stream";
-        const allowed = new Set(["image/jpeg", "image/png", "image/webp"]);
-        if (!allowed.has(mime)) {
-          return NextResponse.json({ error: "Неверный формат (разрешены JPEG, PNG, WebP)" }, { status: 400 });
-        }
-
-        const buffer = Buffer.from(await avatarFile.arrayBuffer());
-        const size = getImageSize(buffer, mime);
-        if (!size) {
-          return NextResponse.json({ error: "Не удалось определить размер изображения" }, { status: 400 });
-        }
-        if (size.width < 200 || size.height < 200) {
-          return NextResponse.json({ error: "Слишком маленькое изображение (минимум 200×200)" }, { status: 400 });
-        }
-        if (size.width > 1000 || size.height > 1000) {
-          return NextResponse.json({ error: "Слишком большое изображение (максимум 1000×1000)" }, { status: 400 });
-        }
-
-        const fileName = `avatar-${Date.now()}.webp`;
-        const tmpPath = path.join(UPLOADS_DIR, `${fileName}.tmp`);
-        const finalPath = path.join(UPLOADS_DIR, fileName);
-
-        fs.writeFileSync(tmpPath, buffer);
-        fs.renameSync(tmpPath, finalPath);
-
-        nextSettings.person.avatar = `/images/uploads/${fileName}`;
-
-        try {
-          fs.writeFileSync(SETTINGS_FILE_PATH, JSON.stringify(nextSettings, null, 2), "utf-8");
-        } catch (err) {
-          if (fs.existsSync(finalPath)) fs.rmSync(finalPath, { force: true });
-          throw err;
-        }
-
-        if (prevAvatar && isUploadsAvatarPath(prevAvatar)) {
-          const oldFsPath = toFsPublicPath(prevAvatar);
-          if (fs.existsSync(oldFsPath)) fs.rmSync(oldFsPath, { force: true });
-        }
-
-        return NextResponse.json({ success: true, settings: nextSettings });
+        buffer = Buffer.from(await fileLike.arrayBuffer());
+        mime = typeof fileLike.type === "string" && fileLike.type ? fileLike.type : "application/octet-stream";
       }
 
-      fs.writeFileSync(SETTINGS_FILE_PATH, JSON.stringify(nextSettings, null, 2), "utf-8");
-      return NextResponse.json({ success: true, settings: nextSettings });
+      const result = await applyAvatarModeAndSave({
+        nextSettings,
+        prevSettings,
+        avatarMode,
+        avatarBuffer: buffer,
+        avatarMime: mime,
+      });
+
+      if ("status" in result) {
+        return NextResponse.json({ error: result.error }, { status: result.status });
+      }
+      return NextResponse.json(result);
     }
 
-    const body = await request.json();
-    fs.writeFileSync(SETTINGS_FILE_PATH, JSON.stringify(body, null, 2), "utf-8");
-    return NextResponse.json({ success: true, settings: body });
+    const fallbackClone = request.clone();
+    try {
+      const body = await request.json();
+      if (!body || typeof body !== "object" || Array.isArray(body)) {
+        return NextResponse.json({ error: "Invalid settings payload" }, { status: 400 });
+      }
+      enforceAvatarPath(body);
+      fs.writeFileSync(SETTINGS_FILE_PATH, JSON.stringify(body, null, 2), "utf-8");
+      return NextResponse.json({ success: true, settings: body });
+    } catch (jsonErr) {
+      const raw = Buffer.from(await fallbackClone.arrayBuffer());
+      const parsed = parseMultipartBody(raw);
+      if (!parsed) {
+        return NextResponse.json({ error: "Invalid settings payload" }, { status: 400 });
+      }
+
+      const rawSettings = parsed.fields.find((f) => f.kind === "field" && f.name === "settings");
+      const rawAvatarMode = parsed.fields.find((f) => f.kind === "field" && f.name === "avatarMode");
+      const avatarFile = parsed.fields.find((f) => f.kind === "file" && f.name === "avatar");
+      const parsedSettings = parseSettingsJson(rawSettings && rawSettings.kind === "field" ? rawSettings.value : null);
+      if (!parsedSettings.ok) {
+        return NextResponse.json({ error: parsedSettings.error }, { status: 400 });
+      }
+
+      const avatarMode = ((rawAvatarMode && rawAvatarMode.kind === "field" ? rawAvatarMode.value : "keep") as AvatarMode) ?? "keep";
+
+      const nextSettings = parsedSettings.value;
+      const prevSettings = fs.existsSync(SETTINGS_FILE_PATH)
+        ? JSON.parse(fs.readFileSync(SETTINGS_FILE_PATH, "utf-8"))
+        : {};
+
+      const result = await applyAvatarModeAndSave({
+        nextSettings,
+        prevSettings,
+        avatarMode,
+        avatarBuffer: avatarFile && avatarFile.kind === "file" ? avatarFile.buffer : undefined,
+        avatarMime: avatarFile && avatarFile.kind === "file" ? avatarFile.contentType : undefined,
+      });
+
+      if ("status" in result) {
+        return NextResponse.json({ error: result.error }, { status: result.status });
+      }
+      return NextResponse.json(result);
+    }
   } catch (error) {
     console.error('Error saving settings:', error);
     return NextResponse.json({ error: 'Failed to save settings' }, { status: 500 });

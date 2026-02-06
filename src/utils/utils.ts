@@ -2,8 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import type { Metadata, MediaItem, TeamMember } from "@/types";
-
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+import { getImageUrl, getPublicUrl } from "@/lib/assets";
 
 export const getQueryParam = (
   param: string | string[] | undefined
@@ -25,12 +24,15 @@ export function resolveAssetPath(
   value: ImageValue,
   projectFolder: string
 ): string {
-  const folder = value.folder ?? projectFolder;
   const file = value.file;
+  if (!file) return "";
 
-  if (file.startsWith("/")) return file;
+  if (file.startsWith("/")) return getPublicUrl(file);
 
-  return `/${folder}/${file}`;
+  const folder = (value.folder ?? projectFolder ?? "").replace(/^\/+|\/+$/g, "");
+  if (!folder) return getPublicUrl(`/${file}`);
+
+  return getPublicUrl(`/${folder}/${file}`);
 }
 
 export function readMDXFile(filePath: string) {
@@ -48,12 +50,12 @@ export function readMDXFile(filePath: string) {
     // Handle legacy images array and Keystatic object format
     let images = (data.images || []).map((img: any) => {
       if (typeof img === 'string') {
-        return img.startsWith("/") ? `${basePath}${img}` : img;
+        return getImageUrl(img);
       }
       // Handle Keystatic image object
       if (img?.value?.src && typeof img.value.src === 'string') {
          const src = img.value.src;
-         return src.startsWith("/") ? `${basePath}${src}` : src;
+         return getImageUrl(src);
       }
       // Handle new format
       if (img?.value?.file && typeof img.value.file === 'string' && projectFolder) {
@@ -70,14 +72,14 @@ export function readMDXFile(filePath: string) {
           .filter((m) => m.discriminant === "image")
           .map((m) => {
             const img = m.value.image || "";
-            return img.startsWith("/") ? `${basePath}${img}` : img;
+            return getImageUrl(img);
           });
 
         const galleryImages = media
           .filter((m) => m.discriminant === "gallery")
           .flatMap((m) => m.value.images || [])
           .map((img: string) =>
-            img.startsWith("/") ? `${basePath}${img}` : img,
+            getImageUrl(img),
           );
 
         images = [...images, ...galleryImages];
@@ -86,9 +88,7 @@ export function readMDXFile(filePath: string) {
 
     // Handle cover image
     let cover = data.cover
-      ? data.cover.startsWith("/")
-        ? `${basePath}${data.cover}`
-        : data.cover
+      ? getImageUrl(data.cover)
       : "";
 
     // Fallback: if no cover, use first image
@@ -106,9 +106,7 @@ export function readMDXFile(filePath: string) {
       summary: data.summary || "",
       projectFolder: projectFolder,
       image: data.image
-        ? data.image.startsWith("/")
-          ? `${basePath}${data.image}`
-          : data.image
+        ? getImageUrl(data.image)
         : "",
       cover: cover,
       images: images,
@@ -120,9 +118,7 @@ export function readMDXFile(filePath: string) {
       team: (data.team || []).map((member: TeamMember) => ({
         name: member.name,
         role: member.role,
-        avatar: member.avatar.startsWith("/")
-          ? `${basePath}${member.avatar}`
-          : member.avatar,
+        avatar: getImageUrl(member.avatar),
         linkedIn: member.linkedIn,
       })),
       priority: data.priority ?? 999,

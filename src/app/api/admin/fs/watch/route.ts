@@ -3,7 +3,7 @@ import path from "node:path";
 import { type NextRequest } from "next/server";
 
 export const runtime = "nodejs";
-export const dynamic = 'force-static';
+export const dynamic = "force-dynamic";
 
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     return new Response("Bad Request", { status: 400 });
   }
 
-  const rel = publicPath.replace(/^\//, "");
+  const rel = publicPath.replace(/^\/+/, "");
   const fsPath = path.join(PUBLIC_DIR, rel);
   const dir = path.dirname(fsPath);
   const base = path.basename(fsPath);
@@ -47,6 +47,7 @@ export async function GET(req: NextRequest) {
 
       let watcher: fs.FSWatcher | null = null;
       try {
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
         watcher = fs.watch(dir, { recursive: false }, (_eventType, filename) => {
           if (filename && filename.toString() !== base) return;
           send("change", { publicPath, ts: Date.now() });

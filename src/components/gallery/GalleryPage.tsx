@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Flex, Grid, Column, Heading, Text, SmartLink, Media, Tag, Row, Button } from "@once-ui-system/core";
 import { person } from "@/resources";
+import { getImageUrl } from "@/lib/assets";
 
 interface GalleryPageProps {
   title: string;
@@ -97,7 +98,7 @@ export default function GalleryPage({ title, description, albums }: GalleryPageP
                                 <div style={{ position: 'relative' }}>
                                     {album.entry.publishing?.cover && (
                                         <Media 
-                                            src={album.entry.publishing.cover} 
+                                            src={getImageUrl(album.entry.publishing.cover)} 
                                             aspectRatio="16/9" 
                                             alt={album.entry.title}
                                             style={{ objectFit: 'cover' }}

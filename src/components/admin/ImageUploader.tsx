@@ -3,6 +3,7 @@
 import React, { useState, useRef, type ChangeEvent } from 'react';
 import { Upload, X, Check, Image as ImageIcon } from 'lucide-react';
 import { uploadFileUnified } from '@/utils/largeFileUpload';
+import { getImageUrl } from '@/lib/assets';
 
 interface ImageUploaderProps {
     onUploadComplete: (path: string) => void;
@@ -63,7 +64,7 @@ export default function ImageUploader({ onUploadComplete, currentImage, label = 
                 >
                     {currentImage ? (
                         <img 
-                            src={currentImage} 
+                            src={getImageUrl(currentImage)} 
                             alt="Preview" 
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                         />

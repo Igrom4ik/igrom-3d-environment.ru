@@ -16,7 +16,12 @@ export const metadata: Metadata = {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${fonts.heading.variable} ${fonts.body.variable} ${fonts.label.variable} ${fonts.code.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      data-preset="ios-liquid-glass"
+      className={`${fonts.heading.variable} ${fonts.body.variable} ${fonts.label.variable} ${fonts.code.variable}`}
+    >
       <body style={{ margin: 0 }} suppressHydrationWarning>
         <Providers>
             <ErrorBoundary>

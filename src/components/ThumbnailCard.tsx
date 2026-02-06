@@ -1,6 +1,7 @@
 "use client";
 
 import { Flex, Media, RevealFx, SmartLink, Text } from "@once-ui-system/core";
+import { getImageUrl } from "@/lib/assets";
 
 interface ThumbnailCardProps {
   href: string;
@@ -39,7 +40,7 @@ export const ThumbnailCard: React.FC<ThumbnailCardProps> = ({
           {image ? (
             <Media
               priority={priority}
-              src={image}
+              src={getImageUrl(image)}
               alt={title}
               aspectRatio="16 / 9"
               objectFit="cover"

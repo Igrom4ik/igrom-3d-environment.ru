@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from '../portfolio/portfolio.module.css'; // Reusing portfolio styles
+import { getImageUrl } from '@/lib/assets';
 import { 
     Eye, EyeOff, Plus, Trash2, Check, Circle, GripVertical, FileText, RefreshCw
 } from 'lucide-react';
@@ -245,7 +246,7 @@ function BlogPostCard({
                 <Link href={isTrash ? '#' : `/admin/blog/edit/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%', pointerEvents: isTrash ? 'none' : 'auto' }}>
                     {post.entry.image ? (
                         <img 
-                            src={post.entry.image} 
+                            src={getImageUrl(post.entry.image)} 
                             alt={post.entry.title} 
                             className={styles.cardImage} 
                             style={isTrash ? { filter: 'grayscale(100%)' } : {}}

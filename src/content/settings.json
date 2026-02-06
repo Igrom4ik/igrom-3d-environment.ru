@@ -4,6 +4,15 @@
     "role": "Senior Environment Artist",
     "location": "Калининград, Россия",
     "timeZone": "Europe/Kaliningrad",
-    "avatar": "/images/avatar.jpg"
+    "avatar": "/images/uploads/avatar.webp"
+  },
+  "email": {
+    "enabled": false,
+    "host": "",
+    "port": 465,
+    "secure": true,
+    "user": "",
+    "password": "",
+    "fromName": ""
   }
 }

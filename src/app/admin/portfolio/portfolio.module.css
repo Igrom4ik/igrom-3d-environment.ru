@@ -109,7 +109,7 @@
 .mainLayout {
     display: flex;
     flex: 1;
-    height: 100%;
+    min-height: 0;
     overflow: hidden; /* Prevent full page scroll if sidebar transitions */
 }
 
@@ -246,6 +246,7 @@
     background-color: #0b0b10;
     padding: 24px;
     overflow-y: auto;
+    min-height: 0;
     min-width: 0; /* Important for flex child to shrink properly */
 }
 

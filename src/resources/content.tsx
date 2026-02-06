@@ -8,7 +8,7 @@ const person: Person = {
   lastName: "Unguryanov",
   name: "Игорь Унгурьянов",
   role: "Senior Environment Artist",
-  avatar: `${basePath}/images/avatar.jpg`,
+  avatar: `${basePath}/images/uploads/avatar.webp`,
   email: "igrom4ikus@gmail.com",
   location: "Калининград, Россия",
   timeZone: "Europe/Kaliningrad",
