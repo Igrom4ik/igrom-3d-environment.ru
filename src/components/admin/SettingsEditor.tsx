@@ -5,6 +5,7 @@ import { Flex, Button, Heading, Text, Avatar, useToast } from "@once-ui-system/c
 
 import { KeystaticLayout } from "@/components/admin/KeystaticLayout";
 import ui from "./SettingsEditor.module.css";
+import { getImageUrl } from "@/lib/assets";
 
 export const SettingsEditor = () => {
   const [settings, setSettings] = useState<any>(null);
@@ -433,7 +434,7 @@ export const SettingsEditor = () => {
                               {settings.person?.avatar ? (
                                 <img
                                   alt="Avatar"
-                                  src={`${settings.person.avatar}?v=${avatarCacheKey}`}
+                                  src={`${getImageUrl(settings.person.avatar)}?v=${avatarCacheKey}`}
                                   className={ui.avatarImg}
                                 />
                               ) : (

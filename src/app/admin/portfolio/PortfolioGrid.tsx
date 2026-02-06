@@ -38,6 +38,7 @@ interface PortfolioGridProps {
 }
 
 import { useRouter } from 'next/navigation';
+import { getImageUrl } from '@/lib/assets';
 
 export default function PortfolioGrid({ albums: initialAlbums, onAlbumUpdate, onBatchAction, onReorder, activeTab }: PortfolioGridProps) {
     const router = useRouter();
@@ -392,7 +393,7 @@ export default function PortfolioGrid({ albums: initialAlbums, onAlbumUpdate, on
                                         <div className={styles.selectorCircle} style={{ cursor: 'default' }} />
                                     </div>
                                      {album.entry.publishing?.cover ? (
-                                        <img src={album.entry.publishing.cover} alt={album.entry.title} className={styles.cardImage} />
+                                        <img src={getImageUrl(album.entry.publishing.cover)} alt={album.entry.title} className={styles.cardImage} />
                                      ) : (
                                         <div style={{ width: '100%', height: '100%', background: '#282a36', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             <Circle size={40} color="#3a3a45" />
@@ -596,7 +597,7 @@ function ProjectCard({
                     {isOverlay ? (
                         album.entry.publishing?.cover ? (
                             <img 
-                                src={album.entry.publishing.cover} 
+                                src={getImageUrl(album.entry.publishing.cover)} 
                                 alt={album.entry.title} 
                                 className={styles.cardImage} 
                             />
@@ -609,7 +610,7 @@ function ProjectCard({
                         <Link href={`/admin/portfolio/${album.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
                             {album.entry.publishing?.cover ? (
                                 <img 
-                                    src={album.entry.publishing.cover} 
+                                    src={getImageUrl(album.entry.publishing.cover)} 
                                     alt={album.entry.title} 
                                     className={styles.cardImage} 
                                 />

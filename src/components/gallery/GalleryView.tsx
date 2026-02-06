@@ -2,6 +2,7 @@
 
 import { gallery } from "@/resources";
 import { MasonryGrid, Media, Column, Text } from "@once-ui-system/core";
+import { getImageUrl, getMarmosetPackageUrl } from "@/lib/assets";
 
 interface GalleryViewProps {
   images?: any[];
@@ -10,19 +11,7 @@ interface GalleryViewProps {
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 function normalizeMarmosetFilePath(file: string) {
-  if (!file) return "";
-  let normalized = file.replace(/\\/g, "/");
-  const publicIndex = normalized.indexOf("/public/");
-  if (publicIndex !== -1) {
-    normalized = normalized.slice(publicIndex + "/public".length);
-  }
-  if (!normalized.startsWith("/")) {
-    normalized = `/${normalized}`;
-  }
-  if (basePath && !normalized.startsWith(basePath)) {
-    normalized = `${basePath}${normalized}`;
-  }
-  return normalized;
+  return getMarmosetPackageUrl(file);
 }
 
 const getYoutubeEmbedUrl = (inputUrl: string) => {
@@ -63,7 +52,7 @@ export default function GalleryView({ images = gallery.images }: GalleryViewProp
                             sizes="(max-width: 560px) 100vw, 50vw"
                             radius="m"
                             aspectRatio={image.value.orientation === "horizontal" ? "16 / 9" : "3 / 4"}
-                            src={image.value.src}
+                            src={getImageUrl(image.value.src)}
                             alt={image.value.alt || ''}
                             style={{ marginBottom: '16px' }}
                         />
@@ -72,7 +61,7 @@ export default function GalleryView({ images = gallery.images }: GalleryViewProp
                     return (
                         <div key={index} style={{ marginBottom: '16px', borderRadius: 'var(--radius-m)', overflow: 'hidden' }}>
                             <video
-                                src={image.value.src}
+                                src={getImageUrl(image.value.src)}
                                 autoPlay={image.value.autoPlay}
                                 muted={image.value.muted}
                                 loop={image.value.loop}
@@ -126,7 +115,7 @@ export default function GalleryView({ images = gallery.images }: GalleryViewProp
                     return (
                         <div key={index} style={{ marginBottom: '16px', position: 'relative' }}>
                             <Media 
-                                src={image.value.image} 
+                                src={getImageUrl(image.value.image)} 
                                 alt={image.value.caption || '360 Panorama'} 
                                 radius="m" 
                                 style={{ width: '100%' }} 
@@ -154,6 +143,7 @@ export default function GalleryView({ images = gallery.images }: GalleryViewProp
         const isMarmoset = image.src?.endsWith('.mview');
         
         if (isMarmoset) {
+           const mviewPath = normalizeMarmosetFilePath(image.src);
            return (
              <div 
                 key={image.src || index}
@@ -168,7 +158,7 @@ export default function GalleryView({ images = gallery.images }: GalleryViewProp
                 }}
              >
                <iframe
-                 src={`${basePath}/marmoset-viewer/?file=${encodeURIComponent(image.src)}&autoStart=false`}
+                 src={`${basePath}/marmoset-viewer/?file=${encodeURIComponent(mviewPath)}&autoStart=false`}
                  width="100%"
                  height="100%"
                  allowFullScreen
@@ -187,7 +177,7 @@ export default function GalleryView({ images = gallery.images }: GalleryViewProp
           key={image.src || index}
           radius="m"
           aspectRatio={image.orientation === "horizontal" ? "16 / 9" : "3 / 4"}
-          src={image.src}
+          src={getImageUrl(image.src)}
           alt={image.alt}
           style={{ marginBottom: '16px' }}
         />

@@ -30,7 +30,7 @@ export default function LargeFileUploader() {
                 </div>
             </header>
 
-            <div className={styles.mainLayout} style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+            <div className={styles.contentArea} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ 
                     background: '#181920', 
                     border: '1px solid #282a36', 

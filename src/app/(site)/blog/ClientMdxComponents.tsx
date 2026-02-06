@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { getImageUrl } from "@/lib/assets";
 
 // Portal Component
 const Portal = ({ children }: { children: React.ReactNode }) => {
@@ -101,6 +102,7 @@ export function BlogImage({
 }) {
   const [open, setOpen] = React.useState(false);
   const maxWidth = size === "s" ? 260 : size === "l" ? 720 : 480;
+  const normalizedSrc = getImageUrl(src);
 
   return (
     <>
@@ -117,7 +119,7 @@ export function BlogImage({
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={src}
+          src={normalizedSrc}
           alt={alt ?? ""}
           style={{
             width: "100%",
@@ -148,7 +150,7 @@ export function BlogImage({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={src}
+              src={normalizedSrc}
               alt={alt ?? ""}
               style={{
                 maxWidth: "90vw",
@@ -169,6 +171,7 @@ export function ZoomImage(props: any) {
   const [isZoomed, setIsZoomed] = React.useState(false);
   // Filter out potential conflicting props
   const { width, height, style, ...rest } = props;
+  const normalizedSrc = getImageUrl(rest?.src);
 
   return (
     <>
@@ -185,6 +188,7 @@ export function ZoomImage(props: any) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           {...rest}
+          src={normalizedSrc}
           style={{
             maxWidth: "100%", 
             width: "auto", 

@@ -108,7 +108,12 @@ body {
   Glass Surface Implementation 
   Applying the "liquid-glass-card" styles to Once UI surfaces 
 */
-[data-preset="ios-liquid-glass"] [data-surface="translucent"] {
+html[data-preset="ios-liquid-glass"],
+html[data-preset="ios-liquid-glass"] body {
+  overflow-y: auto;
+}
+
+[data-preset="ios-liquid-glass"] :where([data-surface="translucent"]):not(html):not(body) {
   position: relative;
   /* The complex gradient background from the example */
   background: 

@@ -1,7 +1,9 @@
 import React from "react";
 import { CodeBlock, BlogImage, ZoomImage } from "./ClientMdxComponents";
+import { getImageUrl } from "@/lib/assets";
 
 export function HeroImage({ src, alt }: { src: string; alt?: string }) {
+  const normalizedSrc = getImageUrl(src);
   return (
     <figure
       style={{
@@ -15,7 +17,7 @@ export function HeroImage({ src, alt }: { src: string; alt?: string }) {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={src}
+        src={normalizedSrc}
         alt={alt ?? ""}
         style={{ width: "100%", display: "block", objectFit: "cover" }}
       />
@@ -76,6 +78,7 @@ export function Note({
 }
 
 export function VideoPlayer({ src }: { src: string }) {
+  const normalizedSrc = getImageUrl(src);
   return (
     <div
       style={{
@@ -90,7 +93,7 @@ export function VideoPlayer({ src }: { src: string }) {
     >
       <video
         controls
-        src={src}
+        src={normalizedSrc}
         style={{
           position: "absolute",
           top: 0,
@@ -104,6 +107,7 @@ export function VideoPlayer({ src }: { src: string }) {
 }
 
 export function AudioPlayer({ src }: { src: string }) {
+  const normalizedSrc = getImageUrl(src);
   return (
     <div
       style={{
@@ -114,7 +118,7 @@ export function AudioPlayer({ src }: { src: string }) {
         background: "rgba(10,10,20,0.95)",
       }}
     >
-      <audio controls src={src} style={{ width: "100%" }} />
+      <audio controls src={normalizedSrc} style={{ width: "100%" }} />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { MDXRemote, type MDXRemoteProps } from "next-mdx-remote/rsc";
 import type React from "react";
 import type { ReactNode } from "react";
 import { slugify as transliterate } from "transliteration";
+import { getImageUrl } from "@/lib/assets";
 
 import {
   Accordion,
@@ -93,7 +94,7 @@ function createImage({ alt, src, ...props }: MediaProps & { src: string }) {
       border="neutral-alpha-medium"
       sizes="(max-width: 960px) 100vw, 960px"
       alt={alt}
-      src={src}
+      src={getImageUrl(src)}
       {...props}
     />
   );
