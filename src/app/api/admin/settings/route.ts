@@ -310,7 +310,6 @@ async function applyAvatarModeAndSave({
     const oldFsPath = toFsPublicPath(prevAvatar);
     if (fs.existsSync(oldFsPath)) fs.rmSync(oldFsPath, { force: true });
   }
-
   fs.writeFileSync(SETTINGS_FILE_PATH, JSON.stringify(nextSettings, null, 2), "utf-8");
   return { success: true, settings: nextSettings };
 }
