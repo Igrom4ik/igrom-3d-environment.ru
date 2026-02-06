@@ -1,8 +1,12 @@
 import { getAlbums } from '@/utils/reader';
 import PortfolioManager from './PortfolioManager';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PortfolioAdminPage() {
+    console.log('[PortfolioAdminPage] Fetching albums...');
     const rawAlbums = await getAlbums();
+    console.log(`[PortfolioAdminPage] Found ${rawAlbums.length} albums`);
     
     // Sanitize albums for Client Component (remove functions)
     // IMPORTANT: Include priority and hidden fields!

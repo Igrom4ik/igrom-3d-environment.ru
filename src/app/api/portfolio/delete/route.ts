@@ -6,6 +6,8 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import { log } from '../../../../utils/logger';
 
+export const dynamic = 'force-dynamic';
+
 type DeleteMode = 'soft' | 'hard' | 'restore';
 
 const isValidSlug = (s: string) => s && !s.includes('..') && !s.includes('/') && !s.includes('\\');
@@ -111,6 +113,8 @@ export async function DELETE(req: NextRequest) {
 
     if (success) {
       revalidatePath('/portfolio');
+      revalidatePath('/gallery');
+      revalidatePath('/work');
       revalidatePath('/admin/portfolio');
       revalidatePath('/');
     }
@@ -156,6 +160,8 @@ export async function POST(req: NextRequest) {
     
     if (success) {
       revalidatePath('/portfolio');
+      revalidatePath('/gallery');
+      revalidatePath('/work');
       revalidatePath('/admin/portfolio');
       revalidatePath('/');
     }
