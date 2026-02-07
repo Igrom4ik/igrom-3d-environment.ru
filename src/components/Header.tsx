@@ -46,8 +46,8 @@ const LocationDisplay: React.FC = () => {
 
   useEffect(() => {
     // 1. Try IP-based geolocation for accuracy
-    fetch('https://ipapi.co/json/')
-      .then(res => res.json())
+    fetch("/api/geo/ip")
+      .then(res => res.ok ? res.json() : Promise.reject(new Error(`geo:${res.status}`)))
       .then(data => {
          if (data.city) {
              setLocation(data.city); // e.g. "Saint Petersburg"

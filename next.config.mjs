@@ -48,6 +48,12 @@ const nextConfig = {
   experimental: {
     serverActions: {},
   },
+  async rewrites() {
+    return [
+      { source: "/LogoBW.png", destination: "/images/LogoBW.png" },
+      { source: "/LogoColor.png", destination: "/images/LogoColor.png" },
+    ];
+  },
 };
 
 export default withMDX(nextConfig);

@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getSecrets, saveSecrets } from '@/utils/secrets';
 
-// Ensure this route is not statically exported
-// export const dynamic = 'force-dynamic';
-export const dynamic = 'force-static';
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const secrets = getSecrets();

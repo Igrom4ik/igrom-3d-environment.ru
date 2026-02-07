@@ -6,6 +6,8 @@ export const adminHeaderLinks: HeaderLink[] = [
   { href: "/admin/blog", prefixIcon: "book", label: "Blog" },
   { href: "/keystatic/collection/telegramPosts", prefixIcon: "terminal", label: "Telegram" },
   { href: "/admin/upload", prefixIcon: "gallery", label: "Uploads" },
+  { href: "/admin/branding", prefixIcon: "grid", label: "Branding" },
   { href: "/keystatic/singleton/settings", prefixIcon: "person", label: "Settings" },
   { href: "/keystatic/singleton/design", prefixIcon: "grid", label: "Design" },
+  { href: "/admin/secrets", prefixIcon: "document", label: "Secrets" },
 ];

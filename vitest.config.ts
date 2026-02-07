@@ -11,5 +11,19 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json-summary", "html"],
+      include: [
+        "src/utils/workPeriod.ts",
+        "src/components/admin/ui/WorkPeriodPicker.tsx",
+      ],
+      thresholds: {
+        lines: 90,
+        functions: 90,
+        branches: 90,
+        statements: 90,
+      },
+    },
   },
 });
