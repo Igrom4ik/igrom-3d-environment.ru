@@ -9,13 +9,59 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(154, 156, 171, 0.55) transparent;
   
   /* Отступ под ваш header (64px) + top offset (24px) + padding */
   padding-top: 112px;
 }
 
+.adminBody::-webkit-scrollbar {
+  width: 10px;
+}
+
+.adminBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.adminBody::-webkit-scrollbar-thumb {
+  background-color: rgba(154, 156, 171, 0.55);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .adminBody {
+    scrollbar-color: transparent transparent;
+  }
+
+  .adminBody:hover,
+  .adminBody:focus-within {
+    scrollbar-color: rgba(154, 156, 171, 0.55) transparent;
+  }
+
+  .adminBody::-webkit-scrollbar-thumb {
+    background-color: rgba(154, 156, 171, 0);
+    transition: background-color 200ms ease;
+  }
+
+  .adminBody:hover::-webkit-scrollbar-thumb,
+  .adminBody:focus-within::-webkit-scrollbar-thumb {
+    background-color: rgba(154, 156, 171, 0.55);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adminBody::-webkit-scrollbar-thumb {
+    transition: none;
+  }
+}
+
 .adminBodyWithSidebar {
-  padding-left: 280px;
+  padding-left: 240px;
   transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -28,4 +74,33 @@
     padding-top: 80px; /* Уменьшенный header на мобилке */
     padding-left: 0; /* Sidebar скрыт на мобилке */
   }
+}
+
+.embeddedBody {
+  height: auto;
+  min-height: 0;
+  padding-top: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+@media (max-width: 1024px) {
+  .embeddedBody {
+    padding-top: 0;
+  }
+}
+
+.embeddedActionsBar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  margin: 0 24px 16px;
+  border: 1px solid rgba(46, 49, 56, 0.9);
+  border-radius: 12px;
+  background: rgba(16, 17, 24, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }

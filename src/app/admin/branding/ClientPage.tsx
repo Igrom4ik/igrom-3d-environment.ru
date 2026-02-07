@@ -131,7 +131,11 @@ export default function ClientPage() {
         </div>
       </header>
 
-      <div className={styles.contentArea}>
+      <div
+        className={styles.contentArea}
+        role="region"
+        aria-label="Содержимое страницы Branding"
+      >
         <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 900 }}>
           <AssetCard
             title="Логотип (Dark)"
@@ -178,4 +182,3 @@ export default function ClientPage() {
     </div>
   );
 }
-

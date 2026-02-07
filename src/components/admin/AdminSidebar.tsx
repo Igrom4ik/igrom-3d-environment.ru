@@ -48,7 +48,6 @@ export default function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProp
 
     const otherSections = [
         { href: '/admin/blog', icon: FileText, label: 'Blog Manager' },
-        { href: '/admin/upload', icon: Image, label: 'Uploads' },
     ];
 
     return (

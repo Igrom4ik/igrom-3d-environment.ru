@@ -28,7 +28,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           className={styles.adminBody}
           background="page"
         >
-          <Header preset={settings?.preset} links={adminHeaderLinks} />
+          <Header preset={settings?.preset} links={adminHeaderLinks} menuMaxVisibleItems={5} />
           {children}
         </Column>
       </Providers>

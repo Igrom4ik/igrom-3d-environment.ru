@@ -4,7 +4,7 @@
   left: 0;
   top: 0;
   height: 100vh;
-  width: 280px;
+  width: 240px;
   background: linear-gradient(180deg, #101118 0%, #0f111a 55%, #111216 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -129,6 +129,8 @@
   padding: 0 12px 8px;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
+  cursor: pointer;
+  user-select: none;
 }
 
 .sidebarNav {

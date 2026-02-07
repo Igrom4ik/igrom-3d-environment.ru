@@ -1,0 +1,24 @@
+[NextConfig] NODE_ENV: production
+[NextConfig] IS_GITHUB_PAGES: undefined
+[NextConfig] isGitHubPages: false
+тЦ▓ Next.js 16.1.6 (webpack)
+- Environments: .env
+- Experiments (use with caution):
+  ┬╖ serverActions
+
+  Creating an optimized production build ...
+тЬУ Compiled successfully in 100s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/admin/AboutEditor.tsx:207:32
+Type error: Parameter 'val' implicitly has an 'any' type.
+
+  205 |                     title="╨Ю╨┐╤Л╤В ╤А╨░╨▒╨╛╤В╤Л"
+  206 |                     data={data.work}
+> 207 |                     onChange={(val) => updateField("work", val)}
+      |                                ^
+  208 |                     renderItem={(item, index, onChange) => (
+  209 |                         <ExperienceItem item={item} onChange={onChange} />
+  210 |                     )}
+Next.js build worker exited with code: 1 and signal: null

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LayoutGrid, FileText, Send, Upload, Rocket } from 'lucide-react';
+import { LayoutGrid, FileText, Send, User } from 'lucide-react';
 import styles from './portfolio/portfolio.module.css'; // Reuse styles
 
 export const dynamic = 'force-dynamic';
@@ -7,10 +7,23 @@ export const dynamic = 'force-dynamic';
 export default function AdminDashboard() {
     return (
         <div className={styles.pageContainer}>
-            <div className={styles.contentArea} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+            <main
+                className={styles.contentArea}
+                role="region"
+                aria-label="Содержимое панели администратора"
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}
+            >
                 <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '40px', color: '#fff' }}>Welcome to Admin Panel</h1>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', maxWidth: '800px', width: '100%' }}>
+                    <Link href="/admin/about" className={styles.projectCard} style={{ padding: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textDecoration: 'none', color: '#f4f4f6' }}>
+                        <div style={{ padding: '16px', background: 'rgba(230, 126, 34, 0.1)', borderRadius: '50%', color: '#e67e22' }}>
+                            <User size={32} />
+                        </div>
+                        <span style={{ fontSize: '18px', fontWeight: 600 }}>About Me</span>
+                        <span style={{ fontSize: '14px', color: '#9a9cab', textAlign: 'center' }}>Manage personal info, bio, and resume sections.</span>
+                    </Link>
+
                     <Link href="/admin/portfolio" className={styles.projectCard} style={{ padding: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textDecoration: 'none', color: '#f4f4f6' }}>
                         <div style={{ padding: '16px', background: 'rgba(30, 144, 255, 0.1)', borderRadius: '50%', color: '#1e90ff' }}>
                             <LayoutGrid size={32} />
@@ -34,24 +47,8 @@ export default function AdminDashboard() {
                         <span style={{ fontSize: '18px', fontWeight: 600 }}>Telegram</span>
                         <span style={{ fontSize: '14px', color: '#9a9cab', textAlign: 'center' }}>Broadcast messages to your Telegram channel.</span>
                     </Link>
-
-                    <Link href="/admin/upload" className={styles.projectCard} style={{ padding: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textDecoration: 'none', color: '#f4f4f6' }}>
-                        <div style={{ padding: '16px', background: 'rgba(155, 89, 182, 0.1)', borderRadius: '50%', color: '#9b59b6' }}>
-                            <Upload size={32} />
-                        </div>
-                        <span style={{ fontSize: '18px', fontWeight: 600 }}>Uploads</span>
-                        <span style={{ fontSize: '14px', color: '#9a9cab', textAlign: 'center' }}>Upload large files and manage assets.</span>
-                    </Link>
-
-                    <Link href="/admin/deploy" className={styles.projectCard} style={{ padding: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textDecoration: 'none', color: '#f4f4f6' }}>
-                        <div style={{ padding: '16px', background: 'rgba(240, 80, 51, 0.1)', borderRadius: '50%', color: '#f05033' }}>
-                            <Rocket size={32} />
-                        </div>
-                        <span style={{ fontSize: '18px', fontWeight: 600 }}>Deploy</span>
-                        <span style={{ fontSize: '14px', color: '#9a9cab', textAlign: 'center' }}>Manage Git version control and Vercel deployments.</span>
-                    </Link>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

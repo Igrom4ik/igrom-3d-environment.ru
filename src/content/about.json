@@ -9,7 +9,8 @@
     "display": true
   },
   "calendar": {
-    "display": false
+    "display": false,
+    "link": ""
   },
   "work": {
     "display": true,

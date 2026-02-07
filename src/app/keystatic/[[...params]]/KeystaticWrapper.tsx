@@ -34,6 +34,9 @@ export default function KeystaticWrapper() {
     if (pathname?.includes('/collection/posts') && !pathname?.includes('/item/') && !pathname?.includes('/create')) {
         router.replace('/admin/blog');
     }
+    if (pathname?.includes('/singleton/about')) {
+        router.replace('/admin/about');
+    }
   }, [pathname, router]);
 
   useEffect(() => {

@@ -18,6 +18,9 @@
 /* Header */
 .utilityPageHeader {
     height: 56px;
+    min-height: 56px;
+    max-height: 56px;
+    flex: 0 0 56px;
     background-color: #0b0b10;
     border-bottom: 1px solid #282a36;
     padding: 0 24px;
@@ -248,6 +251,61 @@
     overflow-y: auto;
     min-height: 0;
     min-width: 0; /* Important for flex child to shrink properly */
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(154, 156, 171, 0.55) transparent;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+.contentArea:focus-within {
+    outline: 2px solid rgba(30, 144, 255, 0.7);
+    outline-offset: 2px;
+}
+
+.contentArea::-webkit-scrollbar {
+    width: 10px;
+}
+
+.contentArea::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.contentArea::-webkit-scrollbar-thumb {
+    background-color: rgba(154, 156, 171, 0.55);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .contentArea {
+        scrollbar-color: transparent transparent;
+    }
+
+    .contentArea:hover,
+    .contentArea:focus-within,
+    .contentArea:focus-visible {
+        scrollbar-color: rgba(154, 156, 171, 0.55) transparent;
+    }
+
+    .contentArea::-webkit-scrollbar-thumb {
+        background-color: rgba(154, 156, 171, 0);
+        transition: background-color 200ms ease;
+    }
+
+    .contentArea:hover::-webkit-scrollbar-thumb,
+    .contentArea:focus-within::-webkit-scrollbar-thumb,
+    .contentArea:focus-visible::-webkit-scrollbar-thumb {
+        background-color: rgba(154, 156, 171, 0.55);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contentArea::-webkit-scrollbar-thumb {
+        transition: none;
+    }
 }
 
 .portfolioHeader {

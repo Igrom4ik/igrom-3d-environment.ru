@@ -8,7 +8,6 @@ import {
   FileText,
   Send,
   Home,
-  User,
   Briefcase,
   Image as ImageIcon,
   Palette,
@@ -18,6 +17,7 @@ import {
   PanelLeftOpen
 } from "lucide-react";
 import styles from "./KeystaticSidebar.module.css";
+import { useState } from "react";
 
 // Helper for navigation items
 const NavItem = ({ href, icon: Icon, label }: { href: string; icon: any; label: string }) => {
@@ -42,6 +42,11 @@ interface KeystaticSidebarProps {
 }
 
 export const KeystaticSidebar = ({ isOpen, onToggle }: KeystaticSidebarProps) => {
+  const [collapsed, setCollapsed] = useState<{ collections: boolean; singletons: boolean; system: boolean }>({
+    collections: false,
+    singletons: false,
+    system: false,
+  });
   return (
     <>
       {isOpen && (
@@ -81,30 +86,41 @@ export const KeystaticSidebar = ({ isOpen, onToggle }: KeystaticSidebarProps) =>
 
         <div className={styles.sidebarContent}>
           <div className={styles.sidebarSection}>
-            <div className={styles.sidebarSectionTitle}>Collections</div>
-            <nav className={styles.sidebarNav}>
-              <NavItem href="/keystatic/collection/posts" icon={FileText} label="Posts" />
-              <NavItem href="/keystatic/collection/albums" icon={LayoutGrid} label="Portfolio" />
-              <NavItem href="/keystatic/collection/telegramPosts" icon={Send} label="Telegram Posts" />
-            </nav>
+            <div className={styles.sidebarSectionTitle} onClick={() => setCollapsed((c) => ({ ...c, collections: !c.collections }))}>
+              Collections
+            </div>
+            {!collapsed.collections && (
+              <nav className={styles.sidebarNav}>
+                <NavItem href="/keystatic/collection/posts" icon={FileText} label="Posts" />
+                <NavItem href="/keystatic/collection/albums" icon={LayoutGrid} label="Portfolio" />
+                <NavItem href="/keystatic/collection/telegramPosts" icon={Send} label="Telegram Posts" />
+              </nav>
+            )}
           </div>
 
           <div className={styles.sidebarSection}>
-            <div className={styles.sidebarSectionTitle}>Singletons</div>
-            <nav className={styles.sidebarNav}>
-              <NavItem href="/keystatic/singleton/home" icon={Home} label="Home" />
-              <NavItem href="/keystatic/singleton/about" icon={User} label="About" />
-              <NavItem href="/keystatic/singleton/work" icon={Briefcase} label="Work" />
-              <NavItem href="/keystatic/singleton/gallery" icon={ImageIcon} label="Gallery" />
-            </nav>
+            <div className={styles.sidebarSectionTitle} onClick={() => setCollapsed((c) => ({ ...c, singletons: !c.singletons }))}>
+              Singletons
+            </div>
+            {!collapsed.singletons && (
+              <nav className={styles.sidebarNav}>
+                <NavItem href="/keystatic/singleton/home" icon={Home} label="Home" />
+                <NavItem href="/keystatic/singleton/work" icon={Briefcase} label="Work" />
+                <NavItem href="/keystatic/singleton/gallery" icon={ImageIcon} label="Gallery" />
+              </nav>
+            )}
           </div>
 
           <div className={styles.sidebarSection}>
-            <div className={styles.sidebarSectionTitle}>System</div>
-            <nav className={styles.sidebarNav}>
-              <NavItem href="/keystatic/singleton/design" icon={Palette} label="Design / Theme" />
-              <NavItem href="/keystatic/singleton/settings" icon={Settings} label="Settings" />
-            </nav>
+            <div className={styles.sidebarSectionTitle} onClick={() => setCollapsed((c) => ({ ...c, system: !c.system }))}>
+              System
+            </div>
+            {!collapsed.system && (
+              <nav className={styles.sidebarNav}>
+                <NavItem href="/keystatic/singleton/design" icon={Palette} label="Design / Theme" />
+                <NavItem href="/keystatic/singleton/settings" icon={Settings} label="Settings" />
+              </nav>
+            )}
           </div>
         </div>
       </aside>

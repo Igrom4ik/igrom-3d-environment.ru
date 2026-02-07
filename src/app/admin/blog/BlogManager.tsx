@@ -203,7 +203,11 @@ export default function BlogManager({ initialPosts, initialTrashPosts = [] }: Bl
                 </div>
 
                 {/* Main Content */}
-                <div className={styles.contentArea}>
+                <div
+                    className={styles.contentArea}
+                    role="region"
+                    aria-label={activeTab === 'active' ? 'Содержимое: Статьи блога' : 'Содержимое: Корзина'}
+                >
                 <div className={styles.portfolioHeader}>
                     <div>
                         <h1 className={styles.pageTitle}>

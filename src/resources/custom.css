@@ -52,6 +52,17 @@ body {
   display: none !important;
 }
 
+/*
+  Box sizing reset:
+  border-box предотвращает «выпирание» элементов из-за padding/border и помогает
+  избежать горизонтальной прокрутки, когда компоненты тянутся на 100% ширины.
+*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* 
   APPLE IOS LIQUID GLASS PRESET 
   Refined based on user's reference: 
@@ -84,8 +95,12 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  /*
+    Важно: 100vw в некоторых браузерах включает ширину скроллбара и может создавать
+    горизонтальную прокрутку. 100% для fixed-элемента надёжнее и не «переливает» viewport.
+  */
+  width: 100%;
+  height: 100%;
   z-index: -2;
   /* Deep dark liquid background as base - Updated to Pitch Black/Subtle Gradient */
   background: 
@@ -177,47 +192,42 @@ html[data-preset="ios-liquid-glass"] body {
   LIQUID NAVBAR IMPLEMENTATION
   Specific style for the navigation bar in Liquid Glass mode
 */
+/* Liquid navbar implementation */
 .navbar-liquid { 
   position: relative; 
   display: inline-flex; 
   align-items: center; 
   gap: 12px; 
-  padding: 10px 18px; 
+  padding: 8px 16px; 
+  /*
+    Ограничение ширины навбара:
+    помогает гарантировать, что меню не создаст overflow по горизонтали на узких экранах.
+  */
+  max-width: 1000px; /* Constrain width to ensure it's "small" and scrollable */
+  min-width: 0;
   border-radius: 999px; /* сильный pill‑радиус */ 
-  background: 
-    radial-gradient(circle at 0 0, rgba(255,255,255,0.14), transparent 55%), 
-    radial-gradient(circle at 100% 100%, rgba(148,163,184,0.18), transparent 55%), 
-    rgba(15, 23, 42, 0.72);               /* полупрозрачный тёмный слой */ 
-  border: 1px solid rgba(148, 163, 184, 0.45); 
-  box-shadow: 
-    0 18px 45px rgba(0, 0, 0, 0.7),       /* внешняя тень */ 
-    0 0 0 1px rgba(15, 23, 42, 0.8);      /* лёгкий обвод по контуру */ 
-  backdrop-filter: blur(22px); 
-  -webkit-backdrop-filter: blur(22px); 
+  background: rgba(15, 23, 42, 0.95); /* More solid background */
+  border: 1px solid rgba(148, 163, 184, 0.2); 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px); 
   color: #f9fafb; 
 } 
 
-/* жидкий блик по краю бара */ 
+/* Removed the overlay effect as requested */
+/*
 .navbar-liquid::before { 
   content: ""; 
-  position: absolute; 
-  inset: -40%; 
-  background: 
-    radial-gradient(circle at 0 0, rgba(255,255,255,0.40), transparent 60%), 
-    radial-gradient(circle at 100% 0, rgba(129,140,248,0.35), transparent 55%); 
-  mix-blend-mode: screen; 
-  opacity: 0.6; 
-  transform: translate3d(-10%, -15%, 0); 
-  animation: navbar-liquid-sway 18s ease-in-out infinite alternate; 
-  pointer-events: none; 
+  ...
 } 
+*/ 
 
 /* 
   BUTTON HOVER EFFECTS
   Apply liquid glass effect to anchor tags and buttons inside the navbar on hover
+  Targeting specifically menu items to avoid affecting scroll buttons
 */
-.navbar-liquid a,
-.navbar-liquid button {
+.navbar-liquid [data-header-menuitem="true"] {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 12px; /* Smooth rounded corners for buttons */
   position: relative;
@@ -228,8 +238,7 @@ html[data-preset="ios-liquid-glass"] body {
   border: none; /* Ensure no default border on buttons */
 }
 
-.navbar-liquid a:hover,
-.navbar-liquid button:hover {
+.navbar-liquid [data-header-menuitem="true"]:hover {
   background: rgba(255, 255, 255, 0.1);
   box-shadow: 
     0 4px 15px rgba(0, 0, 0, 0.1),
@@ -240,8 +249,7 @@ html[data-preset="ios-liquid-glass"] body {
 }
 
 /* Inner liquid shine for buttons */
-.navbar-liquid a::after,
-.navbar-liquid button::after {
+.navbar-liquid [data-header-menuitem="true"]::after {
   content: '';
   position: absolute;
   top: 0;
@@ -259,8 +267,7 @@ html[data-preset="ios-liquid-glass"] body {
   pointer-events: none;
 }
 
-.navbar-liquid a:hover::after,
-.navbar-liquid button:hover::after {
+.navbar-liquid [data-header-menuitem="true"]:hover::after {
   left: 150%;
   transition: left 0.7s ease-in-out;
 }

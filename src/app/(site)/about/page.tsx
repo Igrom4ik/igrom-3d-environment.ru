@@ -45,28 +45,31 @@ export default async function About() {
   
   if (!about) return null;
 
+  const blocks = about.blocks ?? [];
+  const avatar = about.avatar ?? { display: true };
+  const calendar = about.calendar ?? { display: true, link: "" };
+  const work = about.work ?? { display: true, title: "Опыт работы", experiences: [] };
+  const studies = about.studies ?? { display: true, title: "Образование", institutions: [] };
+  const technical = about.technical ?? { display: true, title: "Навыки", skills: [] };
+
+  // Filter out 'about' blocks to prevent duplication with manual sections
+  const filteredBlocks = blocks.filter((block) => block.discriminant !== 'about');
+  
   const structure = [
-    ...(about.blocks || [])
-      .filter((block) => block.discriminant === 'about')
-      .map((block) => ({
-        title: (block.value as ComponentProps<typeof AboutBlock>['data']).title || 'Обо мне',
-        display: true,
-        items: [],
-      })),
     {
-      title: about.work.title,
-      display: about.work.display,
-      items: about.work.experiences.map((experience) => experience.company),
+      title: work.title,
+      display: work.display,
+      items: (work.experiences ?? []).map((experience) => experience.company),
     },
     {
-      title: about.studies.title,
-      display: about.studies.display,
-      items: about.studies.institutions.map((institution) => institution.name),
+      title: studies.title,
+      display: studies.display,
+      items: (studies.institutions ?? []).map((institution) => institution.name),
     },
     {
-      title: about.technical.title,
-      display: about.technical.display,
-      items: about.technical.skills.map((skill) => skill.title),
+      title: technical.title,
+      display: technical.display,
+      items: (technical.skills ?? []).map((skill) => skill.title),
     },
   ];
   return (
@@ -86,7 +89,7 @@ export default async function About() {
       />
 
       <Row fillWidth s={{ direction: "column" }} horizontal="center">
-        {about.avatar.display && (
+        {avatar.display && (
           <Column
             className={styles.avatar}
             top="64"
@@ -125,7 +128,7 @@ export default async function About() {
             vertical="center"
             marginBottom="32"
           >
-            {about.calendar.display && (
+            {calendar.display && (
               <Row
                 fitWidth
                 border="brand-alpha-medium"
@@ -143,7 +146,7 @@ export default async function About() {
                 <Icon paddingLeft="12" name="calendar" onBackground="brand-weak" />
                 <Row paddingX="8">Schedule a call</Row>
                 <IconButton
-                  href={about.calendar.link}
+                  href={calendar.link}
                   data-border="rounded"
                   variant="secondary"
                   icon="chevronRight"
@@ -204,13 +207,13 @@ export default async function About() {
             )}
           </Column>
 
-          {about.work.display && (
+          {work.display && (
             <>
-              <Heading as="h2" id={about.work.title} variant="display-strong-s" marginBottom="m">
-                {about.work.title}
+              <Heading as="h2" id={work.title} variant="display-strong-s" marginBottom="m">
+                {work.title}
               </Heading>
               <Column fillWidth gap="l" marginBottom="40">
-                {about.work.experiences.map((experience, index) => (
+                {(work.experiences ?? []).map((experience, index) => (
                   <Column key={`${experience.company}-${experience.role}-${index}`} fillWidth>
                     <Row fillWidth horizontal="between" vertical="end" marginBottom="4">
                       <Text id={experience.company} variant="heading-strong-l">
@@ -263,13 +266,13 @@ export default async function About() {
             </>
           )}
 
-          {about.studies.display && (
+          {studies.display && (
             <>
-              <Heading as="h2" id={about.studies.title} variant="display-strong-s" marginBottom="m">
-                {about.studies.title}
+              <Heading as="h2" id={studies.title} variant="display-strong-s" marginBottom="m">
+                {studies.title}
               </Heading>
               <Column fillWidth gap="l" marginBottom="40">
-                {about.studies.institutions.map((institution, index) => (
+                {(studies.institutions ?? []).map((institution, index) => (
                   <Column key={`${institution.name}-${index}`} fillWidth gap="4">
                     <Text id={institution.name} variant="heading-strong-l">
                       {institution.name}
@@ -283,18 +286,18 @@ export default async function About() {
             </>
           )}
 
-          {about.technical.display && (
+          {technical.display && (
             <>
               <Heading
                 as="h2"
-                id={about.technical.title}
+                id={technical.title}
                 variant="display-strong-s"
                 marginBottom="40"
               >
-                {about.technical.title}
+                {technical.title}
               </Heading>
               <Column fillWidth gap="l">
-                {about.technical.skills.map((skill) => (
+                {(technical.skills ?? []).map((skill) => (
                   <Column key={skill.title} fillWidth gap="4">
                     <Text id={skill.title} variant="heading-strong-l">
                       {skill.title}
@@ -338,7 +341,7 @@ export default async function About() {
             </>
           )}
 
-          {about.blocks && <PageBuilder blocks={about.blocks} />}
+          {filteredBlocks.length > 0 && <PageBuilder blocks={filteredBlocks} />}
         </Column>
       </Row>
     </Column>

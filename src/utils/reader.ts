@@ -84,9 +84,6 @@ async function _getAlbums() {
   }
 
   // Always run fallback to catch flat files that Keystatic might miss in mixed mode
-  // if (albums.length > 0) {
-  //    return albums;
-  // }
   
   try {
     // Fallback: Read from filesystem
@@ -94,7 +91,7 @@ async function _getAlbums() {
     log("Fallback: Checking directory:", albumsDir);
     if (!fs.existsSync(albumsDir)) {
         log("ERROR: Directory does not exist:", albumsDir);
-        return [];
+        return albums; // Return Keystatic albums if FS fails
     }
     
     const entries = fs.readdirSync(albumsDir);
@@ -122,7 +119,7 @@ async function _getAlbums() {
 
         try {
             const { data } = matter(fileContent);
-            log(`Successfully parsed fallback for: ${slug}`);
+            // log(`Successfully parsed fallback for: ${slug}`);
             return {
                 slug,
                 entry: {
@@ -141,19 +138,25 @@ async function _getAlbums() {
         }
     }).filter(a => a !== null);
 
-    // Sort fallback albums by priority
-    fallbackAlbums.sort((a, b) => {
+    // Merge: Prefer Keystatic albums, add fallback albums only if they don't exist in Keystatic results
+    const keystaticSlugs = new Set(albums.map(a => a.slug));
+    const newFallbackAlbums = fallbackAlbums.filter((a: any) => !keystaticSlugs.has(a.slug));
+    
+    const combinedAlbums = [...albums, ...newFallbackAlbums];
+
+    // Sort combined albums by priority
+    combinedAlbums.sort((a, b) => {
         const priorityA = (a as any).entry.priority || 0;
         const priorityB = (b as any).entry.priority || 0;
         return priorityA - priorityB;
     });
 
-    log("Total fallback albums found:", fallbackAlbums.length);
-    return fallbackAlbums as any;
+    log("Total merged albums:", combinedAlbums.length);
+    return combinedAlbums as any;
   } catch (error: any) {
     log("ERROR in getAlbums:", error.message || String(error));
     if (error.stack) log("Stack:", error.stack);
-    return [];
+    return albums; // Return Keystatic albums if fallback fails
   }
 }
 

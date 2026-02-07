@@ -126,7 +126,7 @@ export default config({
                         schema: fields.object({
                             manualPath: fields.text({
                                 label: 'Путь к файлу (.mview)',
-                                description: 'ВАЖНО: Загрузите файл через "Upload" в меню слева (или /admin/upload), затем вставьте путь сюда (например: /marmoset/model.mview).',
+                                description: 'ВАЖНО: Загрузите файл через систему загрузки файлов, затем вставьте путь сюда (например: /marmoset/model.mview).',
                                 validation: { length: { min: 1 } },
                             }),
                             alt: fields.text({ label: 'Альтернативный текст' }),
@@ -398,7 +398,7 @@ export default config({
                         schema: fields.object({
                             manualPath: fields.text({
                                 label: 'Путь к файлу (.mview)',
-                                description: 'ВАЖНО: Загрузите файл через "Upload" в меню слева (или /admin/upload), затем вставьте путь сюда.',
+                                description: 'ВАЖНО: Загрузите файл через систему загрузки файлов, затем вставьте путь сюда.',
                                 validation: { length: { min: 1 } },
                             }),
                             width: fields.text({ label: 'Ширина (px или %)', defaultValue: '100%' }),
@@ -737,7 +737,7 @@ export default config({
             }, { label: 'Аватар' }),
             calendar: fields.object({
                 display: fields.checkbox({ label: 'Показывать кнопку календаря', defaultValue: true }),
-                link: fields.text({ label: 'Ссылка на календарь' }),
+                link: fields.text({ label: 'Ссылка на календарь', defaultValue: '' }),
             }, { label: 'Календарь' }),
             /* intro: fields.object({
                 display: fields.checkbox({ label: 'Показывать введение', defaultValue: true }),

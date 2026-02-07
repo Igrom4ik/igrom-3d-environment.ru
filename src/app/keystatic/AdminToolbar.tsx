@@ -130,13 +130,9 @@ export function AdminToolbar() {
                     
                     if (targetItem) {
                         (targetItem as HTMLElement).click();
-                    } else {
-                        console.error('Keystatic Toolbar: Menu item not found for', block.label);
                     }
                 }
             }, 100); // Short delay for React to render Portal
-          } else {
-              console.error('Keystatic Toolbar: Add button not found');
           }
         };
         
@@ -244,7 +240,7 @@ export function AdminToolbar() {
                         openBtn.style.borderColor = '#404040';
                     }, 2000);
                 })
-                .catch(err => console.error('Failed to open folder', err));
+                .catch(() => {});
         };
 
         // 2. Create "Test Viewer" button

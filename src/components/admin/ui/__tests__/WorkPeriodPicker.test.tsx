@@ -19,11 +19,13 @@ describe("WorkPeriodPicker", () => {
     render(<WorkPeriodPicker aria-label="period" onChange={handleChange} />);
 
     const buttons = screen.getAllByRole("gridcell");
-    const firstDay = buttons.find((b) => b.textContent === "5" && b.getAttribute("aria-disabled") !== "true")!;
-    const secondDay = buttons.find((b) => b.textContent === "10" && b.getAttribute("aria-disabled") !== "true")!;
+    const firstDay = buttons.find((b) => b.textContent === "5" && b.getAttribute("aria-disabled") !== "true");
+    const secondDay = buttons.find((b) => b.textContent === "10" && b.getAttribute("aria-disabled") !== "true");
+    expect(firstDay).toBeTruthy();
+    expect(secondDay).toBeTruthy();
 
-    await user.click(firstDay);
-    await user.click(secondDay);
+    await user.click(firstDay as HTMLButtonElement);
+    await user.click(secondDay as HTMLButtonElement);
 
     const startText = screen.getByText("Начало").parentElement?.querySelector("div:last-child")?.textContent;
     const endText = screen.getByText("Конец").parentElement?.querySelector("div:last-child")?.textContent;
@@ -76,12 +78,14 @@ describe("WorkPeriodPicker", () => {
     render(<WorkPeriodPicker aria-label="period" />);
 
     const buttons = screen.getAllByRole("gridcell");
-    const ten = buttons.find((b) => b.textContent === "10")!;
-    const five = buttons.find((b) => b.textContent === "5")!;
+    const ten = buttons.find((b) => b.textContent === "10");
+    const five = buttons.find((b) => b.textContent === "5");
+    expect(ten).toBeTruthy();
+    expect(five).toBeTruthy();
 
-    await user.click(ten);
-    expect(five).toHaveAttribute("aria-disabled", "true");
-    await user.click(five);
+    await user.click(ten as HTMLButtonElement);
+    expect(five as HTMLElement).toHaveAttribute("aria-disabled", "true");
+    await user.click(five as HTMLButtonElement);
 
     const endText = screen.getByText("Конец").parentElement?.querySelector("div:last-child")?.textContent;
     expect(endText).toBe("—");

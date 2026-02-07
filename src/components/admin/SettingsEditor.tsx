@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Flex, Button, Heading, Text, Avatar, useToast } from "@once-ui-system/core";
 
 import { KeystaticLayout } from "@/components/admin/KeystaticLayout";
@@ -8,10 +9,21 @@ import ui from "./SettingsEditor.module.css";
 import { getImageUrl } from "@/lib/assets";
 import { DEFAULT_AVATAR, resolveAvatar } from "@/utils/avatar";
 
+type SettingsPerson = Record<string, unknown> & {
+  name?: string;
+  role?: string;
+  location?: string;
+  timeZone?: string;
+  avatar?: string | null;
+};
+
+type SettingsData = Record<string, unknown> & {
+  person?: SettingsPerson;
+};
+
 export const SettingsEditor = () => {
-  const [settings, setSettings] = useState<any>(null);
+  const [settings, setSettings] = useState<SettingsData | null>(null);
   const [meta, setMeta] = useState<{ avatarAbsolutePath?: string | null } | null>(null);
-  const [about, setAbout] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { addToast } = useToast();
@@ -31,12 +43,12 @@ export const SettingsEditor = () => {
   const dragStartRef = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null);
 
   useEffect(() => {
-    Promise.all([fetch("/api/admin/settings").then((r) => r.json()), fetch("/api/admin/about").then((r) => r.json())])
-      .then(([settingsData, aboutData]) => {
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((settingsData) => {
         const { __meta, ...rest } = settingsData ?? {};
         setMeta(__meta ?? null);
         setSettings(rest);
-        setAbout(aboutData ?? {});
         setLoading(false);
       })
       .catch(() => {
@@ -45,11 +57,7 @@ export const SettingsEditor = () => {
       });
   }, [addToast]);
 
-  const safeSettingsPayload = useMemo(() => {
-    if (!settings) return null;
-    const { __meta, ...rest } = settings;
-    return rest;
-  }, [settings]);
+  const safeSettingsPayload = useMemo(() => settings, [settings]);
 
   const refreshSettings = async () => {
     const res = await fetch("/api/admin/settings", { cache: "no-store" });
@@ -61,19 +69,20 @@ export const SettingsEditor = () => {
   };
 
   useEffect(() => {
-    const avatar = resolveAvatar(settings?.person?.avatar);
+    const rawAvatar = settings?.person?.avatar;
+    const avatar = resolveAvatar(typeof rawAvatar === "string" ? rawAvatar : null);
     if (!avatar || typeof avatar !== "string" || avatar.startsWith("http://") || avatar.startsWith("https://")) return;
 
     const es = new EventSource(`/api/admin/fs/watch?publicPath=${encodeURIComponent(avatar)}`);
     const onChange = () => setAvatarCacheKey(Date.now());
-    const onError = () => {
+    const onError = (_event: Event) => {
       try {
         es.close();
       } catch {}
     };
 
     es.addEventListener("change", onChange);
-    es.addEventListener("error", onError as any);
+    es.addEventListener("error", onError);
 
     return () => {
       try {
@@ -83,7 +92,7 @@ export const SettingsEditor = () => {
   }, [settings?.person?.avatar]);
 
   const handleSave = async () => {
-    if (!safeSettingsPayload || !about) return;
+    if (!safeSettingsPayload) return;
     setSaving(true);
     try {
       const resSettings = await fetch("/api/admin/settings", {
@@ -92,13 +101,6 @@ export const SettingsEditor = () => {
         body: JSON.stringify(safeSettingsPayload),
       });
       if (!resSettings.ok) throw new Error("SETTINGS");
-
-      const resAbout = await fetch("/api/admin/about", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(about),
-      });
-      if (!resAbout.ok) throw new Error("ABOUT");
 
       addToast({ variant: "success", message: "Данные сохранены" });
       await refreshSettings();
@@ -109,14 +111,17 @@ export const SettingsEditor = () => {
     }
   };
 
-  const updatePerson = (key: string, value: any) => {
-    setSettings((prev: any) => ({
-      ...prev,
-      person: {
-        ...prev.person,
-        [key]: value,
-      },
-    }));
+  const updatePerson = (key: string, value: unknown) => {
+    setSettings((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        person: {
+          ...(prev.person ?? {}),
+          [key]: value,
+        },
+      };
+    });
   };
 
   const revokePendingUrl = () => {
@@ -179,11 +184,14 @@ export const SettingsEditor = () => {
         variant: "success",
         message: "Изображение загружено. Настройте кадрирование 1:1 и нажмите «Загрузить».",
       });
-    } catch (e: any) {
+    } catch (e) {
       setPendingFile(null);
       setPendingUrl(null);
       setPendingDims(null);
-      addToast({ variant: "danger", message: e?.message ?? "Ошибка валидации файла" });
+      addToast({
+        variant: "danger",
+        message: e instanceof Error ? e.message : "Ошибка валидации файла",
+      });
     }
   };
 
@@ -315,8 +323,8 @@ export const SettingsEditor = () => {
       revokePendingUrl();
       setPendingUrl(null);
       setPendingDims(null);
-    } catch (e: any) {
-      addToast({ variant: "danger", message: e?.message ?? "Не удалось загрузить аватар" });
+    } catch (e) {
+      addToast({ variant: "danger", message: e instanceof Error ? e.message : "Не удалось загрузить аватар" });
     } finally {
       setUploadingAvatar(false);
       setUploadProgress(0);
@@ -328,23 +336,20 @@ export const SettingsEditor = () => {
 
   return (
     <KeystaticLayout>
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "var(--bg-app)" }}>
+    <div className={ui.page}>
       {/* Header */}
-      <header style={{ 
-          padding: "16px 24px", 
-          borderBottom: "1px solid var(--border-subtle)", 
-          display: "flex", 
-          justifyContent: "space-between", 
-          alignItems: "center",
-          background: "var(--bg-panel)"
-      }}>
+      <header className={ui.pageHeader}>
         <Heading as="h1" variant="display-default-s">Настройки</Heading>
         <div style={{ display: 'flex', gap: '10px' }}>
             <Button variant="primary" onClick={handleSave} loading={saving}>Сохранить</Button>
         </div>
       </header>
 
-      <div style={{ flex: 1, padding: "40px", overflowY: "auto", display: "flex", justifyContent: "center" }}>
+      <div
+        className={ui.pageContent}
+        role="region"
+        aria-label="Содержимое страницы настроек"
+      >
         <div style={{ width: "100%", maxWidth: "800px" }}>
             
             <section style={{ 
@@ -358,8 +363,9 @@ export const SettingsEditor = () => {
                 <Flex direction="column" gap="l">
                     <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
                         <div style={{ flex: 1 }}>
-                             <label style={{ display: 'block', marginBottom: 8, fontSize: '14px', fontWeight: 500, color: "var(--text-primary)" }}>Имя</label>
+                             <label htmlFor="settings-person-name" style={{ display: 'block', marginBottom: 8, fontSize: '14px', fontWeight: 500, color: "var(--text-primary)" }}>Имя</label>
                              <input 
+                                id="settings-person-name"
                                 type="text"
                                 value={settings.person?.name || ''}
                                 onChange={e => updatePerson('name', e.target.value)}
@@ -374,8 +380,9 @@ export const SettingsEditor = () => {
                              />
                         </div>
                         <div style={{ flex: 1 }}>
-                             <label style={{ display: 'block', marginBottom: 8, fontSize: '14px', fontWeight: 500, color: "var(--text-primary)" }}>Роль / Должность</label>
+                             <label htmlFor="settings-person-role" style={{ display: 'block', marginBottom: 8, fontSize: '14px', fontWeight: 500, color: "var(--text-primary)" }}>Роль / Должность</label>
                              <input 
+                                id="settings-person-role"
                                 type="text"
                                 value={settings.person?.role || ''}
                                 onChange={e => updatePerson('role', e.target.value)}
@@ -393,8 +400,9 @@ export const SettingsEditor = () => {
 
                     <div style={{ display: 'flex', gap: '24px' }}>
                         <div style={{ flex: 1 }}>
-                             <label style={{ display: 'block', marginBottom: 8, fontSize: '14px', fontWeight: 500, color: "var(--text-primary)" }}>Локация</label>
+                             <label htmlFor="settings-person-location" style={{ display: 'block', marginBottom: 8, fontSize: '14px', fontWeight: 500, color: "var(--text-primary)" }}>Локация</label>
                              <input 
+                                id="settings-person-location"
                                 type="text"
                                 value={settings.person?.location || ''}
                                 onChange={e => updatePerson('location', e.target.value)}
@@ -409,8 +417,9 @@ export const SettingsEditor = () => {
                              />
                         </div>
                         <div style={{ flex: 1 }}>
-                             <label style={{ display: 'block', marginBottom: 8, fontSize: '14px', fontWeight: 500, color: "var(--text-primary)" }}>Часовой пояс</label>
+                             <label htmlFor="settings-person-timezone" style={{ display: 'block', marginBottom: 8, fontSize: '14px', fontWeight: 500, color: "var(--text-primary)" }}>Часовой пояс</label>
                              <input 
+                                id="settings-person-timezone"
                                 type="text"
                                 value={settings.person?.timeZone || ''}
                                 onChange={e => updatePerson('timeZone', e.target.value)}
@@ -428,7 +437,7 @@ export const SettingsEditor = () => {
                     </div>
 
                     <div>
-                         <label style={{ display: 'block', marginBottom: 8, fontSize: '14px', fontWeight: 500, color: "var(--text-primary)" }}>Аватар</label>
+                         <label htmlFor="settings-avatar-file" style={{ display: 'block', marginBottom: 8, fontSize: '14px', fontWeight: 500, color: "var(--text-primary)" }}>Аватар</label>
 
                          <div className={ui.avatarSectionRow}>
                             <div className={ui.avatarPreview}>
@@ -473,6 +482,7 @@ export const SettingsEditor = () => {
                               </div>
 
                               <input
+                                id="settings-avatar-file"
                                 ref={fileInputRef}
                                 type="file"
                                 accept="image/jpeg,image/png,image/webp"
@@ -481,8 +491,9 @@ export const SettingsEditor = () => {
                               />
 
                               <div className={ui.fieldGroup}>
-                                <label className={ui.fieldLabel}>Публичный путь</label>
+                                <label className={ui.fieldLabel} htmlFor="settings-avatar-public-path">Публичный путь</label>
                                 <input
+                                  id="settings-avatar-public-path"
                                   type="text"
                                   value={resolveAvatar(settings.person?.avatar)}
                                   readOnly
@@ -499,7 +510,7 @@ export const SettingsEditor = () => {
                               </div>
 
                               <div className={ui.fieldGroup} style={{ gap: 6 }}>
-                                <label className={ui.fieldLabel}>Абсолютный путь (сервер)</label>
+                                <p className={ui.fieldLabel}>Абсолютный путь (сервер)</p>
                                 <div className={ui.monoValue} title={meta?.avatarAbsolutePath ?? ""}>
                                   {meta?.avatarAbsolutePath ?? "—"}
                                 </div>
@@ -568,8 +579,9 @@ export const SettingsEditor = () => {
 
                              <div className={ui.cropControls}>
                                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                 <label className={ui.fieldLabel}>Масштаб</label>
+                                <label className={ui.fieldLabel} htmlFor="settings-avatar-crop-scale-range">Масштаб</label>
                                  <input
+                                  id="settings-avatar-crop-scale-range"
                                    type="range"
                                    min={1}
                                    max={2.5}
@@ -586,8 +598,9 @@ export const SettingsEditor = () => {
 
                                <div className={ui.cropNumbers}>
                                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                   <label className={ui.fieldLabel}>X</label>
+                                  <label className={ui.fieldLabel} htmlFor="settings-avatar-crop-x">X</label>
                                    <input
+                                    id="settings-avatar-crop-x"
                                      type="number"
                                      value={Math.round(cropOffset.x)}
                                      onChange={(e) => setCropOffset((prev) => clampOffset(Number(e.target.value), prev.y))}
@@ -603,8 +616,9 @@ export const SettingsEditor = () => {
                                    />
                                  </div>
                                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                   <label className={ui.fieldLabel}>Y</label>
+                                  <label className={ui.fieldLabel} htmlFor="settings-avatar-crop-y">Y</label>
                                    <input
+                                    id="settings-avatar-crop-y"
                                      type="number"
                                      value={Math.round(cropOffset.y)}
                                      onChange={(e) => setCropOffset((prev) => clampOffset(prev.x, Number(e.target.value)))}
@@ -620,8 +634,9 @@ export const SettingsEditor = () => {
                                    />
                                  </div>
                                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                   <label className={ui.fieldLabel}>Scale</label>
+                                  <label className={ui.fieldLabel} htmlFor="settings-avatar-crop-scale-number">Scale</label>
                                    <input
+                                    id="settings-avatar-crop-scale-number"
                                      type="number"
                                      min={1}
                                      max={2.5}
@@ -666,8 +681,8 @@ export const SettingsEditor = () => {
                                      try {
                                        const blob = await buildCroppedBlob();
                                        await uploadAvatar("upload", blob);
-                                     } catch (e: any) {
-                                       addToast({ variant: "danger", message: e?.message ?? "Ошибка загрузки" });
+                                     } catch (e) {
+                                       addToast({ variant: "danger", message: e instanceof Error ? e.message : "Ошибка загрузки" });
                                      }
                                    }}
                                    loading={uploadingAvatar}
@@ -720,79 +735,6 @@ export const SettingsEditor = () => {
                     </div>
 
                 </Flex>
-            </section>
-
-            <section
-              style={{
-                marginTop: 24,
-                background: "var(--bg-panel)",
-                padding: "32px",
-                borderRadius: "16px",
-                border: "1px solid var(--border-subtle)",
-              }}
-            >
-              <Heading as="h2" variant="display-default-m" marginBottom="l">
-                About
-              </Heading>
-
-              <Flex direction="column" gap="l">
-                <div>
-                  <label style={{ display: "block", marginBottom: 8, fontSize: 14, fontWeight: 500, color: "var(--text-primary)" }}>
-                    Заголовок страницы
-                  </label>
-                  <input
-                    type="text"
-                    value={about?.title || ""}
-                    onChange={(e) => setAbout((prev: any) => ({ ...prev, title: e.target.value }))}
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      borderRadius: "8px",
-                      border: "1px solid var(--border-subtle)",
-                      background: "var(--bg-card)",
-                      color: "var(--text-primary)",
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: "block", marginBottom: 8, fontSize: 14, fontWeight: 500, color: "var(--text-primary)" }}>
-                    Описание
-                  </label>
-                  <textarea
-                    value={about?.description || ""}
-                    onChange={(e) => setAbout((prev: any) => ({ ...prev, description: e.target.value }))}
-                    rows={4}
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      borderRadius: "8px",
-                      border: "1px solid var(--border-subtle)",
-                      background: "var(--bg-card)",
-                      color: "var(--text-primary)",
-                      resize: "vertical",
-                    }}
-                  />
-                </div>
-
-                <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                  <input
-                    id="about-avatar-display"
-                    type="checkbox"
-                    checked={Boolean(about?.avatar?.display)}
-                    onChange={(e) =>
-                      setAbout((prev: any) => ({
-                        ...prev,
-                        avatar: { ...(prev?.avatar ?? {}), display: e.target.checked },
-                      }))
-                    }
-                    style={{ width: 18, height: 18 }}
-                  />
-                  <label htmlFor="about-avatar-display" style={{ fontSize: 14, color: "var(--text-secondary)" }}>
-                    Показывать блок аватара на странице About
-                  </label>
-                </div>
-              </Flex>
             </section>
         </div>
       </div>

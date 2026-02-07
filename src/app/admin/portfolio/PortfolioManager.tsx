@@ -131,10 +131,10 @@ export default function PortfolioManager({ initialAlbums }: PortfolioManagerProp
                 </aside>
 
                 {/* Content Area */}
-                <main className={styles.contentArea}>
+                <main className={styles.contentArea} aria-labelledby="portfolio-page-title">
                     <div className={styles.portfolioHeader}>
                         <div>
-                            <h1 className={styles.pageTitle}>Portfolio</h1>
+                            <h1 className={styles.pageTitle} id="portfolio-page-title">Portfolio</h1>
                             <div className={styles.tabRow}>
                                 <div className={styles.activeTab}>
                                     {activeTab === 'hidden' ? <EyeOff size={16} /> : <LayoutGrid size={16} />}

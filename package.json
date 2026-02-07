@@ -9,7 +9,7 @@
     "test:coverage": "vitest run --coverage",
     "biome-write": "npx @biomejs/biome format --write .",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "npx @biomejs/biome lint src/components/Header.tsx src/components/admin/AboutEditor.tsx src/components/admin/adminHeaderLinks.ts src/app/(site)/about/page.tsx src/app/admin/page.tsx src/app/admin/about/page.tsx src/app/api/admin/about/route.ts src/components/admin/__tests__/AboutEditor.test.tsx src/components/admin/ui/WorkPeriodPicker.tsx src/components/admin/ui/__tests__/WorkPeriodPicker.test.tsx src/utils/workPeriod.ts keystatic.config.tsx",
     "manage:admin": "node src/scripts/manage-admin.mjs",
     "copy:assets": "node src/scripts/copy-assets.mjs"
   },
@@ -67,7 +67,8 @@
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.18",
     "cross-env": "^7.0.3",
-    "eslint": "^9.25.0",
+    "eslint": "^9.39.0",
+    "eslint-config-next": "^16.0.10",
     "jsdom": "^27.4.0",
     "typescript": "^5.8.3",
     "tzdata": "^1.0.44",
